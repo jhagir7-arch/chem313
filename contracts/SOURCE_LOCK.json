@@ -1,0 +1,12 @@
+{
+  "date": "2026-10-16",
+  "schema": "openchem.source_lock.v1",
+  "sources": {
+    "CP02_convergence_original.zip": "214b7628e16e374783591015d03e07ac0494a5d980b3be635fbbb8234cb8b538",
+    "CP03_canonical_original.zip": "f7719cbd3583d4923889fb931dfbfa3afaa97f6bb53087cfc4092edaf76f9f0b",
+    "H016_checkpoint001_original.zip": "8897833e95c0d65288b27cd3d01bd04345510a08fe390a5819632e1ed126f714",
+    "peer_CP03_consolidation_original.zip": "015fb44f952bf2ef0b0169ecae537750cd0ab142fd5b57584b3d753dbd69bdbf",
+    "peer_bridge_cp01_original.zip": "e2d64a88b1e8fafb5d387a0bb88186e48edf14075b9fd62744964365296d78f3",
+    "peer_kernel_cp01_original.zip": "1cf30a254b70d1ac7343c580747b6ebeb0ba60db45666f3c4e1507d1becfd195"
+  }
+}

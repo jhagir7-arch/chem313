@@ -1,0 +1,162 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hypothesislab.local/contracts/tool-actions.schema.json",
+  "title": "HypothesisLab action envelope version 2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "action",
+    "params",
+    "project"
+  ],
+  "properties": {
+    "action": {
+      "enum": [
+        "molecule.inspect_smiles",
+        "molecule.import_molfile",
+        "molecule.fidelity_audit",
+        "avogadro.ping",
+        "measurement.fit_csv"
+      ]
+    },
+    "params": {
+      "type": "object"
+    },
+    "project": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,47}$"
+    },
+    "approved": {
+      "type": "boolean",
+      "default": false
+    },
+    "preview_token": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 256,
+      "description": "Single-use server receipt for non-read-only actions"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "molecule.inspect_smiles"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "params": {
+            "type": "object",
+            "required": [
+              "smiles"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "smiles": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 5000
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "enum": [
+              "molecule.import_molfile",
+              "molecule.fidelity_audit"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "params": {
+            "type": "object",
+            "required": [
+              "molfile"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "molfile": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 250000
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "measurement.fit_csv"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "params": {
+            "type": "object",
+            "required": [
+              "csv",
+              "x_column",
+              "y_column",
+              "x_unit",
+              "y_unit"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "csv": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 250000
+              },
+              "x_column": {
+                "type": "string"
+              },
+              "y_column": {
+                "type": "string"
+              },
+              "x_unit": {
+                "type": "string"
+              },
+              "y_unit": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "avogadro.ping"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "params": {
+            "type": "object",
+            "maxProperties": 0
+          }
+        }
+      }
+    }
+  ],
+  "description": "API apply requires an action-bound preview_token (and local session header) when effect is not read_only; CLI uses approve-sha256."
+}

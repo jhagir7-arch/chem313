@@ -1,0 +1,11 @@
+task_id,fixed_task,success_measure,hypothesislab_status,chemgraph_status,catgo_status,baseline_native_status,evidence_link,decision
+01,Import stereo/isotope MOL; preserve exact original,"file hash, stereo, charge, isotope, provenance",NOT_RUN,NOT_RUN,NOT_RUN,NOT_RUN,,HOLD
+02,Edit and save MOL after preview; deliberately edit again,"stale write refusal, no false success",NOT_RUN,NOT_RUN,NOT_RUN,NOT_RUN,,HOLD
+03,Open native Avogadro CJSON with existing plugin,plugin calls and original hash,NOT_RUN,NOT_RUN,NOT_RUN,NOT_RUN,,HOLD
+04,Round-trip 2D to 3D to 2D,"atom maps, stereochemistry and custom tags",NOT_RUN,NOT_RUN,NOT_RUN,NOT_RUN,,HOLD
+05,Fit measured CSV with declared units,"recorded fit, input, residual and output code",NOT_RUN,NOT_RUN,NOT_RUN,NOT_RUN,,HOLD
+06,Plot spectrum/kinetics with source links,"plot export, axis units, reproducibility",NOT_RUN,NOT_RUN,NOT_RUN,NOT_RUN,,HOLD
+07,Natural-language multi-step molecule inspect,"valid approved plan, no made-up result",NOT_RUN,NOT_RUN,NOT_RUN,NOT_RUN,,HOLD
+08,Offline run with network disabled,no cloud requirement and local trace,NOT_RUN,NOT_RUN,NOT_RUN,NOT_RUN,,HOLD
+09,Reopen existing project after restart,"native files, old plugins, audit continuity",NOT_RUN,NOT_RUN,NOT_RUN,NOT_RUN,,HOLD
+10,"Run same task via UI, CLI, coded client",same source and deterministic scientific result,NOT_RUN,NOT_RUN,NOT_RUN,NOT_RUN,,HOLD

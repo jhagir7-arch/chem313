@@ -1,0 +1,12 @@
+{
+  "action": "measurement.fit_csv",
+  "project": "default",
+  "approved": true,
+  "params": {
+    "csv": "time_s,signal_au\n0,1.01\n1,1.97\n2,2.99\n3,3.96\n4,4.98\n5,5.95\n",
+    "x_column": "time_s",
+    "y_column": "signal_au",
+    "x_unit": "s",
+    "y_unit": "a.u."
+  }
+}

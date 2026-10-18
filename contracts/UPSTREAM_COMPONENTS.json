@@ -1,0 +1,123 @@
+{
+  "version": "2026-10-16",
+  "schema": "openchem.component_registry.v0.2",
+  "entries": [
+    {
+      "id": "rdkit",
+      "role": "engine",
+      "integration": "ENGINE",
+      "license": "BSD-3-Clause",
+      "status": "TESTED_ISOLATED_LIB",
+      "source": "https://pypi.org/project/rdkit/",
+      "note": "H016 Python binding, not a new engine"
+    },
+    {
+      "id": "scipy",
+      "role": "numeric",
+      "integration": "ENGINE",
+      "license": "BSD-3-Clause",
+      "status": "TESTED_ISOLATED_LIB",
+      "source": "https://scipy.org/",
+      "note": "H016 fitting test"
+    },
+    {
+      "id": "ketcher-react",
+      "role": "2d-editor",
+      "integration": "EMBED",
+      "license": "Apache-2.0",
+      "status": "SOURCE_ONLY_NOT_BUILT",
+      "source": "https://github.com/epam/ketcher",
+      "note": "Node >=24.20 required"
+    },
+    {
+      "id": "avogadro2",
+      "role": "native-host",
+      "integration": "HOST",
+      "license": "BSD-3-Clause (app; plugin-specific)",
+      "status": "MOCK_RPC_ONLY",
+      "source": "https://avogadro.cc/develop/rpc.html",
+      "note": "actual CJSON/plugin NOT_RUN"
+    },
+    {
+      "id": "tauri-v2",
+      "role": "desktop-shell",
+      "integration": "OPTIONAL",
+      "license": "Apache-2.0/MIT (verify)",
+      "status": "DOCS_ONLY",
+      "source": "https://v2.tauri.app/develop/sidecar/",
+      "note": "not installed or packaged"
+    },
+    {
+      "id": "aiida-core",
+      "role": "provenance",
+      "integration": "OPTIONAL",
+      "license": "MIT",
+      "status": "DOCS_ONLY",
+      "source": "https://aiida.readthedocs.io/",
+      "note": "not embedded"
+    },
+    {
+      "id": "cwl",
+      "role": "workflow-format",
+      "integration": "OPTIONAL",
+      "license": "open standard",
+      "status": "DOCS_ONLY",
+      "source": "https://www.commonwl.org/",
+      "note": "not runtime engine"
+    },
+    {
+      "id": "otel",
+      "role": "tracing",
+      "integration": "OPTIONAL",
+      "license": "Apache-2.0",
+      "status": "DOCS_ONLY",
+      "source": "https://opentelemetry.io/",
+      "note": "not instrumented"
+    },
+    {
+      "id": "chemgraph",
+      "role": "competitor/mcp",
+      "integration": "BENCHMARK",
+      "license": "Apache-2.0",
+      "status": "RESEARCH_ONLY",
+      "source": "https://github.com/argonne-lcf/ChemGraph",
+      "note": "not tested in runtime"
+    },
+    {
+      "id": "catgo",
+      "role": "competitor",
+      "integration": "BENCHMARK",
+      "license": "AGPL-3.0-or-later (public source)",
+      "status": "RESEARCH_ONLY",
+      "source": "https://github.com/Hello-QM/catgo-LRG",
+      "note": "not bundled"
+    },
+    {
+      "id": "zotero",
+      "role": "literature",
+      "integration": "USER_INSTALLED_HOST",
+      "license": "plugin/helper-specific",
+      "status": "LOCAL_NOT_RUN",
+      "source": "https://www.zotero.org/support/dev/client_coding/direct_access",
+      "note": "existing helper preferred"
+    },
+    {
+      "id": "conda-lock",
+      "role": "packaging",
+      "integration": "OPTIONAL",
+      "license": "open source",
+      "status": "DOCS_ONLY",
+      "source": "https://conda.github.io/conda-lock/",
+      "note": "locks not generated"
+    },
+    {
+      "id": "cyclonedx",
+      "role": "bom",
+      "integration": "OPTIONAL",
+      "license": "Apache-2.0 spec",
+      "status": "DOCS_ONLY",
+      "source": "https://github.com/CycloneDX/specification",
+      "note": "no resolved SBOM yet"
+    }
+  ]
+}
