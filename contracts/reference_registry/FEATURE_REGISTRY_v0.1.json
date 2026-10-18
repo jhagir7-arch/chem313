@@ -1,0 +1,674 @@
+{
+  "schema_version": "0.1",
+  "date": "2026-10-16",
+  "status": "PLANNED_NOT_IMPLEMENTED",
+  "sources": [
+    {
+      "group": "A. Chemistry, visualization and chemical information",
+      "product": "Avogadro 2 / Avogadro libraries",
+      "kind": "Open-source native host / libraries",
+      "tier": "P0 bridge; P1 deeper",
+      "integration": "USER-INSTALLED HOST + JSON-RPC; optional approved libraries",
+      "features": [
+        "3D molecule construction and editing",
+        "Atom, bond and geometry manipulation",
+        "Structure opening/saving with CJSON and supported files",
+        "3D orbit/zoom/measurement",
+        "Geometry optimization with supported force fields",
+        "Conformer display",
+        "Input/output for electronic-structure codes",
+        "Molecular surfaces and orbitals from computed inputs",
+        "Vibrational mode visualization and animation",
+        "Publication-oriented 3D figures",
+        "Existing supported Python/C++ plugins kept in native host"
+      ],
+      "source": "https://avogadro.cc/develop/rpc.html",
+      "caveat": "RPC / plugin versions must be tested in real host. CJSON is Avogadro-oriented native data, not universal. Do not promise all legacy plugins load unchanged."
+    },
+    {
+      "group": "A. Chemistry, visualization and chemical information",
+      "product": "Ketcher / Ketcher React",
+      "kind": "Open-source embed",
+      "tier": "P0",
+      "integration": "EMBED REACT 2D EDITOR + typed API",
+      "features": [
+        "Atoms/bonds/rings and drawing templates",
+        "Reaction arrows and reactants/products",
+        "2D molecule and reaction editing",
+        "Stereochemistry and atom map labels",
+        "Substructure/query drawing",
+        "Undo/redo, auto layout and canvas navigation",
+        "KET project read/write",
+        "MOL V2000/V3000 and RXN read/write",
+        "SMILES, SDF, CML and other formats where available",
+        "SVG/PNG structure depiction",
+        "Optional macromolecule editor/HELM mode",
+        "Optional Miew 3D viewing"
+      ],
+      "source": "https://github.com/epam/ketcher",
+      "caveat": "Version-pin React, Ketcher and service mode. Indigo remote mode optional; some operations not identical in browser standalone."
+    },
+    {
+      "group": "A. Chemistry, visualization and chemical information",
+      "product": "RDKit",
+      "kind": "Open-source Python library",
+      "tier": "P0",
+      "integration": "ISOLATED PYTHON ENGINE, checked tool API",
+      "features": [
+        "Molecule parsing/sanitization",
+        "Chemical graph and stereochemistry validation",
+        "Molecular formulas and weights",
+        "Descriptors (e.g., logP and polar surface area)",
+        "Substructure and SMARTS searches",
+        "Fingerprints/similarity and clustering",
+        "2D structure depiction",
+        "SDF/SMILES/MOL/RXN format conversions",
+        "3D conformer generation and force-field minimization",
+        "Fragment/query and reaction transformations where validated",
+        "Property table calculation and bulk processing"
+      ],
+      "source": "https://www.rdkit.org/docs/GettingStartedInPython.html",
+      "caveat": "Stereochemistry/atom properties/3D and tags may be lost during conversion. A descriptor is not a validated clinical/toxicity prediction."
+    },
+    {
+      "group": "A. Chemistry, visualization and chemical information",
+      "product": "Open Babel",
+      "kind": "Open-source, GPL-related obligations",
+      "tier": "P1 optional",
+      "integration": "OPTIONAL VERSION-PINNED HOST/CLI ADAPTER",
+      "features": [
+        "Chemical file-format conversions",
+        "Geometry/structure preparation",
+        "Standardization and hydrogen handling",
+        "Format inspection",
+        "Conversion between supported molecular model files",
+        "Batch conversion pipelines"
+      ],
+      "source": "https://openbabel.org/docs/",
+      "caveat": "License per shipped version and linking/distribution approach must be reviewed; cannot automatically treat as permissively bundlable."
+    },
+    {
+      "group": "B. General research data and numerical tools",
+      "product": "NumPy + pandas",
+      "kind": "Open-source Python packages",
+      "tier": "P0",
+      "integration": "ISOLATED PYTHON DATA ENGINE",
+      "features": [
+        "Import CSV/TSV and tabular datasets",
+        "Inspect missing values and metadata",
+        "Unit-aware structured table interface built by us",
+        "Filter/sort/group/pivot/merge",
+        "Reproducible numeric transformations",
+        "Preserve raw inputs and data provenance",
+        "Export validated tables"
+      ],
+      "source": "https://numpy.org/doc/ ; https://pandas.pydata.org/docs/",
+      "caveat": "We must implement own unit/schema metadata; do not silently coerce units or erase original row identifiers."
+    },
+    {
+      "group": "B. General research data and numerical tools",
+      "product": "SciPy + SymPy",
+      "kind": "Open-source Python libraries",
+      "tier": "P0",
+      "integration": "ISOLATED SCIENTIFIC CALCULATION ENGINE",
+      "features": [
+        "Curve fitting and residuals",
+        "Optimization and constraints",
+        "Statistical tests and confidence intervals",
+        "Numerical integration and ODE solvers",
+        "Scientific interpolation/signal filtering",
+        "Hypothesis/model-comparison helpers",
+        "Symbolic equation inspection and manipulation",
+        "Experimental-design utility calculations (if independently implemented/tested)",
+        "Parameter sweep and sensitivity analysis"
+      ],
+      "source": "https://docs.scipy.org/doc/scipy/ ; https://docs.sympy.org/latest/",
+      "caveat": "Numerical validity, units, noise model and uncertainty calculations require explicit tests; fit alone does not prove mechanism."
+    },
+    {
+      "group": "B. General research data and numerical tools",
+      "product": "Matplotlib + Plotly",
+      "kind": "Open-source plotting stacks",
+      "tier": "P0",
+      "integration": "EMBED PLOTLY INTERACTIVE VIEW; EXPORT MATPLOTLIB STATIC",
+      "features": [
+        "Editable line/scatter/bar/histogram charts",
+        "Time-course plots",
+        "Reaction-rate/fit residual plots",
+        "Spectra/peak overlays",
+        "Error bars, axes/units and annotations",
+        "Export SVG/PNG/PDF and plot data",
+        "Linked selections between plots/tables where supported"
+      ],
+      "source": "https://matplotlib.org/stable/ ; https://plotly.com/python/",
+      "caveat": "Need consistent style and provenance, not screenshots as only scientific output."
+    },
+    {
+      "group": "B. General research data and numerical tools",
+      "product": "JupyterLab + notebooks / Jupyter AI",
+      "kind": "Open-source notebook ecosystem",
+      "tier": "P1",
+      "integration": "OPEN ORIGINAL NOTEBOOK / OPTIONAL JUPYTER SERVER BRIDGE",
+      "features": [
+        "Open and preserve .ipynb notebooks",
+        "Python cell execution in isolated environment",
+        "Reproduce datasets, parameter configurations and figures",
+        "Export scripts/notebooks",
+        "Allow experts to continue their existing kernels and workflows",
+        "Optional notebook-agent parity via typed tools"
+      ],
+      "source": "https://jupyterlab.readthedocs.io/en/stable/ ; https://github.com/jupyterlab/jupyter-ai",
+      "caveat": "Do not execute untrusted notebooks automatically; embedding a full Jupyter server is not mandatory for v0.1."
+    },
+    {
+      "group": "B. General research data and numerical tools",
+      "product": "EnzymeML / Open Reaction Database (ORD)",
+      "kind": "Open data formats / repositories",
+      "tier": "P1-P2",
+      "integration": "FORMAT IMPORTER + PROVENANCE AND RIGHTS LAYER",
+      "features": [
+        "EnzymeML experiment-condition/time-course import",
+        "Study sample/method/unit metadata",
+        "Kinetic model and experimental result linking",
+        "ORD reaction metadata / conditions and outcomes",
+        "Dataset validation",
+        "Attribution and per-record rights checks"
+      ],
+      "source": "https://github.com/EnzymeML/enzymeml-specifications ; https://github.com/open-reaction-database/ord-schema",
+      "caveat": "Standards/data repositories, not simulation engines. Do not confuse ORD reaction yield with enzyme mechanism ground truth. Dataset rights need review."
+    },
+    {
+      "group": "C. Kinetics, atomistic and quantum simulation",
+      "product": "COPASI + basiCO",
+      "kind": "Open-source native host and Python interface",
+      "tier": "P1",
+      "integration": "OPTIONAL PYTHON BASICO ENGINE; NATIVE COPASI ORIGINAL FILES",
+      "features": [
+        "Reaction-network construction and parameter editing",
+        "Time-course simulation",
+        "Steady-state analysis",
+        "Parameter estimation from experimental data",
+        "Parameter scans and optimization",
+        "Sensitivity analysis",
+        "Metabolic network pathway-related methods",
+        "SBML/COPASI project import/export",
+        "Plots and numerical reports"
+      ],
+      "source": "https://copasi.org/Support/User_Manual/Tasks/ ; https://github.com/copasi/basico",
+      "caveat": "Licensing/compatibility must be version-pinned. Computational models require fitted/known parameters."
+    },
+    {
+      "group": "C. Kinetics, atomistic and quantum simulation",
+      "product": "ASE (Atomic Simulation Environment)",
+      "kind": "Open-source LGPL Python toolkit",
+      "tier": "P2",
+      "integration": "OPTIONAL ISOLATED PYTHON ENGINE / EXTERNAL CALCULATOR PLUGINS",
+      "features": [
+        "Atomistic structures and unit cells",
+        "Geometry optimization",
+        "Atomic energies, forces and stresses via chosen calculators",
+        "Constraints and coordinate handling",
+        "Trajectories and file I/O",
+        "Scriptable calculator interoperability",
+        "Automated parameter scans and workflows",
+        "Atomistic visualization",
+        "Periodic structure conversion"
+      ],
+      "source": "https://docs.ase-lib.org/",
+      "caveat": "ASE is an interface to calculators, not proof that a requested engine or method is installed or accurate."
+    },
+    {
+      "group": "C. Kinetics, atomistic and quantum simulation",
+      "product": "PySCF",
+      "kind": "Open-source quantum chemistry Python engine",
+      "tier": "P2",
+      "integration": "OPTIONAL PYTHON QUANTUM ENGINE",
+      "features": [
+        "Electronic-structure method selection (HF/DFT)",
+        "Basis and spin/charge specification",
+        "Ground-state energy and density analysis",
+        "Orbital outputs for visualization",
+        "Convergence diagnostics",
+        "Property calculations where method supports them",
+        "Batch small-molecule electronic calculations",
+        "Reproducible input method cards"
+      ],
+      "source": "https://pyscf.org/user/scf.html",
+      "caveat": "Quantum results depend on method/basis/convergence, should be labeled computed model not measured truth."
+    },
+    {
+      "group": "C. Kinetics, atomistic and quantum simulation",
+      "product": "OpenMM",
+      "kind": "Open-source C++/Python simulation toolkit",
+      "tier": "P2",
+      "integration": "OPTIONAL ISOLATED MOLECULAR DYNAMICS ENGINE",
+      "features": [
+        "Molecular dynamics setup",
+        "Force-field and parameter selection",
+        "Energy minimization",
+        "Temperature/pressure and integrator settings",
+        "Solvation and periodic boundaries",
+        "Trajectory recording and replay",
+        "Energies and motion analysis",
+        "Checkpoints and reproducible run metadata"
+      ],
+      "source": "https://docs.openmm.org/latest/api-python/index.html",
+      "caveat": "GPU, force fields, substantial dependencies and validated molecule parameterization remain separate installation/science gates."
+    },
+    {
+      "group": "D. Materials and crystallography",
+      "product": "pymatgen + spglib",
+      "kind": "Open-source Python libraries",
+      "tier": "P1",
+      "integration": "OPTIONAL PYTHON CRYSTAL ENGINE",
+      "features": [
+        "CIF crystal structure import",
+        "Unit cell and lattice analysis",
+        "Space-group/symmetry operations",
+        "Bond lengths and coordination environments",
+        "Supercells / lattice transforms",
+        "Structural matching/difference checks",
+        "Calculated XRD patterns and unit annotations",
+        "Phase/property plots where input data justify them",
+        "Export structural and symmetry results"
+      ],
+      "source": "https://pymatgen.org/ ; https://spglib.readthedocs.io/en/stable/",
+      "caveat": "CIF lossy serialization and symmetry tolerances need benchmarks. Calculated XRD is theoretical, not a measured spectrum."
+    },
+    {
+      "group": "D. Materials and crystallography",
+      "product": "Gemmi",
+      "kind": "Open-source crystallographic library",
+      "tier": "P1-P2",
+      "integration": "OPTIONAL PYTHON/C++ STRUCTURAL DATA ADAPTER",
+      "features": [
+        "Parse CIF / mmCIF / PDB",
+        "Macromolecular models and sequence-to-structure annotations",
+        "Reflection/MTZ and crystallographic map reading",
+        "Crystallographic symmetry",
+        "Electron-density maps",
+        "Structure integrity checks",
+        "Native biological source-data preservation"
+      ],
+      "source": "https://gemmi.readthedocs.io/en/stable/",
+      "caveat": "CIF and macromolecular mmCIF are different use cases; do not drop chain or experiment metadata by flattening into SMILES."
+    },
+    {
+      "group": "D. Materials and crystallography",
+      "product": "VESTA",
+      "kind": "Proprietary, free under restrictive vendor license",
+      "tier": "P1 inspiration",
+      "integration": "REFERENCE_ONLY; INDEPENDENT FEATURES VIA PYMATGEN/SPGLIB",
+      "features": [
+        "Unit-cell visualizer",
+        "Crystal lattice and coordination polyhedra",
+        "Structural overlays",
+        "Volumetric density contours and isosurfaces",
+        "Slice planes",
+        "Symmetry and supercell operations",
+        "Scientific export images"
+      ],
+      "source": "https://jp-minerals.org/vesta/en/download.html",
+      "caveat": "No redistribution of its binaries without written consent. No direct host integration rights assumed."
+    },
+    {
+      "group": "D. Materials and crystallography",
+      "product": "CCDC Mercury (CSD-Community)",
+      "kind": "Proprietary free noncommercial edition",
+      "tier": "P1 inspiration",
+      "integration": "REFERENCE_ONLY; INDEPENDENT CIF CRYSTAL VIEWER",
+      "features": [
+        "Crystal packing explorer",
+        "Symmetry equivalents",
+        "Intermolecular contacts and H-bonds",
+        "CIF validation/metadata reporting",
+        "Unit-cell 3D visualizations",
+        "Contact maps and figure export"
+      ],
+      "source": "https://support.ccdc.cam.ac.uk/support/solutions/articles/103000306187",
+      "caveat": "Free community features not same as paid CSD portfolio; redistribution and commercial use not cleared."
+    },
+    {
+      "group": "E. Structural biology, proteins, molecules",
+      "product": "Biopython",
+      "kind": "Open-source Python library",
+      "tier": "P2",
+      "integration": "OPTIONAL PYTHON PROTEIN/SEQUENCE ADAPTER",
+      "features": [
+        "PDB / mmCIF model inspection",
+        "Sequence and residue data",
+        "Protein chain and atom selection",
+        "Structure comparisons",
+        "Distance and contact measurements",
+        "Alignment-related outputs",
+        "Link sequence identifiers to rendered structures"
+      ],
+      "source": "https://biopython.org/docs/latest/",
+      "caveat": "Independent structural annotations must retain source IDs; not a mechanism-of-action inference system."
+    },
+    {
+      "group": "E. Structural biology, proteins, molecules",
+      "product": "BIOVIA Discovery Studio Visualizer",
+      "kind": "Proprietary free visualizer",
+      "tier": "P2 inspiration",
+      "integration": "REFERENCE_ONLY; ORIGINAL PROTEIN/LIGAND VIEWER AND CONTACT REPORT",
+      "features": [
+        "Receptor-ligand contact diagrams",
+        "Protein binding-pocket visualization",
+        "Solvent accessibility",
+        "2D/3D interaction maps",
+        "Molecular alignment and overlays",
+        "Hydrogen-bond and hydrophobic-contact displays",
+        "Ramachandran / geometry plots",
+        "Sequence and structure annotations",
+        "Scientific storyboard and figure export"
+      ],
+      "source": "https://www.3ds.com/products/biovia/discovery-studio/visualization/",
+      "caveat": "Its branded assets and proprietary binaries not included; geometry contacts do not establish binding affinity or clinical activity."
+    },
+    {
+      "group": "E. Structural biology, proteins, molecules",
+      "product": "UCSF ChimeraX",
+      "kind": "Source available, non-open-source restrictive license",
+      "tier": "P2 inspiration / optional host",
+      "integration": "REFERENCE_ONLY; OPTIONAL USER-INSTALLED EXTENSION IF RIGHTS CLEARED",
+      "features": [
+        "High-quality protein/molecular view",
+        "Molecular surfaces",
+        "3D structure alignment",
+        "Cryo-EM and X-ray density-map display",
+        "Sequence-structure links",
+        "Scripting commands",
+        "Movie and scene capture",
+        "Original third-party extensions under proper terms"
+      ],
+      "source": "https://github.com/RBVI/ChimeraX/blob/develop/License.md",
+      "caveat": "Noncommercial academic/research grant and separate commercial license. Core cannot be copied or bundled without permission; original extensions may be separate works."
+    },
+    {
+      "group": "E. Structural biology, proteins, molecules",
+      "product": "Swiss-PdbViewer / DeepView",
+      "kind": "Legacy proprietary restrictive software",
+      "tier": "P3 reference only",
+      "integration": "DOCUMENTED FEATURE REFERENCE; DO NOT REUSE CODE/BINARY",
+      "features": [
+        "Protein structure inspection",
+        "Sequence/structure comparisons",
+        "Structural alignment",
+        "Side-chain/geometry inspection",
+        "Legacy view and annotation workflows"
+      ],
+      "source": "https://spdbv.unil.ch/disclaim.html",
+      "caveat": "No reengineering/decompilation or redistribution under vendor terms; verify abstract feature requirements with independent science."
+    },
+    {
+      "group": "F. Spectroscopy and imaging",
+      "product": "Spectragryph",
+      "kind": "Proprietary free eligible noncommercial edition",
+      "tier": "P1-P2 inspiration",
+      "integration": "REFERENCE_ONLY; SCIENTIFIC PYTHON SPECTRUM STUDIO",
+      "features": [
+        "UV-Vis/FTIR/Raman spectra import",
+        "Baseline correction",
+        "Smoothing / resampling",
+        "Peak identification and integration",
+        "Spectral overlay/compare",
+        "Normalization",
+        "Batch processing",
+        "Peak tables and report figures",
+        "Export source-linked spectra"
+      ],
+      "source": "https://www.effemm2.de/spectragryph/license.html",
+      "caveat": "Free noncommercial license not free for commercial R&D; no vendor binary integration approved."
+    },
+    {
+      "group": "F. Spectroscopy and imaging",
+      "product": "OpenMS / pyOpenMS",
+      "kind": "Open-source mass-spectrometry tools",
+      "tier": "P2",
+      "integration": "OPTIONAL PYTHON MASS-SPECTROMETRY ENGINE",
+      "features": [
+        "LC-MS spectrum/chromatogram reading",
+        "Peak picking",
+        "Retention-time alignment",
+        "Feature detection and grouping",
+        "Isotopic pattern analysis",
+        "Quantification and quality measures",
+        "mzML and supported data exchange",
+        "Report/export of detected features"
+      ],
+      "source": "https://pyopenms.readthedocs.io/en/stable/",
+      "caveat": "Requires instrument data, careful parameterization and domain QA. Not the same as optical spectroscopy."
+    },
+    {
+      "group": "F. Spectroscopy and imaging",
+      "product": "Fiji / ImageJ + PyImageJ",
+      "kind": "Open-source host and Python bridge",
+      "tier": "P3",
+      "integration": "USER-INSTALLED NATIVE HOST / PYIMAGEJ BRIDGE",
+      "features": [
+        "Microscopy image/stack import",
+        "Contrast, registration and preprocessing",
+        "Filters, thresholding and segmentation",
+        "ROIs and annotations",
+        "Measurements/cell counts",
+        "Reusable ImageJ macros",
+        "Import/export image stacks and masks",
+        "Existing Fiji plugins preserved in original host"
+      ],
+      "source": "https://imagej.net/scripting/pyimagej",
+      "caveat": "Plugins execute in original Fiji host. Cannot promise they work unchanged in a new embedded process."
+    },
+    {
+      "group": "F. Spectroscopy and imaging",
+      "product": "napari",
+      "kind": "Open-source scientific image GUI with plugins",
+      "tier": "P3",
+      "integration": "OPTIONAL NATIVE HOST OR PYTHON BRIDGE",
+      "features": [
+        "2D/3D/nD image stacks",
+        "Image and label layers",
+        "ROI and interactive annotation",
+        "Viewer state linking",
+        "Custom widgets and plugins",
+        "Multidimensional microscopy visualization",
+        "Import/export readers and formats"
+      ],
+      "source": "https://napari.org/stable/",
+      "caveat": "Different GUI/Qt process; preserve original plugins rather than transpiling them into our React app."
+    },
+    {
+      "group": "G. Other scientific domains (later)",
+      "product": "FreeCAD",
+      "kind": "Open-source parametric CAD desktop",
+      "tier": "P3",
+      "integration": "OPTIONAL NATIVE HOST PYTHON CONSOLE/MACRO BRIDGE",
+      "features": [
+        "Parametric solid modeling",
+        "Constraint-based geometry",
+        "Dimensions and measurements",
+        "STEP/STL import/export",
+        "Versioned design tree",
+        "Python automation/workbenches"
+      ],
+      "source": "https://www.freecad.org/features.php",
+      "caveat": "CAD is adjacent to chemistry but separate domain and data model; not initial shipping promise."
+    },
+    {
+      "group": "G. Other scientific domains (later)",
+      "product": "QGIS + PyQGIS",
+      "kind": "Open-source GIS desktop",
+      "tier": "P3",
+      "integration": "OPTIONAL NATIVE HOST / PYQGIS PROCESSING BRIDGE",
+      "features": [
+        "Geospatial vector/raster layers",
+        "Coordinate reference transforms",
+        "Map visualization and layers",
+        "Geoprocessing and spatial statistics",
+        "Native QGIS plugin workflows",
+        "Map/export/report products",
+        "Python scripting"
+      ],
+      "source": "https://docs.qgis.org/latest/en/docs/pyqgis_developer_cookbook/",
+      "caveat": "Not chemistry first; map formats, CRS and plugin ABI independent of molecular engine."
+    },
+    {
+      "group": "H. Proprietary/legacy molecule editing references",
+      "product": "ChemAxon MarvinSketch/MarvinView",
+      "kind": "Proprietary, conditional free standalone use",
+      "tier": "P1 reference only",
+      "integration": "REFERENCE_ONLY; DESIGN ORIGINAL KETCHER-BASED EDITOR UX",
+      "features": [
+        "Chemical drawing and fragment templates",
+        "Stereo and reaction annotation",
+        "Chemical format interchange",
+        "2D layout/presentation",
+        "Molecule property panels"
+      ],
+      "source": "https://docs.chemaxon.com/lts-krypton/reactor-licensing.html",
+      "caveat": "Free standalone license does not authorize embedding into our product; obtain written rights for any vendor host API use."
+    },
+    {
+      "group": "H. Proprietary/legacy molecule editing references",
+      "product": "ACD/ChemSketch Freeware",
+      "kind": "Proprietary discontinued freeware (new users)",
+      "tier": "P3 legacy references",
+      "integration": "LEGACY REFERENCE ONLY",
+      "features": [
+        "Publication-style chemical sketching",
+        "Labels, arrows and templates",
+        "2D reaction diagrams",
+        "Legacy structure-document workflows"
+      ],
+      "source": "https://www.acdlabs.com/resources/free-chemistry-software-apps/chemsketch-freeware/",
+      "caveat": "Discontinued for new users in 2026; no bundle or new-user install plan."
+    },
+    {
+      "group": "I. Existing competing AI-workbench products",
+      "product": "DataWarrior / DataWarrior-Agent",
+      "kind": "GPL DataWarrior host; AI agent repo licensing needs audit",
+      "tier": "Competitive benchmark",
+      "integration": "BENCHMARK; USER-INSTALLED HOST ADAPTER ONLY AFTER GPL REVIEW",
+      "features": [
+        "Multi-molecule tabular chemical descriptors",
+        "Drug-likeness filters and scaffold views",
+        "Search/filter sort of compound data",
+        "Macros and batch analysis",
+        "Natural-language macro tool calls via Ollama",
+        "Live scientific data browsing"
+      ],
+      "source": "https://github.com/thsa/datawarrior ; https://github.com/YoussBGD/DataWarrior-Agent",
+      "caveat": "Existing local-agent competitor. Agent repository has no confirmed redistributable license; do not copy code. Test via native app only if permitted."
+    },
+    {
+      "group": "I. Existing competing AI-workbench products",
+      "product": "ChemGraph",
+      "kind": "Open-source agent research product",
+      "tier": "Competitive benchmark",
+      "integration": "BENCHMARK + POSSIBLE INTEGRATION AFTER LICENSE AUDIT",
+      "features": [
+        "Natural-language chemical tool orchestration",
+        "RDKit + ASE scientific actions",
+        "Python/CLI/GUI/MCP interfaces",
+        "Report/plot generation",
+        "Scientific multi-step workflows",
+        "Ollama/local provider route",
+        "Logged agent-tool interactions"
+      ],
+      "source": "https://github.com/argonne-lcf/ChemGraph",
+      "caveat": "Direct competitor, not evidence our stack is first. Prefer comparing metrics or collaborating over blindly forking."
+    },
+    {
+      "group": "I. Existing competing AI-workbench products",
+      "product": "CatGo / CatBot",
+      "kind": "Published 1.4 source AGPL; newer binary rights different",
+      "tier": "Competitive benchmark",
+      "integration": "BENCHMARK; NO COPYING WITHOUT AGPL COMPLIANCE",
+      "features": [
+        "3D molecular structures",
+        "Desktop scientific workspaces",
+        "Scientific workflow graphs",
+        "Job/run tracking",
+        "HPC and computational-engine integrations",
+        "Natural-language CatBot actions",
+        "Python/CLI/MCP and coding agent operations",
+        "Results visualization and exports"
+      ],
+      "source": "https://github.com/Hello-QM/catgo-LRG",
+      "caveat": "Existing desktop competitor; version-specific source licensing, local-model compatibility and true offline operation need testing."
+    },
+    {
+      "group": "I. Existing competing AI-workbench products",
+      "product": "SAMSON / SAMSON AI",
+      "kind": "Commercial/proprietary product and extension ecosystem",
+      "tier": "Competitive benchmark",
+      "integration": "BENCHMARK ONLY; OPTIONAL HOST IF VENDOR API RIGHTS",
+      "features": [
+        "Molecular-design workspace",
+        "3D manipulation and simulation",
+        "Extension manager",
+        "AI command/script assistance",
+        "Scientific objects and visualization",
+        "Reusable modeling components"
+      ],
+      "source": "https://www.samson-connect.net/",
+      "caveat": "Do not assume its AI runs locally or its components can be redistributed."
+    },
+    {
+      "group": "I. Existing competing AI-workbench products",
+      "product": "KNIME Analytics Platform and AI extensions",
+      "kind": "Mixed open-source platform/extensions; commercial layers",
+      "tier": "Competitive benchmark",
+      "integration": "BENCHMARK; NO DIRECT UI/CODE CLONE",
+      "features": [
+        "Drag-and-drop graph workflows",
+        "Tabular transformation and joins",
+        "Charts and data analytics",
+        "Reusable workflow nodes",
+        "Integration with Python and local LLM nodes",
+        "Execution diagnostics and history",
+        "Community extensions"
+      ],
+      "source": "https://www.knime.com/ ; https://docs.knime.com/ap/latest/ai/overview/",
+      "caveat": "Mature incumbent and UI inspiration. Platform user count does not imply AI feature uptake; license every extension separately."
+    },
+    {
+      "group": "J. Local model and extensibility layer",
+      "product": "Qwen3.5 0.8B / 2B, llama.cpp, MLX-LM, Ollama",
+      "kind": "Open-weight model candidates / open tool runtimes",
+      "tier": "P1 (model optional)",
+      "integration": "LOCAL MODEL RUNNER; explicit optional download",
+      "features": [
+        "Parse scientist requests",
+        "Select typed allowed tools",
+        "Draft and explain execution plans",
+        "Ask clarifying questions when variables absent",
+        "Summarize verified outputs with sources",
+        "Abstain on unsupported actions",
+        "User-specific optional LoRA adapters after validation",
+        "Offline local model mode"
+      ],
+      "source": "https://huggingface.co/Qwen ; https://github.com/ggml-org/llama.cpp ; https://github.com/ml-explore/mlx-lm",
+      "caveat": "No trained model exists yet. Existing small Qwen weights are not proven reliable on full workflows; model add-on size cap separate from RAM/app size."
+    },
+    {
+      "group": "J. Local model and extensibility layer",
+      "product": "Python SDK / CLI / MCP / community plugins",
+      "kind": "OUR ORIGINAL PLATFORM CONTRACT",
+      "tier": "P0 SDK; P1 marketplace",
+      "integration": "TYPED VERSIONED TOOL REGISTRY",
+      "features": [
+        "Invoke scientific tools by user-defined names",
+        "Preview, permission and approval",
+        "Tool parameter schemas and error reporting",
+        "Action history, undo where feasible and deterministic replay",
+        "Native-host adapter registration",
+        "Community plugin discovery and compatibility metadata",
+        "Offline and network boundary policies",
+        "Integration with independent coding agents as optional clients"
+      ],
+      "source": "https://modelcontextprotocol.io/ ; https://docs.python.org/3/",
+      "caveat": "Only approved/sandboxed plugin execution; not unrestricted tools and no claim existing plugin binaries are portable across hosts."
+    }
+  ]
+}
