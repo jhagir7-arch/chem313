@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 3.16)
+project(hypothesislab_avogadro_ping LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+add_executable(avogadro_ping avogadro_ping.cpp)
+if(APPLE)
+  target_compile_definitions(avogadro_ping PRIVATE HL_MACOS=1)
+endif()
