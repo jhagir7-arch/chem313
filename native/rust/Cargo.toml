@@ -1,0 +1,7 @@
+[package]
+name = "hypothesislab-bridge"
+version = "0.1.0"
+edition = "2021"
+description = "Dependency-free, explicit Rust -> Python tool transport (CLI proof)"
+
+[dependencies]
