@@ -1,0 +1,417 @@
+# Observed macOS arm64 Python 3.12 resolver lock for the bounded bioscience worker.
+# Top-level operation dependencies: PyEnzyme 1.1.5, PySB 1.17.0, BioNetGen 0.8.7; PyInstaller is build-only.
+# Verified with `uv pip sync` in a fresh Python 3.12 environment. No local editables, models, datasets, or source archives.
+altgraph==0.17.5
+    # via
+    #   macholib
+    #   pyinstaller
+anyio==4.15.1
+    # via
+    #   httpx
+    #   jupyter-server
+appnope==1.0.0
+    # via ipykernel
+argon2-cffi==25.1.0
+    # via jupyter-server
+argon2-cffi-bindings==26.1.0
+    # via argon2-cffi
+arrow==1.4.0
+    # via isoduration
+asttokens==3.0.2
+    # via stack-data
+async-lru==2.4.0
+    # via jupyterlab
+attrs==26.1.0
+    # via
+    #   jsonschema
+    #   referencing
+babel==2.18.0
+    # via jupyterlab-server
+beautifulsoup4==4.15.0
+    # via nbconvert
+bionetgen==0.8.7
+bleach==6.4.0
+    # via nbconvert
+cachebox==5.2.3
+    # via deepdiff
+cement==3.0.16
+    # via bionetgen
+certifi==2026.7.22
+    # via
+    #   httpcore
+    #   httpx
+    #   requests
+cffi==2.1.1
+    # via argon2-cffi-bindings
+charset-normalizer==3.5.2
+    # via requests
+colorlog==6.12.0
+    # via bionetgen
+comm==0.2.3
+    # via ipykernel
+contourpy==1.3.3
+    # via matplotlib
+cycler==0.12.1
+    # via matplotlib
+debugpy==1.8.22
+    # via ipykernel
+deepdiff==9.1.0
+    # via pyenzyme
+defusedxml==0.7.1
+    # via
+    #   bionetgen
+    #   nbconvert
+deprecation==2.1.0
+    # via pyenzyme
+et-xmlfile==2.0.0
+    # via openpyxl
+executing==2.3.0
+    # via stack-data
+fastjsonschema==2.22.2
+    # via nbformat
+fonttools==4.67.0
+    # via matplotlib
+fqdn==1.6.0
+    # via jsonschema
+h11==0.16.0
+    # via httpcore
+httpcore==1.0.9
+    # via httpx
+httpx==0.28.1
+    # via jupyterlab
+idna==3.20
+    # via
+    #   anyio
+    #   httpx
+    #   jsonschema
+    #   requests
+ipykernel==7.4.0
+    # via jupyterlab
+ipython==9.17.1
+    # via ipykernel
+ipython-pygments-lexers==1.1.1
+    # via ipython
+isoduration==20.11.0
+    # via jsonschema
+jedi==0.20.1
+    # via ipython
+jinja2==3.1.6
+    # via
+    #   jupyter-server
+    #   jupyterlab
+    #   jupyterlab-server
+    #   nbconvert
+json5==0.17.3
+    # via jupyterlab-server
+jsonpointer==3.2.1
+    # via jsonschema
+jsonschema==4.26.0
+    # via
+    #   jupyter-events
+    #   jupyterlab-server
+    #   nbformat
+jsonschema-specifications==2025.9.1
+    # via jsonschema
+jupyter-builder==1.2.3
+    # via
+    #   jupyterlab
+    #   notebook
+jupyter-client==8.10.0
+    # via
+    #   ipykernel
+    #   jupyter-server
+    #   nbclient
+jupyter-core==5.9.1
+    # via
+    #   ipykernel
+    #   jupyter-builder
+    #   jupyter-client
+    #   jupyter-server
+    #   jupyterlab
+    #   nbclient
+    #   nbconvert
+    #   nbformat
+jupyter-events==0.12.1
+    # via jupyter-server
+jupyter-lsp==2.3.1
+    # via jupyterlab
+jupyter-server==2.21.1
+    # via
+    #   jupyter-lsp
+    #   jupyterlab
+    #   jupyterlab-server
+    #   notebook
+    #   notebook-shim
+jupyter-server-terminals==0.5.4
+    # via jupyter-server
+jupyterlab==4.6.4
+    # via notebook
+jupyterlab-pygments==0.3.0
+    # via nbconvert
+jupyterlab-server==2.28.1
+    # via
+    #   jupyterlab
+    #   notebook
+kiwisolver==1.5.1
+    # via matplotlib
+lark==1.3.1
+    # via rfc3987-syntax
+libroadrunner==2.6.0
+    # via bionetgen
+lxml==6.1.3
+    # via bionetgen
+macholib==1.16.4
+    # via pyinstaller
+markupsafe==3.0.4
+    # via
+    #   jinja2
+    #   nbconvert
+matplotlib==3.11.2
+    # via seaborn
+matplotlib-inline==0.2.2
+    # via
+    #   ipykernel
+    #   ipython
+mistune==3.3.4
+    # via nbconvert
+mpmath==1.4.1
+    # via sympy
+narwhals==2.27.1
+    # via plotly
+nbclient==0.11.0
+    # via nbconvert
+nbconvert==7.17.2
+    # via jupyter-server
+nbformat==5.11.1
+    # via
+    #   jupyter-server
+    #   nbclient
+    #   nbconvert
+    #   nbopen
+nbopen==0.7
+    # via bionetgen
+nest-asyncio2==1.7.4
+    # via ipykernel
+networkx==3.7
+    # via
+    #   bionetgen
+    #   pysb
+notebook==7.6.3
+    # via nbopen
+notebook-shim==0.2.4
+    # via
+    #   jupyterlab
+    #   notebook
+numexpr==2.14.2
+    # via pyenzyme
+numpy==1.26.4
+    # via
+    #   bionetgen
+    #   contourpy
+    #   libroadrunner
+    #   matplotlib
+    #   numexpr
+    #   pandas
+    #   pyenzyme
+    #   pysb
+    #   scipy
+    #   seaborn
+openpyxl==3.1.5
+    # via pyenzyme
+orderly-set==5.5.0
+    # via deepdiff
+packaging==26.3
+    # via
+    #   bionetgen
+    #   deprecation
+    #   ipykernel
+    #   jupyter-events
+    #   jupyter-server
+    #   jupyterlab
+    #   jupyterlab-server
+    #   matplotlib
+    #   nbconvert
+    #   plotly
+    #   pyinstaller
+    #   pyinstaller-hooks-contrib
+pandas==3.0.6
+    # via
+    #   pyenzyme
+    #   seaborn
+pandocfilters==1.5.1
+    # via nbconvert
+parso==0.8.7
+    # via jedi
+pexpect==4.9.0
+    # via ipython
+pillow==13.0.0
+    # via matplotlib
+platformdirs==4.13.3
+    # via jupyter-core
+plotly==7.1.0
+    # via pyenzyme
+prometheus-client==0.26.0
+    # via jupyter-server
+prompt-toolkit==3.0.53
+    # via ipython
+psutil==7.2.2
+    # via ipython
+ptyprocess==0.7.0
+    # via
+    #   pexpect
+    #   terminado
+pure-eval==0.2.4
+    # via stack-data
+pycparser==3.11
+    # via cffi
+pydantic==1.8.2
+    # via pyenzyme
+pyenzyme==1.1.5
+pygments==2.21.0
+    # via
+    #   ipython
+    #   ipython-pygments-lexers
+    #   nbconvert
+pyinstaller==6.22.3
+pyinstaller-hooks-contrib==2026.8
+    # via pyinstaller
+pylru==1.3.1
+    # via bionetgen
+pyparsing==3.3.3
+    # via
+    #   bionetgen
+    #   matplotlib
+pysb==1.17.0
+python-dateutil==2.9.0.post0
+    # via
+    #   arrow
+    #   jupyter-client
+    #   matplotlib
+    #   pandas
+python-json-logger==4.2.0
+    # via jupyter-events
+python-libcombine==0.2.20
+    # via pyenzyme
+python-libsbml==5.21.2
+    # via
+    #   bionetgen
+    #   pyenzyme
+python-multipart==0.0.32
+    # via pyenzyme
+pyyaml==6.0.3
+    # via
+    #   bionetgen
+    #   jupyter-events
+    #   pyenzyme
+pyzmq==27.2.0
+    # via
+    #   ipykernel
+    #   jupyter-client
+    #   jupyter-server
+referencing==0.37.0
+    # via
+    #   jsonschema
+    #   jsonschema-specifications
+    #   jupyter-events
+requests==2.34.2
+    # via
+    #   jupyterlab-server
+    #   pyenzyme
+rfc3339-validator==0.1.4
+    # via
+    #   jsonschema
+    #   jupyter-events
+rfc3986-validator==0.1.1
+    # via
+    #   jsonschema
+    #   jupyter-events
+rfc3987-syntax==1.1.0
+    # via jsonschema
+rpds-py==2026.9.1
+    # via
+    #   jsonschema
+    #   referencing
+scipy==1.17.1
+    # via
+    #   pyenzyme
+    #   pysb
+seaborn==0.13.2
+    # via
+    #   bionetgen
+    #   pyenzyme
+send2trash==2.1.0
+    # via jupyter-server
+setuptools==84.0.0
+    # via pyinstaller
+six==1.17.0
+    # via
+    #   python-dateutil
+    #   rfc3339-validator
+soupsieve==3.0.3
+    # via beautifulsoup4
+stack-data==0.6.3
+    # via ipython
+sympy==1.11.1
+    # via
+    #   bionetgen
+    #   pysb
+terminado==0.18.1
+    # via
+    #   jupyter-server
+    #   jupyter-server-terminals
+texttable==1.7.1
+    # via pyenzyme
+tinycss2==1.5.1
+    # via bleach
+tornado==6.5.10
+    # via
+    #   ipykernel
+    #   jupyter-client
+    #   jupyter-server
+    #   jupyterlab
+    #   notebook
+    #   terminado
+traitlets==5.16.1
+    # via
+    #   ipykernel
+    #   ipython
+    #   jupyter-builder
+    #   jupyter-client
+    #   jupyter-core
+    #   jupyter-events
+    #   jupyter-server
+    #   jupyterlab
+    #   matplotlib-inline
+    #   nbclient
+    #   nbconvert
+    #   nbformat
+typing-extensions==4.16.0
+    # via
+    #   anyio
+    #   beautifulsoup4
+    #   jupyter-client
+    #   pydantic
+    #   referencing
+tzdata==2026.5
+    # via arrow
+uri-template==1.3.0
+    # via jsonschema
+urllib3==2.8.0
+    # via requests
+wcwidth==0.9.2
+    # via prompt-toolkit
+webcolors==25.10.0
+    # via jsonschema
+webencodings==0.6.1
+    # via
+    #   bleach
+    #   tinycss2
+websocket-client==1.9.2
+    # via jupyter-server
+xlsxwriter==3.2.9
+    # via pyenzyme
+xmltodict==1.0.4
+    # via
+    #   bionetgen
+    #   pyenzyme
+
