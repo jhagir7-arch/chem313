@@ -1,0 +1,48 @@
+{
+  "commit": "127b2229d584d54fb84a74e383edb18a271fc283",
+  "notice": "Public test inputs fetched from cclib-data. Repository contains no root license; files are local test material, ignored by Git, and not bundled in the app. Check upstream permissions before redistributing.",
+  "files": [
+    {
+      "path": "ORCA/ORCA4.2/dvb_sp.out",
+      "file": "ORCA_ORCA4.2_dvb_sp.out",
+      "url": "https://raw.githubusercontent.com/cclib/cclib-data/127b2229d584d54fb84a74e383edb18a271fc283/ORCA/ORCA4.2/dvb_sp.out",
+      "sha256": "a7e6a906196a44a84dc3b36cd1f591edf6538e2d927ef824084fb5b1fab0a3c9",
+      "bytes": 187372
+    },
+    {
+      "path": "ORCA/ORCA4.2/dvb_gopt.out",
+      "file": "ORCA_ORCA4.2_dvb_gopt.out",
+      "url": "https://raw.githubusercontent.com/cclib/cclib-data/127b2229d584d54fb84a74e383edb18a271fc283/ORCA/ORCA4.2/dvb_gopt.out",
+      "sha256": "dc3617cacb55024ce33267b137c1a7723ab08f389f053591535b77ddda1de1f8",
+      "bytes": 425569
+    },
+    {
+      "path": "ORCA/ORCA4.2/dvb_ir.out",
+      "file": "ORCA_ORCA4.2_dvb_ir.out",
+      "url": "https://raw.githubusercontent.com/cclib/cclib-data/127b2229d584d54fb84a74e383edb18a271fc283/ORCA/ORCA4.2/dvb_ir.out",
+      "sha256": "e053a2b3a24ac425f816263420782b542e8058b7ddd49aab443de21417c5ce4f",
+      "bytes": 111215
+    },
+    {
+      "path": "ORCA/ORCA3.0/dvb_gopt_unconverged.out",
+      "file": "ORCA_ORCA3.0_dvb_gopt_unconverged.out",
+      "url": "https://raw.githubusercontent.com/cclib/cclib-data/127b2229d584d54fb84a74e383edb18a271fc283/ORCA/ORCA3.0/dvb_gopt_unconverged.out",
+      "sha256": "72492a79fba713955de3310800726ca7ed0d940b6ecf6b9626dc4f4faab16a77",
+      "bytes": 262859
+    },
+    {
+      "path": "ORCA/ORCA6.0/1618.out",
+      "file": "ORCA_ORCA6.0_1618.out",
+      "url": "https://raw.githubusercontent.com/cclib/cclib-data/127b2229d584d54fb84a74e383edb18a271fc283/ORCA/ORCA6.0/1618.out",
+      "sha256": "61ec63b44b09d3561ccc01c469bd7fb92843e9e0fd868889c0a6dc124e16ef0b",
+      "bytes": 187539
+    },
+    {
+      "path": "ORCA/ORCA6.1/1509.out",
+      "file": "ORCA_ORCA6.1_1509.out",
+      "url": "https://raw.githubusercontent.com/cclib/cclib-data/127b2229d584d54fb84a74e383edb18a271fc283/ORCA/ORCA6.1/1509.out",
+      "sha256": "12873a94bf34d6fbd7eb975876f0d95ba9a396ba26cadf355d05e2ee627198d8",
+      "bytes": 238985
+    }
+  ]
+}
