@@ -1,65 +1,43 @@
 # OpenChem
 
-A local chemistry workbench for building molecules, preparing calculations, and keeping traceable research records.
+A local chemistry workbench for building molecules, preparing calculations and keeping traceable research records. A restrained monochrome desktop interface with native macOS File, Edit, View, Calculation, Window and Help menus.
 
-Draw or import a structure, inspect its molecular properties, generate a starting geometry, and review the exact calculation input before saving it. The desktop interface uses a restrained monochrome layout and native macOS File, Edit, View, Calculation, Window and Help menus.
+## Download the standalone Mac app
 
-**Version 1.0.0-preview.1 — research preview.** This first public version includes source and a compiled Apple Silicon native shell. The shell requires the separately installed local runtime below; it is not a self-contained installer. Python, scientific engines, Avogadro, ORCA and model assets are not bundled.
+[OpenChem 1.0.0-preview.2 with offline Qwen](https://github.com/jhagir7-arch/openchem/releases/tag/v1.0.0-preview.2)
 
-## Start on Apple Silicon macOS
+Download the DMG and drag OpenChem.app to Applications. **No Python or Node installation is required.** Requires Apple Silicon and macOS 26.2+. Tested on macOS 27; other versions are untested. Verify the release SHA256SUMS before opening.
 
-Install Python 3.13, Node.js 24.20 or later and Apple's Xcode command-line tools. Download and extract the source archive, then run in that folder:
-
-```sh
-bash scripts/setup_public_runtime.sh
-bash scripts/build_public_app.sh
-open "dist/OpenChem Public.app"
-```
-
-Choose that source folder when the app asks. It remembers the folder. Keep the folder in place: its `.venv` and locally built interface supply the app's runtime. The setup command downloads npm/Python dependencies under their upstream licenses; it does not fetch models or external applications. The compiled shell from Releases works with the same configured source folder, without recompiling.
-
-The preview is ad-hoc signed, not Developer ID signed or notarized. macOS may block the downloaded shell; inspect the source and build it locally if you prefer. Tested on macOS 27 arm64; the compiled shell targets macOS 14+, but other macOS versions are unverified.
-
-For a browser session instead of the native shell:
-
-```sh
-.venv/bin/python -m hypothesislab.desktop --ui frontend/dist
-```
-
-Open the loopback URL printed by the service. Project files are stored locally in `~/Library/Application Support/OpenChem`. No cloud service is required after dependencies are installed. You can select a different configured source folder by launching the shell with `OPENCHEM_SOURCE_ROOT` set to its absolute path.
+This free research preview is **ad-hoc signed and unnotarized**, without Developer ID signing. macOS may block first launch. Follow [Apple's guidance for opening a trusted app](https://support.apple.com/102445); do not disable system security protections.
 
 ## Molecule to calculation
 
-1. Draw in Ketcher, enter SMILES or open a MOL file. Inspect formula, charge, stereochemistry and RDKit descriptors.
-2. Generate an explicit-hydrogen 3D starting geometry with RDKit ETKDG and MMFF/UFF. Drawing changes invalidate the geometry.
-3. Prepare ORCA input with explicit charge, multiplicity, method, basis and calculation type. Review and preserve the exact SDF, INP and report.
-4. Configure a separately licensed ORCA executable to run an input. Its runner records output; inspect convergence separately in Results.
-5. Keep original bytes and derived outputs in a content-addressed project record. Check artifact hashes and inspect job history.
+1. Draw with Ketcher, enter SMILES or import a MOL file. Inspect formula, charge, stereochemistry and RDKit descriptors.
+2. Generate an explicit-hydrogen starting geometry with RDKit. Changes to the drawing invalidate that geometry.
+3. Draft a structure and calculation settings with the bundled offline Qwen assistant. Review the draft and explicitly Apply it.
+4. Review and save exact ORCA inputs with charge, multiplicity, method and basis. Running ORCA requires a separately installed, user-licensed executable.
+5. Review ORCA results with source-line evidence; fit CSV data; run reviewed numerical recipes; preserve original files and derived artifacts in local project records.
 
-The Results reader links extracted ORCA facts to source lines and distinguishes normal termination from convergence. Measurement tools fit CSV data and preserve units and reports. Research scripts run up to eight reviewed, allowlisted operations from versioned JSON; they do not execute arbitrary Python or shell commands.
+## Included and optional engines
 
-## Optional integrations
+The standalone Qwen edition includes Ketcher/Indigo, RDKit, 3Dmol, CPython, NumPy, SciPy, Matplotlib, MLX and a 4-bit Qwen3.5-2B-Base. The model is pinned to upstream revision b1485b2fa6dfa1287294f269f5fb618e03d52d7c under Apache-2.0. It is the upstream base model, without the private fine-tuned adapter, datasets or training records.
 
-- **Scientific workers:** `bash scripts/install_engines.sh` uses separately installed [uv](https://docs.astral.sh/uv/getting-started/installation/) to create isolated environments and run integration checks. It downloads substantial additional dependencies. Adapter coverage includes selected PySCF RHF and tblite GFN2 single points, units, arrays, spectra, structures and bioscience operations. An adapter does not provide every feature of the upstream application.
-- **Avogadro:** install [Avogadro](https://avogadro.cc/) separately. Discovery checks normal Applications folders; set `OPENCHEM_AVOGADRO_APP` to an absolute `.app` path for a custom location. The companion transfer checks selected MOL fields. Full plugin and metadata compatibility is unverified.
-- **ORCA:** obtain [ORCA](https://www.faccts.de/orca/) under its own terms. Enter its absolute executable path in calculation preparation or set `OPENCHEM_ORCA_EXECUTABLE` before launch. Real licensed ORCA execution has not been tested here; runner lifecycle tests use controlled fixtures.
-- **Qwen:** experimental typed draft integration source is included. Model weights, the local 25-update training adapter and datasets are excluded. The public package cannot draft with Qwen out of the box; its unavailable state is intentional. General chemistry competence has not been established.
+ORCA, Avogadro, PySCF and tblite are not bundled. They require separate installation and applicable licenses. The registry distinguishes available operations from missing engines; this app does not contain 54 complete upstream applications.
 
-The runtime registry distinguishes installed components from bundled components and records limited checks. No set of 54 complete applications is compiled into OpenChem.
+## Verification and limits
 
-## Verify and benchmark
+The compiled native workflow and frozen service passed offline Qwen drafts, explicit Apply, RDKit geometry, reviewed ORCA input saving, numerical reference checks, CSV fitting, synthetic results review, persistence and artifact integrity. Backend: 160 tests plus 7 subtests; frontend: 19 tests. Packaging includes native ownership/license manifests and pinned model hashes.
 
-```sh
-python3 benchmarks/verify_bundle.py
-.venv/bin/python benchmarks/run.py --suite core --output benchmark-results
-npm --prefix frontend test
-npm --prefix frontend run build
-```
+Actual licensed ORCA execution, independent scientific validation and broader macOS compatibility remain unverified. Qwen can produce incorrect drafts. A passing structural check does not establish scientific correctness. Generated geometries are starting points, and calculation settings require researcher review. Worker subprocesses are not an OS security sandbox.
 
-`verify_bundle.py` applies to the packaged source snapshot and checks its manifest. The core benchmark explicitly deselects three real worker tests when their science environment is absent. The original private archive test and six third-party ORCA fixture tests skip because those files are excluded. Skips are not passing scientific tests. Optional engine checks need their own installed environments.
+## Corresponding source and building
 
-Generated conformers are starting geometries. Integration/reference checks do not establish method suitability, experimental accuracy or superiority to other software. Worker processes are trusted local processes, not an OS security sandbox. Independent researcher acceptance, broader compatibility and real licensed ORCA runs remain open work.
+For preview.2, use **OpenChem-1.0.0-preview.2-Source.zip**, attached to the release. It contains the corresponding source, dependency locks, build scripts and verification notes. Start with release/qwen/BUILDING.md. Model weights and installed dependencies are separate from the source archive.
 
-## License and contributions
+The repository's application source remains the earlier preview.1 baseline. GitHub's automatic “Source code” archives follow the tag; use the specifically named preview.2 Source.zip attachment for this binary. The earlier preview.1 native shell requires a separately configured runtime and remains available as a historical release.
 
-OpenChem-originated code and documentation are under [Apache-2.0](LICENSE). Dependencies retain their own terms; no third-party engine or model is relicensed. See [NOTICE](NOTICE), [third-party notices](THIRD_PARTY_NOTICES.md), [source origin](SOURCE_ORIGIN.md), [release scope](PUBLICATION_STATUS.md), [contributing](CONTRIBUTING.md) and [security](SECURITY.md).
+Projects are stored locally in ~/Library/Application Support/OpenChem. Keep original scientific files and back up projects after quitting.
+
+## License
+
+OpenChem-originated code and documentation are [Apache-2.0](LICENSE). Third-party engines and models retain their own terms. The standalone app includes LICENSE, NOTICE, THIRD_PARTY_NOTICES.md and component license manifests. See the corresponding source archive for its current release scope and notices. Private handoffs, projects, Git history and training material are excluded.
