@@ -1,0 +1,19 @@
+Program Version 5.0.4
+CARTESIAN COORDINATES (ANGSTROEM)
+O  0.0 0.0 0.1
+
+CARTESIAN COORDINATES (ANGSTROM)
+O  0.0 0.0 0.2
+H  0.0 0.7 -0.4
+H  0.0 -0.7 -0.4
+
+VIBRATIONAL FREQUENCIES
+  0:  1.0D+02 cm**-1
+  1:  200.50 cm**-1
+IR SPECTRUM
+Temperature ... 298.15 K
+Zero point energy ... 1.23D-02 Eh
+Total Enthalpy ... -75.00 Eh
+Final Gibbs free energy ... -75.10 Eh
+FINAL SINGLE POINT ENERGY -75.2
+ORCA TERMINATED NORMALLY

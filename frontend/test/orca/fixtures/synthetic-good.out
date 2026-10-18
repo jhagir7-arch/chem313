@@ -1,0 +1,15 @@
+                         *****************
+                         * O   R   C   A *
+                         *****************
+                         Program Version 5.0.4
+! B3LYP def2-SVP TightSCF
+Total Charge       : 0
+Multiplicity       : 1
+
+CARTESIAN COORDINATES (ANGSTROEM)
+---------------------------------
+C     0.000000  0.000000  0.000000
+H     0.000000  0.000000  1.089000
+
+FINAL SINGLE POINT ENERGY     -7.598123456789
+ORCA TERMINATED NORMALLY
