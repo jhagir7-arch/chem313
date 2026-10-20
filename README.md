@@ -1,43 +1,41 @@
-# OpenChem
+# Chem313
 
-A local chemistry workbench for building molecules, preparing calculations and keeping traceable research records. A restrained monochrome desktop interface with native macOS File, Edit, View, Calculation, Window and Help menus.
+A local molecular study workbench for beginners: build a small molecule, inspect its atoms, compare starting shapes, and prepare a calculation input you can review and keep.
 
-## Download the standalone Mac app
+Formerly OpenChem. Independent of [Mariewelt/OpenChem](https://github.com/Mariewelt/OpenChem). The repository URL stays the same so existing links continue to work.
 
-[OpenChem 1.0.0-preview.2 with offline Qwen](https://github.com/jhagir7-arch/openchem/releases/tag/v1.0.0-preview.2)
+## Download the current preview
 
-Download the DMG and drag OpenChem.app to Applications. **No Python or Node installation is required.** Requires Apple Silicon and macOS 26.2+. Tested on macOS 27; other versions are untested. Verify the release SHA256SUMS before opening.
+[**Chem313 1.0.0-preview.3 — downloads, source and verification**](https://github.com/jhagir7-arch/openchem/releases/tag/v1.0.0-preview.3)
 
-This free research preview is **ad-hoc signed and unnotarized**, without Developer ID signing. macOS may block first launch. Follow [Apple's guidance for opening a trusted app](https://support.apple.com/102445); do not disable system security protections.
+The Apple Silicon Mac DMG is **111 MB**. Drag Chem313.app to Applications; no Python or Node setup. macOS 14+ deployment target, tested on macOS 27 only. This research preview is **ad-hoc signed and unnotarized**. macOS may block an Internet download. Verify the release SHA-256 sums before opening.
 
-## Molecule to calculation
+![Compiled Chem313 interface](https://github.com/jhagir7-arch/openchem/releases/download/v1.0.0-preview.3/Chem313-1.0.0-preview.3-screenshot.png)
 
-1. Draw with Ketcher, enter SMILES or import a MOL file. Inspect formula, charge, stereochemistry and RDKit descriptors.
-2. Generate an explicit-hydrogen starting geometry with RDKit. Changes to the drawing invalidate that geometry.
-3. Draft a structure and calculation settings with the bundled offline Qwen assistant. Review the draft and explicitly Apply it.
-4. Review and save exact ORCA inputs with charge, multiplicity, method and basis. Running ORCA requires a separately installed, user-licensed executable.
-5. Review ORCA results with source-line evidence; fit CSV data; run reviewed numerical recipes; preserve original files and derived artifacts in local project records.
+## What changed
 
-## Included and optional engines
+- Black and white interface with five main workspaces; experimental tools are under Labs.
+- Real local RDKit force-field calculations, complete-geometry atom counts and a selectable relative-energy chart with units.
+- Guided Q-Chem input lesson for water, methane and ethanol, with coordinate-derived identity checks and learner review before download.
+- Keyboard-accessible 3D controls, local project records and a searchable feature directory.
+- A project index connecting features, source files, tests and current limits.
 
-The standalone Qwen edition includes Ketcher/Indigo, RDKit, 3Dmol, CPython, NumPy, SciPy, Matplotlib, MLX and a 4-bit Qwen3.5-2B-Base. The model is pinned to upstream revision b1485b2fa6dfa1287294f269f5fb618e03d52d7c under Apache-2.0. It is the upstream base model, without the private fine-tuned adapter, datasets or training records.
+Force-field results are not quantum results, reaction pathways or medication predictions. Neither ORCA nor Q-Chem has completed a real quantum calculation on the maintainer’s machine. Both require separately licensed installations. Qwen is optional, experimental and **not bundled** in this core release.
 
-ORCA, Avogadro, PySCF and tblite are not bundled. They require separate installation and applicable licenses. The registry distinguishes available operations from missing engines; this app does not contain 54 complete upstream applications.
+## Verification and platform status
 
-## Verification and limits
+The compiled Mac app passed real force-field workflows for water, methane and ethanol, checked input preparation, learner review gating and five butane samples with chart/3D selection. Frontend: 40 tests passed. Focused backend: 69 passed. Frozen service, native ownership/license and deployment audits passed. See the release verification record for scope. Independent learner and scientific validation remain pending.
 
-The compiled native workflow and frozen service passed offline Qwen drafts, explicit Apply, RDKit geometry, reviewed ORCA input saving, numerical reference checks, CSV fitting, synthetic results review, persistence and artifact integrity. Backend: 160 tests plus 7 subtests; frontend: 19 tests. Packaging includes native ownership/license manifests and pinned model hashes.
+Windows and Linux native builders are included in the source snapshot. Downloads remain withheld until native workflow and redistribution checks pass. Windows Microsoft runtime redistribution terms remain unresolved; fresh Linux native verification is pending. A Mac binary cannot be converted into a Windows or Linux app.
 
-Actual licensed ORCA execution, independent scientific validation and broader macOS compatibility remain unverified. Qwen can produce incorrect drafts. A passing structural check does not establish scientific correctness. Generated geometries are starting points, and calculation settings require researcher review. Worker subprocesses are not an OS security sandbox.
+## Corresponding source and project index
 
-## Corresponding source and building
+Use **Chem313-1.0.0-preview.3-Source.zip** attached to the current release. It contains the corresponding code, dependency locks, build scripts, notices and verification record. Start with **PROJECT_INDEX.md** for the feature-to-code-to-test map, and **release/standalone/BUILDING.md** for Mac builds. Run `python3 scripts/check_project_index.py` to check index links and feature IDs.
 
-For preview.2, use **OpenChem-1.0.0-preview.2-Source.zip**, attached to the release. It contains the corresponding source, dependency locks, build scripts and verification notes. Start with release/qwen/BUILDING.md. Model weights and installed dependencies are separate from the source archive.
+The repository application tree still contains the earlier preview.1 baseline. GitHub’s automatic Source code archives follow the tag commit; use the specifically named preview.3 Source.zip attachment for this binary. The older preview.2 Qwen edition remains a historical release. Private correspondence, user projects, training data and private adapters are excluded.
 
-The repository's application source remains the earlier preview.1 baseline. GitHub's automatic “Source code” archives follow the tag; use the specifically named preview.2 Source.zip attachment for this binary. The earlier preview.1 native shell requires a separately configured runtime and remains available as a historical release.
+## Feedback and license
 
-Projects are stored locally in ~/Library/Application Support/OpenChem. Keep original scientific files and back up projects after quitting.
+Use [GitHub Issues](https://github.com/jhagir7-arch/openchem/issues) for confusing steps, reproducible bugs or classroom tasks you need. Please omit private research data and license credentials.
 
-## License
-
-OpenChem-originated code and documentation are [Apache-2.0](LICENSE). Third-party engines and models retain their own terms. The standalone app includes LICENSE, NOTICE, THIRD_PARTY_NOTICES.md and component license manifests. See the corresponding source archive for its current release scope and notices. Private handoffs, projects, Git history and training material are excluded.
+Project-originated code and documentation use [Apache-2.0](LICENSE). Third-party components retain their own terms; consult the source snapshot’s NOTICE, THIRD_PARTY_NOTICES.md and SOURCE_ORIGIN.md. Proprietary engine binaries are excluded.
