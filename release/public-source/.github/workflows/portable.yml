@@ -10,6 +10,15 @@ on:
         description: 'Expected SHA-256 of that ZIP (64 hexadecimal characters)'
         required: true
         type: string
+      platform:
+        description: 'Native candidate platform to build'
+        required: true
+        default: all
+        type: choice
+        options:
+          - all
+          - windows
+          - linux
 permissions:
   contents: write
 jobs:
@@ -17,11 +26,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - os: ubuntu-22.04
-            label: linux-x86_64
-          - os: windows-2022
-            label: windows-amd64
+        include: ${{ fromJSON(inputs.platform == 'windows' && '[{"os":"windows-2022","label":"windows-amd64"}]' || inputs.platform == 'linux' && '[{"os":"ubuntu-22.04","label":"linux-x86_64"}]' || '[{"os":"ubuntu-22.04","label":"linux-x86_64"},{"os":"windows-2022","label":"windows-amd64"}]') }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
     steps:
@@ -92,7 +97,31 @@ jobs:
         run: npm --prefix frontend ci
       - name: Check portable behavior
         working-directory: source
-        run: python -m pytest backend/tests/test_first_calculation.py backend/tests/test_workbench.py backend/tests/test_portable_launcher.py backend/tests/test_portable_notices.py backend/tests/test_standalone_profile.py backend/tests/test_science_jobs.py -q -k "not real_numpy_and_pint_jobs_persist_reports_and_verify_project"
+        shell: bash
+        run: |
+          python scripts/test_build_portable.py
+          python scripts/test_prepare_linux_runtime_sources.py
+          python - <<'PY'
+          import hashlib
+          import pytest
+
+          class BoundedNodeIds:
+              def pytest_collection_modifyitems(self, items):
+                  for item in items:
+                      nodeid = item.nodeid
+                      if len(nodeid) > 240:
+                          item._nodeid = nodeid[:160] + "-sha256-" + hashlib.sha256(nodeid.encode()).hexdigest()
+
+          raise SystemExit(pytest.main([
+              "backend/tests/test_first_calculation.py",
+              "backend/tests/test_workbench.py",
+              "backend/tests/test_portable_launcher.py",
+              "backend/tests/test_portable_notices.py",
+              "backend/tests/test_standalone_profile.py",
+              "backend/tests/test_science_jobs.py",
+              "-q", "-k", "not real_numpy_and_pint_jobs_persist_reports_and_verify_project",
+          ], plugins=[BoundedNodeIds()]))
+          PY
       - name: Build frozen application and inspect license gate
         # Run scientific smoke tests on the local candidate even when notice
         # collection fails. The smoke script still blocks all download archives

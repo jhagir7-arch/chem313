@@ -75,7 +75,8 @@ def main():
                 assert response.status == 200 and b'<div id="root">' in response.read()
             checks.append("Packaged UI served from the frozen distribution")
             os.environ["OPENCHEM_TEST_URL"] = base
-            runpy.run_path(str(Path(__file__).with_name("test_packaged_engine.py")), run_name="__main__")
+            exercised = runpy.run_path(str(Path(__file__).with_name("test_packaged_engine.py")), run_name="__main__")
+            molecular_results = exercised["lesson"]
             checks.append("RDKit geometry, reviewed ORCA input, CSV fit/SVG, session/origin/replay protections and immutable artifacts")
             token = api("/api/session")["session_token"]
             assert api("/api/assistant/status")["status"] != "READY"
@@ -119,7 +120,7 @@ def main():
                   json.loads(distribution.read_text(encoding="utf-8")).get("passed"))
     result = {"status": "PASS", "platform": os.name, "external_python_node": False,
               "fresh_home": True, "relocated_cwd": True, "distribution_releasable": releasable,
-              "checks": checks}
+              "real_first_calculation": molecular_results, "checks": checks}
     report.parent.mkdir(parents=True, exist_ok=True)
     report.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(result, indent=2))

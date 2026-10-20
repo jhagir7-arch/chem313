@@ -67,15 +67,17 @@ Windows/Linux download is currently claimed. See [portable builds](release/porta
 
 ## Try the beginner workflow
 
-1. In **Molecule**, draw water, methane, or ethanol and inspect the formula.
-2. Generate a starting geometry when appropriate; interpret chart values only
-   as force-field comparisons for that molecule.
-3. In **Learn**, complete the Q-Chem input prompts and review the InChI identity
-   state before export.
-4. In **Calculate**, choose ORCA or Q-Chem, configure a licensed local engine,
-   and read a result only after normal termination and SCF convergence are
-   recorded.
-5. In **Records**, save the reviewed input, output, and result metadata.
+1. Open **Calculate → First calculation**.
+2. Choose **Ethanol**, then click **Run shape calculation**. No engine account,
+   scripting or AI setup is required.
+3. Inspect the relaxed 3D molecule and the signed before/after energy chart.
+   The values compare shapes of this same molecule using MMFF94.
+4. Click **Download record** to keep parameters, model version and artifact hashes.
+5. Try water or methane. Do not compare their raw force-field energies against
+   ethanol's energy to rank reactions or stability.
+
+ORCA and Q-Chem input preparation remains a separate advanced workflow for
+people who have installed and licensed those engines.
 
 ## Build and verify
 

@@ -19,7 +19,7 @@ FILES = ('PROJECT_INDEX.md', 'CONTRIBUTING.md', 'docs/COMMUNITY.md', 'scripts/ch
          'desktop/bioscience_service.py', 'desktop/qwen_service.py',
          'scripts/build_public_app.sh', 'scripts/setup_public_runtime.sh',
          'scripts/build_standalone_app.sh', 'scripts/package_standalone_mac.sh',
-         'scripts/build_portable.py', 'scripts/prepare_linux_runtime_sources.py', 'scripts/test_portable_package.py',
+         'scripts/build_portable.py', 'scripts/test_build_portable.py', 'scripts/prepare_linux_runtime_sources.py', 'scripts/test_prepare_linux_runtime_sources.py', 'scripts/test_portable_package.py',
          'scripts/build_public_qwen_worker.sh', 'scripts/assemble_qwen_app.py',
          'scripts/package_qwen_mac.sh', 'scripts/collect_qwen_licenses.py',
          'release/qwen/requirements-lock.txt',

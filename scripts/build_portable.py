@@ -20,6 +20,10 @@ PRODUCT_NAME = "Chem313"
 # Keep the existing on-disk project location. Renaming the executable must not
 # strand a researcher's prior OpenChem records.
 LEGACY_DATA_PRODUCT_NAME = "OpenChem"
+WINDOWS_UCRT_BASELINE = "Windows 10 or later, or Windows Server 2022 or later"
+WINDOWS_OS_RUNTIME_DLL = re.compile(
+    r"(?:api-ms-win-(?:core|crt)-.+|ucrtbase)\.dll", re.IGNORECASE
+)
 
 
 def platform_id() -> str:
@@ -49,6 +53,28 @@ def run(command: list[str], *, check: bool = True) -> subprocess.CompletedProces
 
 def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def remove_windows_os_runtime_payloads(bundle: Path, *, system: str = sys.platform) -> list[str]:
+    """Remove only UCRT/API-set DLLs supplied by the supported Windows baseline.
+
+    These files are not cleared for redistribution.  On the supported Windows
+    10+/Windows Server 2022+ baseline, the loader uses the operating system's UCRT and API
+    set schema; keeping arbitrary copies collected from a build image creates
+    an unnecessary, unmapped Microsoft payload.  VCRUNTIME DLLs are excluded
+    from this rule and continue through the pinned-CPython notice mapping.
+    """
+    if system != "win32":
+        return []
+    internal = bundle / "_internal"
+    if not internal.is_dir():
+        return []
+    removed = []
+    for payload in sorted(internal.iterdir(), key=lambda item: item.name.lower()):
+        if payload.is_file() and WINDOWS_OS_RUNTIME_DLL.fullmatch(payload.name):
+            payload.unlink()
+            removed.append(payload.relative_to(bundle).as_posix())
+    return removed
 
 
 def linux_runtime_evidence(bundle: Path) -> dict:
@@ -163,6 +189,13 @@ def main(argv=None) -> int:
     produced = target.parent / PRODUCT_NAME
     if produced != target:
         produced.rename(target)
+    removed_windows_os_runtime_payloads = remove_windows_os_runtime_payloads(target)
+    if removed_windows_os_runtime_payloads:
+        print(
+            "excluded Windows OS UCRT/API-set payloads "
+            f"(requires {WINDOWS_UCRT_BASELINE}): "
+            + ", ".join(removed_windows_os_runtime_payloads)
+        )
     bundled_ui = target / "_internal" / "ui"
     if bundled_ui.exists():
         shutil.rmtree(bundled_ui)

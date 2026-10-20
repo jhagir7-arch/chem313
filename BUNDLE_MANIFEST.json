@@ -23,8 +23,8 @@
     },
     {
       "path": ".github/workflows/portable.yml",
-      "bytes": 9091,
-      "sha256": "f8091c97c7227abb58c68b4624913258c4dbb213b080dba28f661cf3c9662e2d"
+      "bytes": 10200,
+      "sha256": "7ebebec02f5b25ef2874d195e2df4c6792b536a9bf9b56377fc8db26820f3740"
     },
     {
       "path": ".gitignore",
@@ -63,8 +63,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 6370,
-      "sha256": "6a2ef5a9cc97ce290f56dd32bdc2aa026f4112431d9e76dd90dcb6ca2819289a"
+      "bytes": 6471,
+      "sha256": "2e0e0a1d5c7404961bbc61c23f95f902e724e643a2e12a5d67e88bc3fb112385"
     },
     {
       "path": "RELEASE_CHECKS.md",
@@ -1213,8 +1213,8 @@
     },
     {
       "path": "release/portable/README.txt",
-      "bytes": 2013,
-      "sha256": "cab345e95a5408452ad5315995baa00e35fd05176e7465d87d329a6e789a4203"
+      "bytes": 2906,
+      "sha256": "ca2c351882305815d410d52bfa6a6bc8b7602b50b2b9931755138b05e7a3e7ae"
     },
     {
       "path": "release/public-source/.github/workflows/ci.yml",
@@ -1223,8 +1223,8 @@
     },
     {
       "path": "release/public-source/.github/workflows/portable.yml",
-      "bytes": 9091,
-      "sha256": "f8091c97c7227abb58c68b4624913258c4dbb213b080dba28f661cf3c9662e2d"
+      "bytes": 10200,
+      "sha256": "7ebebec02f5b25ef2874d195e2df4c6792b536a9bf9b56377fc8db26820f3740"
     },
     {
       "path": "release/public-source/.gitignore",
@@ -1258,8 +1258,8 @@
     },
     {
       "path": "release/public-source/README.md",
-      "bytes": 6370,
-      "sha256": "6a2ef5a9cc97ce290f56dd32bdc2aa026f4112431d9e76dd90dcb6ca2819289a"
+      "bytes": 6471,
+      "sha256": "2e0e0a1d5c7404961bbc61c23f95f902e724e643a2e12a5d67e88bc3fb112385"
     },
     {
       "path": "release/public-source/RELEASE_CHECKS.md",
@@ -1338,8 +1338,8 @@
     },
     {
       "path": "scripts/build_portable.py",
-      "bytes": 11195,
-      "sha256": "272df700586d42691ecc491d0b9ebef10b8d68d2fa0a2cb1359bb9144a180530"
+      "bytes": 12717,
+      "sha256": "3c7184e914a46fa4ae5deb30513e3cdc8dedda95f16718a17e61526de5295c9d"
     },
     {
       "path": "scripts/build_public_app.sh",
@@ -1403,8 +1403,8 @@
     },
     {
       "path": "scripts/package_public_source.py",
-      "bytes": 7131,
-      "sha256": "c887f3dbf1044d151d871b7241f933612360901c8f48568443bd774724343d03"
+      "bytes": 7214,
+      "sha256": "2abb080e22d0dd1b4c68bf6547fc335f2bf5d37321e094b31c968f1051fb5ead"
     },
     {
       "path": "scripts/package_qwen_mac.sh",
@@ -1418,8 +1418,8 @@
     },
     {
       "path": "scripts/prepare_linux_runtime_sources.py",
-      "bytes": 4965,
-      "sha256": "be17ce34591074f6a9cad00ac3edecdca4bb40544195806c1543e7267c12de19"
+      "bytes": 6481,
+      "sha256": "278634773d9fc95b4aa6147766b2f79dc6dd0053a80de8b6983855c385d02da4"
     },
     {
       "path": "scripts/render_app_icon.swift",
@@ -1442,6 +1442,11 @@
       "sha256": "23f2f14a66079195bd9c2ecfb99801c24c54af7e0b93be101a111fede91c2750"
     },
     {
+      "path": "scripts/test_build_portable.py",
+      "bytes": 2019,
+      "sha256": "4afd5789f395ce92fdf8e37a81a3614279850ac07ac0e18ab0835e0f5b54eec8"
+    },
+    {
       "path": "scripts/test_extended_engines.py",
       "bytes": 7314,
       "sha256": "167620e98f62c92a1676c435c69388dc59e60da5ca2aa208b610463b1820b630"
@@ -1453,8 +1458,13 @@
     },
     {
       "path": "scripts/test_portable_package.py",
-      "bytes": 6640,
-      "sha256": "ca02da3a07227b2d51c4743f237c0bf7893a6ea7c73de1b067b911e6eed8b50c"
+      "bytes": 6749,
+      "sha256": "fe9c140745603ec2590c3d550db9d5facd6398ef232357283ac0945c7f74784f"
+    },
+    {
+      "path": "scripts/test_prepare_linux_runtime_sources.py",
+      "bytes": 1816,
+      "sha256": "858204565fc7a5335d39b63b8abee3556019f9d930d35ce04a568c25b55c8aac"
     },
     {
       "path": "scripts/test_science_engines.py",

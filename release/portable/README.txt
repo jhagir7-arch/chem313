@@ -5,6 +5,22 @@ Chem313 (Chem313.exe on Windows). It starts a local loopback-only service and
 opens the browser only after that service reports readiness. Recipients need no
 separate Python, Node.js, or package manager.
 
+First calculation
+
+1. Extract the whole download, keeping Chem313 beside its _internal folder.
+2. Open Chem313.exe on Windows, or run ./Chem313 on Linux.
+3. In the browser, open Calculate > First calculation, choose Ethanol, and
+   click Run shape calculation. Water and methane are also available.
+4. Read the final 3D shape and before/after MMFF94 energy chart in kcal/mol.
+5. Click Download record to keep the parameters, model version and file hashes.
+
+This is a real included molecular-mechanics calculation. It relaxes one
+molecule's shape; it does not establish a reaction or a quantum result.
+Windows requires Windows 10+ (or Windows Server 2022+), x64. The Windows
+UCRT/API-set libraries come from the operating system, not this archive.
+Linux requires x86_64 with glibc 2.35+; the native candidate is tested on
+Ubuntu 22.04. Other distributions and ARM builds are not yet verified.
+
 Included: the built web interface, RDKit structure inspection and force-field
 conformers, NumPy summaries, SciPy calibration fits, Matplotlib SVG plots,
 reviewed JSON research recipes, ORCA input preparation/results review, and

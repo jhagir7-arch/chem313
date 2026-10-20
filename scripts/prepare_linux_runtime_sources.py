@@ -18,9 +18,53 @@ def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def system_library_aliases(path: Path) -> list[Path]:
+    """Return merged-/usr and symlink targets for one already hash-matched file."""
+    candidates = [path]
+    path_text = str(path)
+    if path_text.startswith("/lib/"):
+        candidates.append(Path("/usr/lib") / path.relative_to("/lib"))
+    elif path_text.startswith("/usr/lib/"):
+        candidates.append(Path("/lib") / path.relative_to("/usr/lib"))
+    try:
+        candidates.append(path.resolve(strict=True))
+    except OSError:
+        pass
+    unique = []
+    for candidate in candidates:
+        if candidate not in unique:
+            unique.append(candidate)
+    return unique
+
+
+def packages_from_dpkg_search(output: str) -> set[str]:
+    packages = set()
+    for line in output.splitlines():
+        package_names, separator, _path = line.partition(": ")
+        if not separator:
+            continue
+        for package in package_names.split(","):
+            package = package.strip()
+            if package:
+                packages.add(package.rsplit(":", 1)[0])
+    return packages
+
+
 def package_for(path: Path) -> str:
-    line = run("dpkg-query", "-S", str(path)).splitlines()[0]
-    return line.split(": ", 1)[0].rsplit(":", 1)[0]
+    """Look up the owner through merged-/usr aliases after exact hash matching."""
+    packages = set()
+    queried = []
+    for candidate in system_library_aliases(path):
+        queried.append(str(candidate))
+        try:
+            packages.update(packages_from_dpkg_search(run("dpkg-query", "-S", str(candidate))))
+        except subprocess.CalledProcessError:
+            continue
+    if len(packages) != 1:
+        raise SystemExit(
+            f"expected one Ubuntu owner for {path}; found {sorted(packages)} via {queried}"
+        )
+    return packages.pop()
 
 
 def installed_equivalent(payload: Path) -> Path:
