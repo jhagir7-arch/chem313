@@ -1,10 +1,9 @@
-
-name: Portable core candidate
+name: Chem313 portable core candidate
 on:
   workflow_dispatch:
     inputs:
       source_url:
-        description: 'OpenChem release asset URL for the reviewed portable source ZIP'
+        description: 'Chem313 release asset URL for the reviewed portable source ZIP'
         required: true
         type: string
       source_sha256:
@@ -82,21 +81,42 @@ jobs:
         # unless the separate distribution review exists and passes.
         continue-on-error: true
         working-directory: source
-        run: python scripts/build_portable.py --output dist/OpenChem-core-${{ matrix.label }}
+        run: python scripts/build_portable.py --output dist/Chem313-core-${{ matrix.label }}
       - name: Exercise frozen workflow without Python or Node on PATH
         working-directory: source
         shell: bash
         run: |
           if [ "$RUNNER_OS" = "Windows" ]; then suffix=.exe; else suffix=; fi
-          python scripts/test_portable_package.py "dist/OpenChem-core-${{ matrix.label }}/OpenChem$suffix" "build/portable/workflow.json"
-      - name: Archive tested candidate
+          python scripts/test_portable_package.py "dist/Chem313-core-${{ matrix.label }}/Chem313$suffix" "build/portable/workflow.json" --allow-unreleased-candidate
+      - name: Check whether this candidate may be archived
+        id: release_gate
+        working-directory: source
+        shell: bash
+        env:
+          BUNDLE_NAME: Chem313-core-${{ matrix.label }}
+        run: |
+          python - <<'PY'
+          import json, os, pathlib
+          bundle = pathlib.Path("dist") / os.environ["BUNDLE_NAME"]
+          notice_gate = json.loads((bundle / "licenses/portable-core/MANIFEST.json").read_text())["gate"]["passed"]
+          distribution_gate = json.loads((bundle / "DISTRIBUTION_REVIEW.json").read_text())["passed"]
+          releasable = notice_gate and distribution_gate
+          print(f"releasable={str(releasable).lower()}")
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+              output.write(f"releasable={str(releasable).lower()}\n")
+          if not releasable:
+              print("Native smoke test passed, but this candidate is not releasable; retaining evidence only.")
+          PY
+      - name: Archive releasable tested candidate
+        if: steps.release_gate.outputs.releasable == 'true'
         working-directory: source
         env:
-          BUNDLE_NAME: OpenChem-core-${{ matrix.label }}
+          BUNDLE_NAME: Chem313-core-${{ matrix.label }}
         run: python -c "import hashlib,os,pathlib,shutil; n=os.environ['BUNDLE_NAME']; p=pathlib.Path(shutil.make_archive('dist/'+n,'zip','dist',n)); p.with_suffix('.zip.sha256').write_text(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+p.name+'\n')"
       - uses: actions/upload-artifact@v4
+        if: steps.release_gate.outputs.releasable == 'true'
         with:
-          name: OpenChem-core-${{ matrix.label }}-tested-candidate
+          name: Chem313-core-${{ matrix.label }}-tested-candidate
           path: |
             source/dist/*.zip
             source/dist/*.sha256
