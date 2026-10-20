@@ -1,0 +1,130 @@
+/* Chem313 classic desktop chrome. Neutral sRGB greys only; no wallpaper tint. */
+:root {
+  --sans: Arial, Helvetica, sans-serif;
+  --serif: Arial, Helvetica, sans-serif;
+  --ink: #111;
+  --paper: #fff;
+  --surface: #fff;
+  --subtle: #eee;
+  --rail: #e5e5e5;
+  --line: #b3b3b3;
+  --line-dark: #777;
+  --muted: #444;
+  --quiet: #555;
+  --danger: #111;
+  --success: #111;
+  --primary-ink: #fff;
+  --control: #e5e5e5;
+  --bevel-light: #fff;
+  --bevel-dark: #777;
+  font-family: var(--sans);
+  accent-color: #444;
+}
+[data-appearance="dark"] {
+  --ink: #eee; --paper: #161616; --surface: #1c1c1c;
+  --subtle: #292929; --rail: #242424; --line: #555;
+  --line-dark: #888; --muted: #ccc; --quiet: #bbb;
+  --danger: #eee; --success: #eee; --primary-ink: #111;
+  --control: #333; --bevel-light: #666; --bevel-dark: #111;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-appearance="light"]) {
+    --ink: #eee; --paper: #161616; --surface: #1c1c1c;
+    --subtle: #292929; --rail: #242424; --line: #555;
+    --line-dark: #888; --muted: #ccc; --quiet: #bbb;
+    --danger: #eee; --success: #eee; --primary-ink: #111;
+    --control: #333; --bevel-light: #666; --bevel-dark: #111;
+  }
+}
+.task-shell {font: 13px/1.45 var(--sans)}
+.task-shell .project-bar {min-height: 40px; padding: 5px 12px; background: var(--rail)}
+.task-shell .section-tools {min-height: 38px; padding: 4px 12px; background: var(--subtle)}
+.task-shell .workspace-scroll {padding: 16px}
+.task-shell .page-heading {margin-bottom: 16px; padding-bottom: 10px; border-color: var(--line-dark)}
+.task-shell .page-heading h1 {font: bold 21px/1.25 var(--sans); letter-spacing: 0}
+.task-shell .page-heading p {margin-top: 4px; font-size: 12px}
+.task-shell .panel-header {min-height: 34px; padding: 6px 10px; background: var(--subtle); border-color: var(--line-dark)}
+.task-shell .panel-header h2, .task-shell .panel-header h3 {font: bold 13px/1.4 var(--sans)}
+.task-shell .panel {border-color: var(--line-dark)}
+.task-shell button:not(.text-button):not(.energy-bars button):not(.nav-item),
+.task-shell .file-button, .task-shell .result-downloads>summary {
+  border-radius: 0; box-shadow: none; letter-spacing: 0;
+}
+.task-shell .primary, .task-shell .secondary, .task-shell .chrome-button,
+.task-shell .file-actions button, .task-shell .file-button,
+.task-shell .heading-actions button, .task-shell .structure-input button,
+.task-shell .beginner-actions button, .task-shell .starter-choice button,
+.task-shell .result-assistant-chips button, .task-shell .welcome-options button,
+.task-shell .result-downloads>summary {
+  min-height: 32px; padding: 6px 12px; font: 13px/1.3 var(--sans);
+  background: var(--control); color: var(--ink); border: 1px solid var(--line-dark);
+  border-top-color: var(--bevel-light); border-left-color: var(--bevel-light);
+  box-shadow: inset -1px -1px var(--bevel-dark), inset 1px 1px var(--bevel-light);
+}
+.task-shell .primary {border: 2px solid var(--ink); font-weight: bold}
+.task-shell .primary:hover:not(:disabled), .task-shell .secondary:hover:not(:disabled),
+.task-shell .chrome-button:hover:not(:disabled) {background: var(--subtle); color: var(--ink)}
+.task-shell .primary:active:not(:disabled), .task-shell .secondary:active:not(:disabled) {
+  box-shadow: inset 1px 1px var(--bevel-dark); transform: translateY(1px);
+}
+.task-shell input:not([type="checkbox"]):not([type="radio"]),
+.task-shell select, .task-shell textarea {
+  border-radius: 0; border: 1px solid var(--line-dark);
+  box-shadow: inset 1px 1px var(--line); background: var(--surface); color: var(--ink);
+}
+.task-shell .section-tools button {border-radius: 0; font-size: 12px}
+.task-shell .section-tools button[aria-current] {border-color: var(--line-dark); box-shadow: inset 1px 1px var(--line); background: var(--surface)}
+.task-shell .task-sidebar {padding: 16px 8px; background: var(--rail)}
+.task-shell .sidebar-brand {font: bold 18px var(--sans); padding: 0 8px 16px}
+.task-shell .task-sidebar nav {gap: 4px}
+.task-shell .task-sidebar nav button {min-height: 42px; padding: 6px 8px}
+.task-shell .task-sidebar nav button[aria-current] {background: var(--ink); color: var(--primary-ink)}
+.task-shell .task-sidebar nav button[aria-current] small {color: inherit}
+.task-shell .workspace-footer {padding: 8px; margin-top: 16px; background: var(--rail); border: 1px solid var(--line)}
+.task-shell .beginner-steps>section {padding: 12px}
+.task-shell .beginner-steps h3 {font-size: 13px}
+.task-shell .beginner-steps p {font-size: 12px; line-height: 1.45; margin: 8px 0}
+.task-shell .beginner-workflow button, .task-shell .beginner-workflow select {min-height: 32px}
+.task-shell .inspector {border: 1px solid var(--line-dark); padding: 12px}
+.task-shell .inspector h2 {font: bold 15px var(--sans)}
+.task-shell .inspector h3 {font: bold 13px var(--sans)}
+.task-shell .properties dd {font: bold 14px var(--mono)}
+.task-shell .formula {font: 24px var(--sans); margin-top: 16px}
+.task-shell .editor-stage {filter: grayscale(1)}
+.task-shell .qchem-intro h2 {font: bold 24px/1.25 var(--sans)}
+.task-shell .qchem-page h3 {font: bold 18px/1.3 var(--sans)}
+.task-shell .qchem-coach h3 {font: bold 15px/1.4 var(--sans)}
+.task-shell .qchem-intro-compact h2 {font-size: 18px}
+.task-shell .qchem-molecule-card, .task-shell .calculation-context {padding: 10px 12px; border: 1px solid var(--line-dark); box-shadow: none}
+.task-shell .qchem-steps, .task-shell .calculation-steps {margin: 16px 0}
+.task-shell .qchem-steps li, .task-shell .calculation-steps li {padding: 8px; border-radius: 0}
+.task-shell .qchem-answer-cards button, .task-shell .result-feedback-card,
+.task-shell .qchem-transfer, .task-shell .qchem-feedback,
+.task-shell .qchem-identity, .task-shell .qchem-error {background: var(--surface); color: var(--ink); border-color: var(--line-dark)}
+.task-shell .qchem-answer-cards button.selected, .task-shell .result-feedback-card.is-selected {background: var(--subtle); border-color: var(--ink)}
+.task-shell .qchem-feedback {border: 1px solid var(--line-dark); border-left: 4px solid var(--ink)}
+.task-shell .qchem-page p, .task-shell .qchem-page label, .task-shell .qchem-coach p {font-size: 13px; line-height: 1.5}
+.task-shell .result-card-head {padding: 12px}
+.task-shell .result-kicker {letter-spacing: 0; text-transform: none}
+.task-shell .result-card-head h4 {font-size: 16px}
+.task-shell .result-engine-line {padding: 8px 12px}
+.task-shell .result-status {font-size: 12px; border-radius: 0}
+.task-shell .result-assistant-chips .text-button {border-radius: 0}
+.task-shell .result-energy-reading {padding: 16px 12px 12px}
+.task-shell .welcome-sheet {padding: 24px; border: 2px solid var(--line-dark); box-shadow: 4px 4px #0006}
+.task-shell .welcome-sheet h1 {font: bold 23px/1.3 var(--sans); margin: 12px 0}
+.task-shell .welcome-sheet>p {font-size: 13px; line-height: 1.5}
+.task-shell .welcome-options {gap: 8px; margin: 16px 0}
+.task-shell .welcome-options button {padding: 12px!important}
+.task-shell .welcome-options strong {font-size: 13px}
+.task-shell .welcome-options span {font-size: 12px}
+.task-shell .banner, .task-shell .verification, .task-shell .warning-text,
+.task-shell .study-error {color: var(--ink)!important; background: var(--subtle); border-color: var(--ink)}
+.task-shell .topbar {background: var(--rail)}
+@media (max-width: 680px) {.task-shell .workspace-scroll {padding: 10px}.task-shell .page-heading h1 {font-size: 19px}}
+
+.beginner-instructions > summary {padding:8px 0;font-weight:bold;cursor:pointer}
+@media (min-width:760px){
+ .task-shell .sample-grid {grid-template-columns:minmax(0,1fr) minmax(240px,.8fr)}
+ .task-shell .shape-results table {min-width:0;font-size:12px}
+}

@@ -45,3 +45,25 @@ def test_configured_path_survives_restart_without_any_automatic_calculation(tmp_
         assert json.loads((tmp_path/'orca.json').read_text())['executable']==str(binary)
     resumed=WorkbenchEngine(tmp_path)
     assert resumed.orca.executable==binary
+
+
+def test_orca_discovery_requires_session_and_does_not_probe_or_configure(tmp_path, monkeypatch):
+    import hypothesislab.calculation_api as calculation_api
+
+    app=FastAPI()
+    facade=SimpleNamespace(ROOT=tmp_path,engine=WorkbenchEngine(tmp_path),SESSION_HEADER=api.SESSION_HEADER,require_session=api.require_session)
+    register(app,facade)
+    candidate=tmp_path/'found-orca'
+    candidate.write_text('#!/bin/sh\nexit 0\n')
+    candidate.chmod(0o700)
+    calls=[]
+    monkeypatch.setattr(calculation_api, 'discover_executables', lambda preferred: calls.append(preferred) or [candidate])
+    headers={'X-HypothesisLab-Session':api.SESSION}
+    with TestClient(app) as client:
+        assert client.get('/api/orca/discover').status_code==403
+        reply=client.get('/api/orca/discover',headers=headers)
+        assert reply.status_code==200
+        assert reply.json()['configured'] is None
+        assert reply.json()['candidates']==[str(candidate)]
+        assert not (tmp_path/'orca.json').exists()
+    assert calls==[None]

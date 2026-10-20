@@ -5,9 +5,9 @@ const safeName = /^[A-Za-z0-9][A-Za-z0-9 _.-]*$/;
 
 export const DEFAULT_RECIPE = {
   version: 1,
-  name: 'Mass conversion and summary',
+  name: 'Measurement summary and calibration',
   steps: [
-    {name: 'Convert milligrams to grams', operation: 'pint.convert', inputs: {value: 1000, from_unit: 'milligram', to_unit: 'gram'}},
+    {name: 'Fit calibration line', operation: 'scipy.line', inputs: {x: [0, 1, 2], y: [1, 3, 5], x_unit: 's', y_unit: 'a.u.'}},
     {name: 'Summarize measurements', operation: 'numpy.summary', inputs: {values: [1, 2, 3, 4, 5], unit: 'a.u.'}},
   ],
 };

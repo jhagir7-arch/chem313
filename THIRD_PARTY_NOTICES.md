@@ -1,59 +1,80 @@
 # Third-party notices and distribution boundary
 
-Applies to OpenChem 1.0.0-preview.1 source and its compiled native shell. Apache-2.0 covers OpenChem-originated code/documentation only. The shell is built from `desktop/OpenChem.swift` against system AppKit/WebKit and contains our LICENSE/NOTICE. It includes no third-party engines, Python, generated JavaScript bundles, models, datasets or native companion applications.
+Chem313 1.0.0-preview.3 supplies the standalone molecular-study core.
+Apache-2.0 applies to project-originated code and documentation. Dependencies
+retain their own terms. No upstream endorsement or ownership is implied.
 
-Lock files identify dependencies rather than redistribute their code. Setup obtains npm/Python packages separately under upstream terms and generates browser assets locally. Any future redistribution of those assets or installed packages must retain their actual license/NOTICE files and satisfy applicable source/relinking obligations. This document does not clear the older private DMG.
+The preview.3 app contains only the `standalone-core` inventory below. Qwen,
+MLX and model notices are retained here for the historical OpenChem preview.2
+model edition and its optional source builders; they are not bundled in the
+preview.3 core. The source ZIP contains no installed runtimes or weights.
 
-## Frontend source dependencies
+## Artifact-local notices
 
-Exact resolved versions are from `frontend/package-lock.json` (lockfile v3). The package has direct browser/runtime dependencies below; retain their license texts/notices if their code or a generated browser bundle is later included.
+Inside Chem313.app/Contents/Resources/licenses (historically OpenChem.app):
 
-| Package | Version | Reported license | Upstream |
-| --- | ---: | --- | --- |
-| 3dmol | 2.5.5 | BSD-3-Clause | [3Dmol.js](https://github.com/3dmol/3Dmol.js) |
-| events | 3.3.0 | MIT | [npm package](https://www.npmjs.com/package/events) |
-| ketcher-core | 3.18.0 | Apache-2.0 | [Ketcher](https://github.com/epam/ketcher) |
-| ketcher-react | 3.18.0 | Apache-2.0 | [Ketcher](https://github.com/epam/ketcher) |
-| ketcher-standalone | 3.18.0 | Apache-2.0 | [Ketcher](https://github.com/epam/ketcher) |
-| react | 18.3.1 | MIT | [React](https://github.com/facebook/react) |
-| react-dom | 18.3.1 | MIT | [React](https://github.com/facebook/react) |
-| vite-plugin-node-polyfills | 0.28.0 | MIT | [npm package](https://www.npmjs.com/package/vite-plugin-node-polyfills) |
+- `standalone-core`: exact wheel/production npm notices, CPython license,
+  font notices and native payload ownership manifest for the chemistry core.
+- `qwen-runtime` (preview.2 model edition only): wheel notices and native ownership manifest for the separate
+  frozen CPython 3.12 / MLX worker, including Metal payloads. Retained CPython,
+  OpenSSL, SQLite and mpdecimal notices accompany this inventory.
+- `qwen-model` (preview.2 model edition only): original Apache-2.0 LICENSE, upstream model card, transformation
+  NOTICE and pinned model-file SHA-256 manifest.
 
-Build/test-only direct packages: `@types/react` 18.3.31 (MIT), `@types/react-dom` 18.3.7 (MIT), `@vitejs/plugin-react` 4.7.0 (MIT), TypeScript 5.9.3 (Apache-2.0), and Vite 6.4.4 (MIT). They are not part of the public source distribution as installed artifacts. If `frontend/dist` is later shipped, produce a bundle-specific notice inventory from the actual output; Vite supports generated bundle license reporting in its [official documentation](https://vite.dev/guide/features.html#license).
+Manifests map native files to wheel RECORD or the exact PyInstaller collection
+source, recording packaged hashes after load-path/signature transformations.
+They are artifact inventories, not a scientific validation or a claim of
+source equivalence to an unrelated downloaded development archive.
+PyInstaller's bootloader is distributed under its GPL exception permitting
+bundled applications; the original terms are retained among runtime notices.
+System AppKit, WebKit, Metal and other macOS frameworks are not copied.
 
-Ketcher’s upstream [NOTICE](https://github.com/epam/ketcher/blob/master/NOTICE) identifies its own third-party notices. A future bundled build must not reduce Ketcher compliance to its top-level Apache-2.0 label when it is bundled.
+## Component inventory
 
-## Core Python source dependencies
+This combined table includes core components and historical optional Qwen components.
 
-`backend/pyproject.toml` declares ranges; `desktop/requirements-lock.txt` records the observed core build environment. The source package contains source/configuration only and does not distribute those installed wheels or libraries.
-
-| Package | Declared range | Observed core lock | Reported license | Upstream |
-| --- | --- | ---: | --- | --- |
-| RDKit | >=2025.9.4,<2027 | 2026.9.1 | BSD-3-Clause | [RDKit](https://github.com/rdkit/rdkit) |
-| NumPy | >=2,<3 | 2.5.4 | BSD-3-Clause | [NumPy](https://numpy.org/) |
-| SciPy | >=1.14,<2 | 1.18.1 | BSD-3-Clause | [SciPy](https://scipy.org/) |
-| Matplotlib | >=3.9,<4 | 3.11.2 | Matplotlib license | [Matplotlib](https://matplotlib.org/) |
-| FastAPI | >=0.115,<1 | 0.143.3 | MIT | [FastAPI](https://github.com/fastapi/fastapi) |
-| Uvicorn | >=0.30,<1 | 0.54.0 | BSD-3-Clause | [Uvicorn](https://github.com/encode/uvicorn) |
-
-The core lock also names transitive/build/test packages, including PyInstaller. They remain external installs in this scope. A later binary release needs a release-specific SBOM and the original license/NOTICE files from the resulting artifact; the existing `desktop/licenses/` directory is useful evidence, not a final binary disclosure.
-
-## Optional integration source references
-
-The repository contains adapters, lock files, registry rows, tests or documentation referring to the following integrations. This public preview does **not** ship their executable, wheel, model, dataset, archive, or host bundle. Their source license labels are informative only and do not make the component part of this release.
-
-| Integration area | Referenced projects / source links | Source-only treatment |
+| Component | Version | Upstream license family / notice location |
 | --- | --- | --- |
-| Scientific worker | [Gemmi](https://github.com/project-gemmi/gemmi), [spglib](https://github.com/spglib/spglib), [pymatgen](https://github.com/materialsproject/pymatgen), [Pint](https://github.com/hgrecco/pint), [pandas](https://github.com/pandas-dev/pandas), [Polars](https://github.com/pola-rs/polars), [lmfit](https://github.com/lmfit/lmfit-py), [nmrglue](https://github.com/jjhelmus/nmrglue), [Pyteomics](https://github.com/levitsky/pyteomics), [Biopython](https://github.com/biopython/biopython), [Optuna](https://github.com/optuna/optuna), [Cantera](https://github.com/Cantera/cantera), [OpenMM](https://github.com/openmm/openmm), [MDTraj](https://github.com/mdtraj/mdtraj), [MDAnalysis](https://github.com/MDAnalysis/mdanalysis), [RO-Crate](https://www.researchobject.org/ro-crate/) and [ORD Schema](https://github.com/Open-Reaction-Database/ord-schema) | Optional external installs; versions are recorded in `environments/science-macos-arm64.lock`. |
-| Extended worker | [PySCF 2.14.0](https://pyscf.org/) (Apache-2.0), [tblite](https://github.com/tblite/tblite), [matchms](https://github.com/matchms/matchms), [Meeko](https://github.com/forlilab/Meeko) and [RDKit](https://github.com/rdkit/rdkit) | Optional external installs; no worker binary or engine package is included. |
-| Bioscience worker | [PyEnzyme 1.1.5](https://github.com/EnzymeML/PyEnzyme), [PySB 1.17.0](https://github.com/pysb/pysb) and [BioNetGen 0.8.7](https://github.com/RuleWorld/bionetgen) | Optional external installs; `bng-mac` helpers are expressly excluded. |
-| Local ML worker | [MLX 0.32.4](https://github.com/ml-explore/mlx), [mlx-lm 0.32.2](https://github.com/ml-explore/mlx-lm), [Transformers](https://github.com/huggingface/transformers), [Tokenizers](https://github.com/huggingface/tokenizers), [Safetensors](https://github.com/huggingface/safetensors) and [SentencePiece](https://github.com/google/sentencepiece) | Entire worker, weights, adapter and training materials are excluded. |
-| Native hosts/executables | Avogadro, Open Babel, Qt and ORCA | Excluded. This draft makes no redistribution statement for their binaries or dynamic libraries. |
+| RDKit | 2026.9.1 | BSD-3-Clause and bundled notices; standalone-core |
+| NumPy | 2.5.4 | BSD-3-Clause and bundled notices; both runtime inventories |
+| SciPy | 1.18.1 | BSD-3-Clause and bundled notices; standalone-core |
+| Matplotlib | 3.11.2 | Matplotlib and bundled font/library notices; standalone-core |
+| Ketcher | 3.18.0 | Apache-2.0 and dependency notices; standalone-core |
+| Indigo | 1.46.0 | Apache-2.0; standalone-core |
+| 3DmolJS | 2.5.5 | BSD-3-Clause; standalone-core |
+| React / React DOM | 18.3.1 | MIT; standalone-core |
+| CPython | 3.13.14 core / 3.12.15 Qwen | PSF and bundled notices |
+| MLX / mlx-metal | 0.32.4 | MIT and retained dependencies; qwen-runtime |
+| mlx-lm | 0.32.2 | MIT; qwen-runtime |
+| Transformers | 5.20.1 | Apache-2.0; qwen-runtime |
+| Qwen3.5-2B-Base | pinned revision below | Apache-2.0; qwen-model |
 
-The 54-entry source catalog and `sources/licenses/` are research/provenance records. They do not assert that all upstream sources were built, installed, or redistributed, and they must not be represented as a complete binary license inventory.
+The Qwen upstream revision is `b1485b2fa6dfa1287294f269f5fb618e03d52d7c`
+from https://huggingface.co/Qwen/Qwen3.5-2B-Base . OpenChem converts its
+weights with MLX affine 4-bit quantization, group size 64. This modification
+is declared in the model NOTICE. The public app uses no private LoRA adapter,
+distillation dataset, training record or model downloaded at launch.
 
-## Source and assets
+Exact transitive package versions and complete captured notices are in the
+runtime manifests. The npm inventory is conservative rather than a proof of
+what tree-shaking removed. Native components statically linked into upstream
+wheels depend on the original supplier's bundled notices; the inventory does
+not claim to reconstruct every source-level build input.
 
-OpenChem-originated code is supplied under the root LICENSE. Installed dependencies remain external and retain their original terms. Original handoff archives, private receipts, model/adapter/training material, generated UI and researcher records are excluded. Six third-party cclib-data ORCA outputs are excluded because their redistribution license was not established; the URL/hash provenance manifest alone is retained.
+## Excluded components and source archive
 
-The compiled shell uses system-provided AppKit and WebKit; no copy of those frameworks is included. It is ad-hoc signed and not notarized. No OpenChem endorsement by any upstream project is implied. Product names remain their respective owners' marks.
+ORCA, Avogadro, Open Babel, Qt, PySCF, tblite and the broader optional workers
+are not bundled. ORCA must be obtained and licensed separately. References
+and optional adapters do not relicense these applications or incorporate
+all their features into OpenChem.
+
+The corresponding source ZIP excludes installed dependencies, model weights,
+private adapters/datasets, researcher data, handoff archives and Git history.
+It includes the build/notice-collection scripts and locked runtime requirements.
+Six third-party cclib-data ORCA output fixtures remain excluded because their
+redistribution license was not established. Their provenance manifest alone
+is retained; missing-fixture tests explicitly skip in the public snapshot.
+
+The earlier preview.1 native shell was source-runtime based. Its narrower
+distribution scope is preserved in its original release, not used to describe
+the standalone preview.2 download. Product names remain their owners' marks.

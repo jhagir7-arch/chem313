@@ -3,7 +3,7 @@ from fastapi import HTTPException, Request, Security
 from pydantic import BaseModel, ConfigDict, Field, StrictBool
 from .validation import InputError
 from .assistant import Assistant
-from .orca_runtime import executable_status
+from .orca_runtime import discover_executables, executable_status
 import json
 import os
 from pathlib import Path
@@ -47,6 +47,17 @@ def register(app, api):
             return executable_status(api.engine.orca.executable, discover=False)
         except InputError as exc:
             return {'status':'UNAVAILABLE','detail':str(exc)}
+
+    @app.get('/api/orca/discover')
+    def discover_orca(request: Request, token: str | None = Security(api.SESSION_HEADER)):
+        api.require_session(request,token)
+        configured = api.engine.orca.executable
+        candidates = discover_executables(configured)
+        return {
+            'configured': str(configured) if configured is not None else None,
+            'candidates': [str(candidate) for candidate in candidates],
+            'detail': 'Candidates were found without running ORCA. Select one and connect to perform the existing version check.',
+        }
 
     @app.post('/api/orca/configure')
     def configure(payload: OrcaPath, request: Request, token: str | None = Security(api.SESSION_HEADER)):

@@ -1,14 +1,11 @@
-# Release scope: 1.0.0-preview.1
+# Release scope: Chem313 1.0.0-preview.5
 
-This public research preview supplies OpenChem-originated source under Apache-2.0 and a compiled native macOS shell that uses a separately installed local source runtime. It does not supply a self-contained chemistry runtime or the earlier private development DMG.
+Chem313 was previously named OpenChem. The new name distinguishes this application from the unrelated Mariewelt/OpenChem project. Existing repository URLs, internal identifiers and project data paths remain compatible.
 
-Resolved for this scope:
+The standalone core contains a frozen CPython service, Ketcher/Indigo, RDKit, 3Dmol, NumPy, SciPy and Matplotlib. It contains no ORCA or Q-Chem executable, Qwen model, private adapter, training dataset, Avogadro binary or optional science-worker environments.
 
-- Selected and included the project license, NOTICE, source-origin statement and dependency notices.
-- Removed unlicensed third-party ORCA outputs, original archives, private provenance, training data, model/adapter assets and installed dependencies from the public export.
-- The compiled shell ships no browser bundles, Python packages, workers, Avogadro, Open Babel, Qt or ORCA. Their dependencies are obtained separately, so this release does not redistribute those binaries.
-- Added reproducible local setup and native-shell compilation. Missing optional components are reported as unavailable, not bundled or scientifically validated.
+Verified checks must distinguish frontend/unit tests, frozen service tests and compiled native workflow tests. These prove only the documented workflow and bounded numerical checks. A fake executable used in runner lifecycle tests is never evidence of a real licensed quantum calculation. The first real ORCA / Q-Chem calculation remains pending.
 
-Still outside this release: Developer ID signing/notarization, a fully bundled installer with a complete binary SBOM and applicable redistribution materials, a distributable trained Qwen adapter, independent scientific validation, real licensed ORCA execution and broad macOS compatibility testing.
+The Mac candidate is ad-hoc signed, not Developer ID signed or notarized. The binary audit determines its minimum deployment target; other OS releases and architectures remain untested unless explicitly recorded. Windows/Linux workflows must pass native smoke and notice gates before a download is offered. Failed or license-blocked builds retain evidence only.
 
-The original development builds remain local. Their older license notices and included assets do not define this public preview's distribution scope.
+The source archive excludes private correspondence, handoff archives, Git history, installed dependencies, model weights, training data, user projects and third-party fixtures with unresolved redistribution rights. Component notices and source-origin records accompany the permitted application code. No dependency is relicensed by the application's Apache-2.0 grant.

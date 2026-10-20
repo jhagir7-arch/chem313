@@ -53,8 +53,13 @@ class WorkbenchEngine(Engine):
             if params:
                 raise InputError("This Avogadro action takes no parameters")
             return self._actions[action]
-        if set(params) != {key} or not isinstance(params[key], str) or not params[key].strip():
+        allowed = {key, "seed"} if action == "molecule.generate_conformer" else {key}
+        if key not in params or not set(params) <= allowed or not isinstance(params[key], str) or not params[key].strip():
             raise InputError(f"{key} must contain text")
+        if action == "molecule.generate_conformer" and "seed" in params:
+            seed = params["seed"]
+            if isinstance(seed, bool) or not isinstance(seed, int) or not 0 <= seed <= 2_147_483_647:
+                raise InputError("seed must be an integer from 0 through 2147483647")
         if len(params[key].encode("utf-8")) > (5000 if key == "smiles" else 250_000):
             raise InputError("Input exceeds the supported size")
         if key == "molfile":
@@ -83,6 +88,7 @@ class WorkbenchEngine(Engine):
             prepared = prepare_orca_input(params)
             preview["prepared_input"] = prepared["input_text"]
             preview["checks"] = prepared["coordinate_checks"]
+            preview["identity_check"] = prepared["identity_check"]
             preview["electron_count"] = prepared["electron_count"]
             preview["settings"] = prepared["settings"]
             preview["warnings"] = prepared["warnings"]

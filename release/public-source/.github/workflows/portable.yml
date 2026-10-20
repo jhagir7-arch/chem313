@@ -1,0 +1,132 @@
+name: Chem313 portable core candidate
+on:
+  workflow_dispatch:
+    inputs:
+      source_url:
+        description: 'Chem313 release asset URL for the reviewed portable source ZIP'
+        required: true
+        type: string
+      source_sha256:
+        description: 'Expected SHA-256 of that ZIP (64 hexadecimal characters)'
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  native:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-22.04
+            label: linux-x86_64
+          - os: windows-2022
+            label: windows-amd64
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 40
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Download and verify the exact reviewed source
+        shell: bash
+        env:
+          SOURCE_URL: ${{ inputs.source_url }}
+          SOURCE_SHA256: ${{ inputs.source_sha256 }}
+        run: |
+          python - <<'PY'
+          import hashlib, os, pathlib, re, urllib.request, zipfile
+          url, digest = os.environ['SOURCE_URL'], os.environ['SOURCE_SHA256'].lower()
+          if not re.fullmatch(r'https://github.com/jhagir7-arch/openchem/releases/download/[^/]+/[^/]+\.zip', url):
+              raise SystemExit('Only this project release ZIP assets are accepted')
+          if not re.fullmatch(r'[0-9a-f]{64}', digest):
+              raise SystemExit('Invalid expected SHA-256')
+          with urllib.request.urlopen(url, timeout=60) as response:
+              raw = response.read(20_000_001)
+          if len(raw) > 20_000_000 or hashlib.sha256(raw).hexdigest() != digest:
+              raise SystemExit('Source size or digest mismatch')
+          pathlib.Path('source.zip').write_bytes(raw)
+          with zipfile.ZipFile('source.zip') as archive:
+              entries = archive.infolist()
+              if sum(e.file_size for e in entries) > 100_000_000:
+                  raise SystemExit('Extracted source exceeds limit')
+              roots = set()
+              for entry in entries:
+                  p = pathlib.PurePosixPath(entry.filename)
+                  if p.is_absolute() or '..' in p.parts or '\\' in entry.filename or ':' in entry.filename:
+                      raise SystemExit('Unsafe ZIP path')
+                  if (entry.external_attr >> 16) & 0o170000 == 0o120000:
+                      raise SystemExit('Source symlink rejected')
+                  roots.add(p.parts[0])
+              if len(roots) != 1:
+                  raise SystemExit('Expected one source directory')
+              archive.extractall('unpacked')
+          pathlib.Path('unpacked', roots.pop()).rename('source')
+          PY
+      - name: Install build dependencies
+        working-directory: source
+        run: python -m pip install -e "backend[test]" "pyinstaller>=6.19,<7"
+      - name: Install locked interface dependencies
+        working-directory: source
+        run: npm --prefix frontend ci
+      - name: Check portable behavior
+        working-directory: source
+        run: python -m pytest backend/tests/test_portable_launcher.py backend/tests/test_portable_notices.py backend/tests/test_standalone_profile.py backend/tests/test_science_jobs.py -q -k "not real_numpy_and_pint_jobs_persist_reports_and_verify_project"
+      - name: Build frozen application and inspect license gate
+        # Run scientific smoke tests on the local candidate even when notice
+        # collection fails. The smoke script still blocks all download archives
+        # unless the separate distribution review exists and passes.
+        continue-on-error: true
+        working-directory: source
+        run: python scripts/build_portable.py --output dist/Chem313-core-${{ matrix.label }}
+      - name: Exercise frozen workflow without Python or Node on PATH
+        working-directory: source
+        shell: bash
+        run: |
+          if [ "$RUNNER_OS" = "Windows" ]; then suffix=.exe; else suffix=; fi
+          python scripts/test_portable_package.py "dist/Chem313-core-${{ matrix.label }}/Chem313$suffix" "build/portable/workflow.json" --allow-unreleased-candidate
+      - name: Check whether this candidate may be archived
+        id: release_gate
+        working-directory: source
+        shell: bash
+        env:
+          BUNDLE_NAME: Chem313-core-${{ matrix.label }}
+        run: |
+          python - <<'PY'
+          import json, os, pathlib
+          bundle = pathlib.Path("dist") / os.environ["BUNDLE_NAME"]
+          notice_gate = json.loads((bundle / "licenses/portable-core/MANIFEST.json").read_text())["gate"]["passed"]
+          distribution_gate = json.loads((bundle / "DISTRIBUTION_REVIEW.json").read_text())["passed"]
+          releasable = notice_gate and distribution_gate
+          print(f"releasable={str(releasable).lower()}")
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+              output.write(f"releasable={str(releasable).lower()}\n")
+          if not releasable:
+              print("Native smoke test passed, but this candidate is not releasable; retaining evidence only.")
+          PY
+      - name: Archive releasable tested candidate
+        if: steps.release_gate.outputs.releasable == 'true'
+        working-directory: source
+        env:
+          BUNDLE_NAME: Chem313-core-${{ matrix.label }}
+        run: python -c "import hashlib,os,pathlib,shutil; n=os.environ['BUNDLE_NAME']; p=pathlib.Path(shutil.make_archive('dist/'+n,'zip','dist',n)); p.with_suffix('.zip.sha256').write_text(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+p.name+'\n')"
+      - uses: actions/upload-artifact@v4
+        if: steps.release_gate.outputs.releasable == 'true'
+        with:
+          name: Chem313-core-${{ matrix.label }}-tested-candidate
+          path: |
+            source/dist/*.zip
+            source/dist/*.sha256
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: portable-${{ matrix.label }}-evidence
+          path: |
+            source/build/portable/workflow.json
+            source/dist/**/licenses/portable-core/MANIFEST.json
+            source/dist/**/DISTRIBUTION_REVIEW.json
+          if-no-files-found: ignore

@@ -59,7 +59,7 @@ class Store:
             try:
                 os.link(temporary, path, follow_symlinks=False)
             except FileExistsError:
-                flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
+                flags = getattr(os, "O_BINARY", 0) | os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
                 try:
                     existing = os.open(path, flags)
                     try:
@@ -94,7 +94,7 @@ class Store:
             raise InputError("Project symlinks are unsupported")
         log = folder / "events.jsonl"
         if os.path.lexists(log):
-            flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
+            flags = getattr(os, "O_BINARY", 0) | os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
             try:
                 fd = os.open(log, flags)
                 try:
@@ -113,7 +113,7 @@ class Store:
         log = folder / "events.jsonl"
         if not os.path.lexists(log):
             return b""
-        flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
+        flags = getattr(os, "O_BINARY", 0) | os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
         try:
             fd = os.open(log,flags)
         except OSError as exc:
@@ -149,7 +149,7 @@ class Store:
         self.preflight_event_log(project)
         log = self._project(project) / "events.jsonl"
         data = (json.dumps(event, ensure_ascii=False, sort_keys=True, allow_nan=False) + "\n").encode("utf-8")
-        flags = os.O_WRONLY | os.O_CREAT | os.O_APPEND | getattr(os,"O_NOFOLLOW",0) | getattr(os,"O_NONBLOCK",0)
+        flags = getattr(os, "O_BINARY", 0) | os.O_WRONLY | os.O_CREAT | os.O_APPEND | getattr(os,"O_NOFOLLOW",0) | getattr(os,"O_NONBLOCK",0)
         try:
             fd = os.open(log,flags,0o600)
         except OSError as exc:
@@ -219,7 +219,7 @@ class Store:
                         if folder.is_symlink():
                             faults.append({"event": index, "reason": "SYMLINK_FOLDER"})
                             continue
-                        flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
+                        flags = getattr(os, "O_BINARY", 0) | os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
                         fd = os.open(self.root / rel, flags)
                         try:
                             meta = self._safe_regular(fd, "Artifact")

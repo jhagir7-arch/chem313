@@ -1,0 +1,134 @@
+{
+  "release": "Chem313 1.0.0-preview.5",
+  "host": "macOS 27 arm64",
+  "frontend_tests": {
+    "passed": 42,
+    "failed": 0
+  },
+  "focused_backend_tests": {
+    "passed": 59,
+    "scope": "ORCA discovery/runtime, calculation API, input and run actions, Q-Chem runtime/results, identity and workbench; unchanged backend check set from preview.4, not repeated for styling-only preview.5"
+  },
+  "compiled_native": {
+    "status": "PASS",
+    "application": "Chem313 1.0.0-preview.5",
+    "environment": "Compiled AppKit / WKWebView with frozen Python; no Node/Python setup",
+    "checks": [
+      "Compiled app exposes native sidebar mode and opens with the first-launch choice sheet",
+      "Appearance control switches the compiled UI between dark and light modes",
+      "Bundled RDKit generated water, methane and ethanol; each coordinate-to-InChI preparation check passed",
+      "Visible answer cards give immediate feedback, including a transfer check for a different molecule",
+      "Simulated UI-only result fixture is visibly labeled, keeps matching molecule context, switches units, hides raw ID by default, and gives accessible interpretation and Qwen-unavailable feedback",
+      "Feature index finds the scoped energy task",
+      "Five real local butane starting shapes render with units, selectable feedback, and 3D controls",
+      "No external quantum result or optional Qwen service was treated as available"
+    ],
+    "structures": [
+      {
+        "molecule": "water",
+        "atom_count": 3,
+        "force_field": "MMFF",
+        "energy": 2.720184563696395e-10,
+        "unit": "kcal/mol",
+        "inchikey": "XLYOFNOQVPJJNP-UHFFFAOYSA-N",
+        "input_sha256": "6cfdb8a94b6a604dcc52fba2f31b88a0a49ea64b8aa6f7221fe4da35a8b72436"
+      },
+      {
+        "molecule": "methane",
+        "atom_count": 5,
+        "force_field": "MMFF",
+        "energy": 0.026382646652735264,
+        "unit": "kcal/mol",
+        "inchikey": "VNWKTOKETHGBQD-UHFFFAOYSA-N",
+        "input_sha256": "7e4f17494bd4dd633fbd36ec5dbaecb5b0b423bb246945721c69f213db8cc274"
+      },
+      {
+        "molecule": "ethanol",
+        "atom_count": 9,
+        "force_field": "MMFF",
+        "energy": -1.336857058685919,
+        "unit": "kcal/mol",
+        "inchikey": "LFQSCWFLJHTTHZ-UHFFFAOYSA-N",
+        "input_sha256": "ce6006d92f5c41524ecb100bf4ad28760586c44be684dd2d55adf9f8b4ebca78"
+      }
+    ],
+    "engine_status": {
+      "orca": "NOT_CONFIGURED",
+      "qchem": "NOT_CONFIGURED",
+      "qwen": "UNAVAILABLE"
+    },
+    "real_quantum_calculation": "NOT_RUN_NO_LICENSED_ENGINE",
+    "scientific_scope": "Real local RDKit force-field calculations and coordinate identity validation; explicitly simulated browser-only result fixture tests rendering, without launching a quantum engine"
+  },
+  "native_preferences": {
+    "status": "PREVIOUS_PREVIEW_PASS_NOT_REPEATED",
+    "restored_across_launches": true,
+    "last_verified_release": "1.0.0-preview.4",
+    "current_check": "Appearance switches pass in preview.5 compiled workflow; across-launch persistence was not repeated."
+  },
+  "frozen_service": {
+    "status": "PASS",
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "external_python_node": false,
+      "fresh_home": true,
+      "relocated_cwd": true
+    },
+    "checks": [
+      "Packaged engine: RDKit, ORCA preparation, immutable artifacts, SciPy, Matplotlib, session/origin/replay protection",
+      "Both embedded subprocess worker operations passed known numerical references",
+      "Unavailable engine rejected before queuing; fresh project integrity passed",
+      "Quit/relaunch preserves scientific jobs and project artifact integrity"
+    ],
+    "jobs": [
+      {
+        "operation": "numpy.summary",
+        "state": "SUCCEEDED",
+        "output": {
+          "count": 5,
+          "mean": 3.0,
+          "standard_deviation": 1.4142135623730951,
+          "minimum": 1.0,
+          "maximum": 5.0,
+          "unit": "V"
+        }
+      },
+      {
+        "operation": "scipy.line",
+        "state": "SUCCEEDED",
+        "output": {
+          "slope": 2.0,
+          "intercept": 1.0,
+          "r_squared": 1.0,
+          "slope_standard_error": 0.0,
+          "x_unit": "s",
+          "y_unit": "V"
+        }
+      }
+    ]
+  },
+  "mac_distribution": {
+    "signature": "ad-hoc",
+    "notarized": false,
+    "native_license_gate": "passed",
+    "deployment_audit": {
+      "status": "PASS",
+      "native_files": 243,
+      "errors": []
+    },
+    "declared_minimum_macos": "14.0",
+    "compatibility_limit": "Tested on macOS 27 arm64 only"
+  },
+  "portable": {
+    "previous_source_ci": "https://github.com/jhagir7-arch/openchem/actions/runs/39366818959",
+    "previous_windows_workflow": "PASS",
+    "previous_linux_workflow": "PASS",
+    "this_version_native_ci": "NOT_RUN",
+    "windows_download": "WITHHELD: Microsoft runtime redistribution review",
+    "linux_download": "WITHHELD: exact GCC/libquadmath corresponding-source obligations"
+  },
+  "scientific_limit": "Real bundled RDKit force-field calculations and coordinate identity checks; no real ORCA or Q-Chem calculation; result fixture tested presentation only",
+  "qwen": "Optional, unavailable in the core QA environment; no model weights included",
+  "student_usability_validation": "NOT_YET_RUN",
+  "ui_style": "Classic neutral-grey, white and black controls, native AppKit sidebar; completed molecule activity collapses instructions"
+}

@@ -1,7 +1,18 @@
 import AppKit
 import WebKit
 
-final class DesktopApp: NSObject, NSApplicationDelegate, WKUIDelegate, WKNavigationDelegate, WKScriptMessageHandler, NSMenuItemValidation {
+final class ClassicSidebarRow: NSTableRowView {
+    override var interiorBackgroundStyle: NSView.BackgroundStyle { .normal }
+    override func drawSelection(in dirtyRect: NSRect) {
+        let dark = effectiveAppearance.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua
+        NSColor(calibratedWhite: dark ? 0.32 : 0.76, alpha: 1).setFill()
+        bounds.fill()
+        NSColor(calibratedWhite: dark ? 0.60 : 0.40, alpha: 1).setStroke()
+        NSBezierPath(rect: bounds.insetBy(dx: 0.5, dy: 0.5)).stroke()
+    }
+}
+
+final class DesktopApp: NSObject, NSApplicationDelegate, WKUIDelegate, WKNavigationDelegate, WKScriptMessageHandler, NSMenuItemValidation, NSOutlineViewDataSource, NSOutlineViewDelegate, NSToolbarDelegate {
     var window: NSWindow!
     var web: WKWebView!
     var worker: Process?
@@ -10,23 +21,64 @@ final class DesktopApp: NSObject, NSApplicationDelegate, WKUIDelegate, WKNavigat
     var logHandle: FileHandle?
     var smokeTimer: Timer?
     var smokeTicks = 0
+    private var splitController: NSSplitViewController?
+    private var sidebarOutline: NSOutlineView?
+    private var labsButton: NSButton?
+    private var sidebarRows: [NativeSection] = NativeSection.standard
+    private var labsVisible = false
+    private var selectedSection = NativeSection.learn
+    private let sidebarWidth: CGFloat = 190
     private let frontendCommands: Set<String> = [
         "new-project", "open-structure", "save-structure", "export-mol",
-        "structures", "orcaInput", "orca", "measurements", "science", "notes", "history", "connections", "recipes",
-        "toggle-assistant", "generate-3d", "check-engines", "help"
+        "qchem", "calculate", "study", "structures", "orcaInput", "orca", "measurements", "science", "labs", "notes", "history", "connections", "recipes",
+        "toggle-assistant", "generate-3d", "check-engines", "show-welcome", "help"
     ]
     private var menuQARoutes = [String]()
+
+    enum NativeSection: String, CaseIterable {
+        case learn, molecule, calculate, records, labs
+
+        static let standard: [NativeSection] = [.learn, .molecule, .calculate, .records]
+
+        var title: String {
+            switch self {
+            case .learn: return "Learn"
+            case .molecule: return "Molecule"
+            case .calculate: return "Calculate"
+            case .records: return "Records"
+            case .labs: return "Labs"
+            }
+        }
+
+        var command: String {
+            switch self {
+            case .learn: return "qchem"
+            case .molecule: return "structures"
+            case .calculate: return "calculate"
+            case .records: return "history"
+            case .labs: return "labs"
+            }
+        }
+    }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         makeMenu()
         window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 1440, height: 940), styleMask: [.titled, .closable, .miniaturizable, .resizable], backing: .buffered, defer: false)
-        window.title = "OpenChem"
+        window.title = "Chem313"
         window.minSize = NSSize(width: 850, height: 650)
         window.center()
         window.setFrameAutosaveName("OpenChemMainWindow")
+        if ProcessInfo.processInfo.environment["OPENCHEM_QA_WIDE"] == "1" {
+            window.setContentSize(NSSize(width: 1440, height: 940))
+        }
         window.collectionBehavior.insert(.fullScreenPrimary)
         let configuration = WKWebViewConfiguration()
         configuration.userContentController.add(self, name: "desktop")
+        configuration.userContentController.addUserScript(WKUserScript(
+            source: "window.__CHEM313_NATIVE_SIDEBAR__=true;window.__CHEM313_PREFERENCES__=\(preferenceJSON());",
+            injectionTime: .atDocumentStart,
+            forMainFrameOnly: true
+        ))
         web = WKWebView(frame: window.contentView!.bounds, configuration: configuration)
         web.autoresizingMask = [.width, .height]
         web.uiDelegate = self
@@ -44,12 +96,197 @@ final class DesktopApp: NSObject, NSApplicationDelegate, WKUIDelegate, WKNavigat
         startWorker()
     }
 
+    func preferenceURL() -> URL {
+        let root = ProcessInfo.processInfo.environment["OPENCHEM_DATA"] ?? FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Application Support/OpenChem").path
+        return URL(fileURLWithPath: root).appendingPathComponent("interface-preferences.json")
+    }
+    func preferenceJSON() -> String {
+        guard let data = try? Data(contentsOf: preferenceURL()),
+              let values = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else { return "{}" }
+        let appearance = values["appearance"] as? String ?? "system"
+        let clean: [String: Any] = ["appearance": ["system", "light", "dark"].contains(appearance) ? appearance : "system", "started": values["started"] as? Bool ?? false]
+        return String(data: (try? JSONSerialization.data(withJSONObject: clean)) ?? Data(), encoding: .utf8) ?? "{}"
+    }
+
+    var classicChromeColor: NSColor {
+        NSColor(name: nil) { appearance in
+            NSColor(calibratedWhite: appearance.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua ? 0.14 : 0.90, alpha: 1)
+        }
+    }
+
+    func installNativeShell() {
+        guard splitController == nil else { return }
+        let sidebarController = NSViewController()
+        let outline = NSOutlineView()
+        outline.headerView = nil
+        outline.rowSizeStyle = .medium
+        outline.style = .plain
+        outline.rowHeight = 34
+        outline.backgroundColor = classicChromeColor
+        outline.selectionHighlightStyle = .regular
+        outline.delegate = self
+        outline.dataSource = self
+        let column = NSTableColumn(identifier: NSUserInterfaceItemIdentifier("section"))
+        column.title = "Workspace"
+        outline.addTableColumn(column)
+        let scroll = NSScrollView()
+        scroll.documentView = outline
+        scroll.hasVerticalScroller = true
+        scroll.autohidesScrollers = true
+        scroll.drawsBackground = true
+        scroll.backgroundColor = classicChromeColor
+        let labsButton = NSButton(title: "Show Labs", target: self, action: #selector(toggleLabs(_:)))
+        labsButton.bezelStyle = .smallSquare
+        labsButton.setAccessibilityLabel("Show Labs")
+        let stack = NSStackView(views: [scroll, labsButton])
+        stack.orientation = .vertical
+        stack.alignment = .width
+        stack.spacing = 8
+        stack.edgeInsets = NSEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+        sidebarController.view = stack
+        stack.wantsLayer = true
+        stack.layer?.backgroundColor = classicChromeColor.cgColor
+        sidebarController.view.frame = NSRect(x: 0, y: 0, width: sidebarWidth, height: 640)
+        let webController = NSViewController()
+        let documentContainer = NSView()
+        webController.view = documentContainer
+        web.translatesAutoresizingMaskIntoConstraints = false
+        documentContainer.addSubview(web)
+        NSLayoutConstraint.activate([
+            web.leadingAnchor.constraint(equalTo: documentContainer.leadingAnchor),
+            web.trailingAnchor.constraint(equalTo: documentContainer.trailingAnchor),
+            web.topAnchor.constraint(equalTo: documentContainer.topAnchor),
+            web.bottomAnchor.constraint(equalTo: documentContainer.bottomAnchor)
+        ])
+        let controller = NSSplitViewController()
+        // An ordinary split item keeps the sidebar opaque instead of borrowing
+        // warm wallpaper colours through AppKit's source-list vibrancy.
+        let sidebar = NSSplitViewItem(viewController: sidebarController)
+        sidebar.minimumThickness = 170
+        sidebar.maximumThickness = 260
+        sidebar.canCollapse = true
+        controller.addSplitViewItem(sidebar)
+        controller.addSplitViewItem(NSSplitViewItem(viewController: webController))
+        splitController = controller
+        sidebarOutline = outline
+        self.labsButton = labsButton
+        window.contentViewController = controller
+        controller.view.layoutSubtreeIfNeeded()
+        controller.splitView.setPosition(sidebarWidth, ofDividerAt: 0)
+        window.contentMinSize = NSSize(width: 850, height: 650)
+        window.setFrame(NSRect(x: window.frame.origin.x, y: window.frame.origin.y,
+                               width: max(window.frame.width, 1040), height: window.frame.height), display: false)
+        installToolbar()
+        selectSidebar(.learn, sendCommand: false)
+    }
+
+    func installToolbar() {
+        let toolbar = NSToolbar(identifier: "Chem313Toolbar")
+        toolbar.delegate = self
+        toolbar.displayMode = .iconAndLabel
+        toolbar.allowsUserCustomization = false
+        window.toolbar = toolbar
+        window.toolbarStyle = .expanded
+    }
+
+    func toolbarAllowedItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
+        [.toggleSidebar, .flexibleSpace, .space, NSToolbarItem.Identifier("welcome")]
+    }
+
+    func toolbarDefaultItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
+        [.toggleSidebar, .flexibleSpace, NSToolbarItem.Identifier("welcome")]
+    }
+
+    func toolbar(_ toolbar: NSToolbar, itemForItemIdentifier itemIdentifier: NSToolbarItem.Identifier,
+                 willBeInsertedIntoToolbar flag: Bool) -> NSToolbarItem? {
+        let item = NSToolbarItem(itemIdentifier: itemIdentifier)
+        switch itemIdentifier {
+        case .toggleSidebar:
+            item.label = "Sidebar"
+            item.paletteLabel = "Toggle sidebar"
+            item.toolTip = "Show or hide workspace sidebar"
+            item.image = NSImage(systemSymbolName: "sidebar.left", accessibilityDescription: "Toggle sidebar")
+            item.target = self
+            item.action = #selector(toggleSidebar(_:))
+        case NSToolbarItem.Identifier("welcome"):
+            item.label = "Welcome"
+            item.toolTip = "Open Chem313 welcome"
+            item.image = NSImage(systemSymbolName: "house", accessibilityDescription: "Welcome")
+            item.target = self
+            item.action = #selector(showWelcome(_:))
+        default:
+            return nil
+        }
+        return item
+    }
+
+    @objc func toggleSidebar(_ sender: Any?) {
+        guard let item = splitController?.splitViewItems.first else { return }
+        item.animator().isCollapsed = !item.isCollapsed
+    }
+
+    @objc func showWelcome(_ sender: Any?) {
+        sendFrontendCommandNamed("show-welcome")
+    }
+
+    @objc func toggleLabs(_ sender: Any?) {
+        setLabsVisible(!labsVisible)
+        if !labsVisible && selectedSection == .labs { selectSidebar(.molecule, sendCommand: true) }
+    }
+
+    func setLabsVisible(_ visible: Bool) {
+        labsVisible = visible
+        sidebarRows = visible ? NativeSection.standard + [.labs] : NativeSection.standard
+        sidebarOutline?.reloadData()
+        labsButton?.title = visible ? "Hide Labs" : "Show Labs"
+        labsButton?.setAccessibilityLabel(labsButton?.title ?? "Show Labs")
+    }
+
+    func selectSidebar(_ section: NativeSection, sendCommand: Bool) {
+        if section == .labs && !labsVisible { setLabsVisible(true) }
+        selectedSection = section
+        if let index = sidebarRows.firstIndex(of: section) { sidebarOutline?.selectRowIndexes(IndexSet(integer: index), byExtendingSelection: false) }
+        window.title = "Chem313 — \(section.title)"
+        if sendCommand { sendFrontendCommandNamed(section.command) }
+    }
+
+    func outlineView(_ outlineView: NSOutlineView, numberOfChildrenOfItem item: Any?) -> Int { item == nil ? sidebarRows.count : 0 }
+    func outlineView(_ outlineView: NSOutlineView, isItemExpandable item: Any) -> Bool { false }
+    func outlineView(_ outlineView: NSOutlineView, child index: Int, ofItem item: Any?) -> Any { sidebarRows[index] }
+    func outlineView(_ outlineView: NSOutlineView, rowViewForItem item: Any) -> NSTableRowView? { ClassicSidebarRow() }
+    func outlineView(_ outlineView: NSOutlineView, viewFor tableColumn: NSTableColumn?, item: Any) -> NSView? {
+        guard let section = item as? NativeSection else { return nil }
+        let identifier = NSUserInterfaceItemIdentifier("native-section")
+        let view = outlineView.makeView(withIdentifier: identifier, owner: self) as? NSTableCellView ?? NSTableCellView()
+        view.identifier = identifier
+        if view.textField == nil {
+            let label = NSTextField(labelWithString: section.title)
+            label.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview(label)
+            view.textField = label
+            NSLayoutConstraint.activate([
+                label.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8),
+                label.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -8),
+                label.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+            ])
+        }
+        view.textField?.stringValue = section.title
+        return view
+    }
+    func outlineViewSelectionDidChange(_ notification: Notification) {
+        let row = sidebarOutline?.selectedRow ?? -1
+        guard row >= 0, row < sidebarRows.count else { return }
+        let section = sidebarRows[row]
+        guard section != selectedSection else { return }
+        selectSidebar(section, sendCommand: true)
+    }
+
     func makeMenu() {
         let menu = NSMenu()
-        let appItem = NSMenuItem(title: "OpenChem", action: nil, keyEquivalent: "")
+        let appItem = NSMenuItem(title: "Chem313", action: nil, keyEquivalent: "")
         menu.addItem(appItem)
-        let appMenu = NSMenu(title: "OpenChem")
-        let aboutItem = appMenu.addItem(withTitle: "About OpenChem", action: #selector(about), keyEquivalent: "")
+        let appMenu = NSMenu(title: "Chem313")
+        let aboutItem = appMenu.addItem(withTitle: "About Chem313", action: #selector(about), keyEquivalent: "")
         aboutItem.target = self
         appMenu.addItem(.separator())
         let servicesMenu = NSMenu(title: "Services")
@@ -58,12 +295,12 @@ final class DesktopApp: NSObject, NSApplicationDelegate, WKUIDelegate, WKNavigat
         appMenu.addItem(servicesItem)
         NSApp.servicesMenu = servicesMenu
         appMenu.addItem(.separator())
-        appMenu.addItem(withTitle: "Hide OpenChem", action: #selector(NSApplication.hide(_:)), keyEquivalent: "h")
+        appMenu.addItem(withTitle: "Hide Chem313", action: #selector(NSApplication.hide(_:)), keyEquivalent: "h")
         let hideOthers = appMenu.addItem(withTitle: "Hide Others", action: #selector(NSApplication.hideOtherApplications(_:)), keyEquivalent: "h")
         hideOthers.keyEquivalentModifierMask = [.command, .option]
         appMenu.addItem(withTitle: "Show All", action: #selector(NSApplication.unhideAllApplications(_:)), keyEquivalent: "")
         appMenu.addItem(.separator())
-        appMenu.addItem(withTitle: "Quit OpenChem", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        appMenu.addItem(withTitle: "Quit Chem313", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         appItem.submenu = appMenu
 
         let fileItem = NSMenuItem(title: "File", action: nil, keyEquivalent: "")
@@ -87,11 +324,15 @@ final class DesktopApp: NSObject, NSApplicationDelegate, WKUIDelegate, WKNavigat
 
         let viewItem = NSMenuItem(title: "View", action: nil, keyEquivalent: "")
         let viewMenu = NSMenu(title: "View")
-        for (title, command, key) in [("Structure", "structures", "1"), ("Calculation Input", "orcaInput", "2"), ("Results", "orca", "3"), ("Measurements", "measurements", "4"), ("Scientific Tools", "science", "5"), ("Research Scripts", "recipes", "6"), ("Notebook", "notes", "7"), ("Project Files", "history", "8"), ("Engine Status", "connections", "9")] {
-            addFrontendItem(to: viewMenu, title: title, command: command, key: key, modifiers: .command)
-        }
+        addSectionMenu(to: viewMenu, section: .learn, items: [("First Calculation", "qchem", ""), ("Guide & Feature Index", "help", "")])
+        addSectionMenu(to: viewMenu, section: .molecule, items: [("Structure", "structures", "2")])
+        addSectionMenu(to: viewMenu, section: .calculate, items: [("Calculate", "calculate", ""), ("Calculation Input", "orcaInput", "3"), ("Results", "orca", "4")])
+        addSectionMenu(to: viewMenu, section: .records, items: [("Notebook", "notes", "8"), ("Project Files", "history", "9")])
+        let labsMenu = addSectionMenu(to: viewMenu, section: .labs, items: [("Molecule Study", "study", "1"), ("Measurements", "measurements", "5"), ("Scientific Tools", "science", "6"), ("Research Scripts", "recipes", "7"), ("Engine Status", "connections", "")])
+        labsMenu.insertItem(withTitle: "Show Labs", action: #selector(toggleLabs(_:)), keyEquivalent: "", at: 0).target = self
+        labsMenu.addItem(.separator())
+        addFrontendItem(to: labsMenu, title: "Qwen Assistant", command: "toggle-assistant", key: "a", modifiers: [.command, .shift])
         viewMenu.addItem(.separator())
-        addFrontendItem(to: viewMenu, title: "Qwen Assistant", command: "toggle-assistant", key: "a", modifiers: [.command, .shift])
         viewMenu.addItem(.separator())
         addNativeItem(to: viewMenu, title: "Zoom In", action: #selector(zoomIn(_:)), key: "+", modifiers: .command)
         addNativeItem(to: viewMenu, title: "Zoom Out", action: #selector(zoomOut(_:)), key: "-", modifiers: .command)
@@ -101,6 +342,7 @@ final class DesktopApp: NSObject, NSApplicationDelegate, WKUIDelegate, WKNavigat
 
         let calculationItem = NSMenuItem(title: "Calculation", action: nil, keyEquivalent: "")
         let calculationMenu = NSMenu(title: "Calculation")
+        addFrontendItem(to: calculationMenu, title: "Beginner Q-Chem Calculation", command: "qchem")
         addFrontendItem(to: calculationMenu, title: "Generate 3D", command: "generate-3d")
         addFrontendItem(to: calculationMenu, title: "Prepare ORCA", command: "orcaInput")
         calculationMenu.addItem(.separator())
@@ -119,7 +361,7 @@ final class DesktopApp: NSObject, NSApplicationDelegate, WKUIDelegate, WKNavigat
 
         let helpItem = NSMenuItem(title: "Help", action: nil, keyEquivalent: "")
         let helpMenu = NSMenu(title: "Help")
-        addFrontendItem(to: helpMenu, title: "OpenChem Guide", command: "help")
+        addFrontendItem(to: helpMenu, title: "Chem313 Guide", command: "help")
         NSApp.helpMenu = helpMenu
         helpItem.submenu = helpMenu
         menu.addItem(helpItem)
@@ -135,6 +377,23 @@ final class DesktopApp: NSObject, NSApplicationDelegate, WKUIDelegate, WKNavigat
         menu.addItem(item)
     }
 
+    @discardableResult
+    func addSectionMenu(to menu: NSMenu, section: NativeSection, items: [(String, String, String)]) -> NSMenu {
+        let item = NSMenuItem(title: section.title, action: #selector(selectNativeSection(_:)), keyEquivalent: "")
+        item.target = self
+        item.representedObject = section.rawValue
+        let submenu = NSMenu(title: section.title)
+        for (title, command, key) in items { addFrontendItem(to: submenu, title: title, command: command, key: key, modifiers: key.isEmpty ? [] : .command) }
+        item.submenu = submenu
+        menu.addItem(item)
+        return submenu
+    }
+
+    @objc func selectNativeSection(_ sender: NSMenuItem) {
+        guard let raw = sender.representedObject as? String, let section = NativeSection(rawValue: raw) else { return }
+        selectSidebar(section, sendCommand: true)
+    }
+
     func addNativeItem(to menu: NSMenu, title: String, action: Selector, key: String, modifiers: NSEvent.ModifierFlags) {
         let item = NSMenuItem(title: title, action: action, keyEquivalent: key)
         item.keyEquivalentModifierMask = modifiers
@@ -148,6 +407,9 @@ final class DesktopApp: NSObject, NSApplicationDelegate, WKUIDelegate, WKNavigat
     }
 
     func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
+        if menuItem.action == #selector(toggleLabs(_:)) {
+            menuItem.title = labsVisible ? "Hide Labs" : "Show Labs"
+        }
         if menuItem.action == #selector(sendFrontendCommand(_:)) || menuItem.action == #selector(zoomIn(_:)) || menuItem.action == #selector(zoomOut(_:)) || menuItem.action == #selector(resetZoom(_:)) {
             return hasValidatedBridge
         }
@@ -156,10 +418,33 @@ final class DesktopApp: NSObject, NSApplicationDelegate, WKUIDelegate, WKNavigat
 
     @objc func sendFrontendCommand(_ sender: NSMenuItem) {
         guard let command = sender.representedObject as? String, frontendCommands.contains(command), hasValidatedBridge else { return }
+        if let section = section(for: command) { selectSidebar(section, sendCommand: false) }
+        dispatchFrontendCommand(command)
+    }
+
+    func sendFrontendCommandNamed(_ command: String) {
+        guard frontendCommands.contains(command), hasValidatedBridge else { return }
+        if let section = section(for: command) { selectSidebar(section, sendCommand: false) }
+        dispatchFrontendCommand(command)
+    }
+
+    func dispatchFrontendCommand(_ command: String) {
         let event = "window.dispatchEvent(new CustomEvent('openchem:command',{detail:\(javaScriptLiteral(command))}))"
         web.evaluateJavaScript(event)
         menuQARoutes.append(command)
         recordMenuQA()
+    }
+
+    func section(for command: String) -> NativeSection? {
+        switch command {
+        case "qchem", "help": return .learn
+        case "structures": return .molecule
+        case "calculate", "orcaInput", "orca": return .calculate
+        case "notes", "history": return .records
+        case "science", "study", "measurements", "labs", "recipes", "connections": return .labs
+        case "toggle-assistant": return .molecule
+        default: return nil
+        }
     }
 
     @objc func zoomIn(_ sender: Any?) { guard hasValidatedBridge else { return }; web.magnification = min(web.magnification + 0.1, 3.0) }
@@ -205,8 +490,8 @@ final class DesktopApp: NSObject, NSApplicationDelegate, WKUIDelegate, WKNavigat
 
     @objc func about() {
         let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "Development"
-        let credits = "A local chemistry workbench. Structures, reviewed calculation inputs and immutable research records. Optional engines, Avogadro and Qwen require separate local installation. ORCA requires a separately licensed executable. See the distribution README and third-party notices for scope and validation limits."
-        NSApp.orderFrontStandardAboutPanel(options: [.applicationName: "OpenChem", .applicationVersion: version, .credits: NSAttributedString(string: credits)])
+        let credits = "Chem313 (formerly OpenChem). A local chemistry workbench. Structures, reviewed calculation inputs and immutable research records. Standalone builds include the core chemistry and numerical runtimes. The Qwen edition also bundles an offline base model; additional engines and Avogadro require separate local installation. ORCA requires a separately licensed executable. See the distribution README and third-party notices for scope and validation limits."
+        NSApp.orderFrontStandardAboutPanel(options: [.applicationName: "Chem313", .applicationVersion: version, .credits: NSAttributedString(string: credits)])
     }
 
     // The public shell distributes our native executable only. Dependencies and
@@ -225,7 +510,7 @@ final class DesktopApp: NSObject, NSApplicationDelegate, WKUIDelegate, WKNavigat
             if env != nil { fail("OPENCHEM_SOURCE_ROOT needs a configured OpenChem checkout. Run bash scripts/setup_public_runtime.sh there first."); return nil }
         }
         let panel = NSOpenPanel()
-        panel.title = "Choose your installed OpenChem source folder"
+        panel.title = "Choose your installed Chem313 source folder"
         panel.message = "First run bash scripts/setup_public_runtime.sh in the downloaded source folder. Then choose that folder here. The native shell does not bundle Python, engines, browser dependencies or models."
         panel.canChooseDirectories = true; panel.canChooseFiles = false; panel.allowsMultipleSelection = false
         guard panel.runModal() == .OK, let root = panel.url else { NSApp.terminate(nil); return nil }
@@ -270,7 +555,7 @@ final class DesktopApp: NSObject, NSApplicationDelegate, WKUIDelegate, WKNavigat
                           let ready = try? JSONSerialization.jsonObject(with: lineData) as? [String: Any],
                           let urlText = ready["url"] as? String, let url = URL(string: urlText), url.host == "127.0.0.1" else { return }
                     self.localURL = url
-                    self.window.contentView = self.web
+                    self.installNativeShell()
                     self.web.load(URLRequest(url: url))
                 }
             }
@@ -280,7 +565,7 @@ final class DesktopApp: NSObject, NSApplicationDelegate, WKUIDelegate, WKNavigat
     }
 
     func fail(_ text: String) {
-        let alert = NSAlert(); alert.messageText = "OpenChem needs attention"; alert.informativeText = text; alert.runModal()
+        let alert = NSAlert(); alert.messageText = "Chem313 needs attention"; alert.informativeText = text; alert.runModal()
     }
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { true }
     func applicationWillTerminate(_ notification: Notification) {
@@ -293,7 +578,17 @@ final class DesktopApp: NSObject, NSApplicationDelegate, WKUIDelegate, WKNavigat
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         guard let target = navigationAction.request.url else { decisionHandler(.cancel); return }
         if target.scheme == "about" || (target.host == "127.0.0.1" && target.port == localURL?.port) { decisionHandler(.allow) }
-        else { decisionHandler(.cancel) }
+        else {
+            if navigationAction.navigationType == .linkActivated && isEngineDocumentation(target) { NSWorkspace.shared.open(target) }
+            decisionHandler(.cancel)
+        }
+    }
+    func isEngineDocumentation(_ target: URL) -> Bool {
+        target.scheme == "https" && ["www.faccts.de", "faccts.de", "orcaforum.kofo.mpg.de", "www.q-chem.com", "q-chem.com", "manual.q-chem.com", "cccbdb.nist.gov"].contains(target.host ?? "")
+    }
+    func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
+        if navigationAction.navigationType == .linkActivated, let target = navigationAction.request.url, isEngineDocumentation(target) { NSWorkspace.shared.open(target) }
+        return nil
     }
     func webView(_ webView: WKWebView, runOpenPanelWith parameters: WKOpenPanelParameters, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping ([URL]?) -> Void) {
         let panel = NSOpenPanel(); panel.allowsMultipleSelection = parameters.allowsMultipleSelection; panel.canChooseDirectories = false
@@ -314,9 +609,55 @@ final class DesktopApp: NSObject, NSApplicationDelegate, WKUIDelegate, WKNavigat
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         guard message.frameInfo.isMainFrame, message.frameInfo.securityOrigin.host == "127.0.0.1",
               message.frameInfo.securityOrigin.port == localURL?.port,
-              let body = message.body as? [String: String], body["action"] == "save",
-              let encoded = body["base64"], let bytes = Data(base64Encoded: encoded), bytes.count <= 30_000_000,
-              let proposed = body["name"] else { return }
+              let body = message.body as? [String: Any] else { return }
+        if (body["kind"] as? String == "workspace" || body["action"] as? String == "workspace"),
+           let raw = body["section"] as? String,
+           let section = NativeSection(rawValue: raw) {
+            selectSidebar(section, sendCommand: false)
+            return
+        }
+        if body["action"] as? String == "preferences",
+           let appearance = body["appearance"] as? String, ["system", "light", "dark"].contains(appearance),
+           let started = body["started"] as? Bool {
+            if let data = try? JSONSerialization.data(withJSONObject: ["appearance": appearance, "started": started]) {
+                try? data.write(to: preferenceURL(), options: .atomic)
+                try? FileManager.default.setAttributes([.posixPermissions: 0o600], ofItemAtPath: preferenceURL().path)
+            }
+            window.appearance = appearance == "system" ? nil : NSAppearance(named: appearance == "dark" ? .darkAqua : .aqua)
+            window.effectiveAppearance.performAsCurrentDrawingAppearance {
+                self.sidebarOutline?.enclosingScrollView?.superview?.layer?.backgroundColor = self.classicChromeColor.cgColor
+            }
+            return
+        }
+        if body["action"] as? String == "choose-qchem" {
+            let panel = NSOpenPanel()
+            panel.title = "Choose your Q-Chem installation"
+            panel.message = "Choose the installation folder containing bin/qchem and qcaux. Chem313 checks it when you connect."
+            panel.canChooseFiles = false; panel.canChooseDirectories = true; panel.allowsMultipleSelection = false
+            panel.beginSheetModal(for: window) { result in
+                guard result == .OK, let target = panel.url,
+                      let data = try? JSONSerialization.data(withJSONObject: ["path": target.path]),
+                      let encoded = String(data: data, encoding: .utf8) else { return }
+                self.web.evaluateJavaScript("window.dispatchEvent(new CustomEvent('openchem:qchem-selected',{detail:(\(encoded)).path}));", completionHandler: nil)
+            }
+            return
+        }
+        if body["action"] as? String == "choose-orca" {
+            let panel = NSOpenPanel()
+            panel.title = "Choose your ORCA executable"
+            panel.message = "Choose the file named orca inside your licensed ORCA installation. Chem313 will check it before connecting."
+            panel.canChooseFiles = true; panel.canChooseDirectories = false; panel.allowsMultipleSelection = false
+            panel.beginSheetModal(for: window) { result in
+                guard result == .OK, let target = panel.url,
+                      let data = try? JSONSerialization.data(withJSONObject: ["path": target.path]),
+                      let encoded = String(data: data, encoding: .utf8) else { return }
+                self.web.evaluateJavaScript("window.dispatchEvent(new CustomEvent('openchem:orca-selected',{detail:(\(encoded)).path}));", completionHandler: nil)
+            }
+            return
+        }
+        guard body["action"] as? String == "save",
+              let encoded = body["base64"] as? String, let bytes = Data(base64Encoded: encoded), bytes.count <= 30_000_000,
+              let proposed = body["name"] as? String else { return }
         let panel = NSSavePanel(); panel.nameFieldStringValue = URL(fileURLWithPath: proposed).lastPathComponent
         panel.beginSheetModal(for: window) { result in
             guard result == .OK, let target = panel.url else { return }
@@ -330,10 +671,10 @@ final class DesktopApp: NSObject, NSApplicationDelegate, WKUIDelegate, WKNavigat
         smokeTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] timer in
             guard let self = self else { timer.invalidate(); return }
             self.smokeTicks += 1
-            self.web.evaluateJavaScript("JSON.stringify({title:document.title,connected:document.querySelector('.engine-state')?.textContent.includes('Local service connected'),formula:document.querySelector('.formula')?.textContent,editor:!!window.__openchemEditor,body:document.body.innerText.slice(0,3000),webgl:!!document.createElement('canvas').getContext('webgl2')})") { result, error in
+            self.web.evaluateJavaScript("JSON.stringify({title:document.title,connected:document.querySelector('[data-workspace-ready=true]')!==null,formula:document.querySelector('.formula')?.textContent,editor:!!window.__openchemEditor,body:document.body.innerText.slice(0,3000),webgl:!!document.createElement('canvas').getContext('webgl2')})") { result, error in
                 guard let text = result as? String, let data = text.data(using: .utf8) else { return }
                 let response = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any]
-                let workflowReady = response?["connected"] as? Bool == true && response?["editor"] as? Bool == true && response?["formula"] as? String == "C8H9NO2"
+                let workflowReady = response?["connected"] as? Bool == true && response?["editor"] as? Bool == true && response?["formula"] as? String == "H2O"
                 if workflowReady || self.smokeTicks > 90 {
                     timer.invalidate()
                     let finishSmoke = { self.completeSmoke(destination: destination, data: data) }

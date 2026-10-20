@@ -24,6 +24,24 @@ TERMINAL = {"SUCCEEDED", "FAILED", "CANCELLED", "INTERRUPTED"}
 ID_RE = re.compile(r"[0-9a-f]{32}")
 
 
+def windows_platform() -> bool:
+    return os.name == "nt"
+
+
+def worker_process_options() -> dict:
+    if windows_platform():
+        # There is no POSIX process group or rlimit API on Windows. The worker
+        # itself has no shell execution path; terminate/kill below address its
+        # single approved subprocess while wall/result limits remain enforced.
+        return {"creationflags": getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0)}
+    return {"start_new_session": True}
+
+
+def isolation_description() -> str:
+    base = "Trusted subprocess; one CPU thread, 120 s wall / 1 MB result; observed RSS, no hard memory sandbox"
+    return base if not windows_platform() else base + "; POSIX CPU/file limits unavailable on Windows"
+
+
 def utc():
     return datetime.now(timezone.utc).isoformat()
 
@@ -44,7 +62,9 @@ def operation_descriptions():
         result += bioscience()
     except ImportError:
         pass
-    return result
+    from .runtime_profile import bundled_profile
+    profile = bundled_profile()
+    return [row for row in result if row["operation"] in profile["operations"]] if profile else result
 
 
 def validated_params(params):
@@ -72,6 +92,12 @@ def validated_params(params):
 
 
 def worker_command(operation):
+    from .runtime_profile import bundled_profile
+    profile = bundled_profile()
+    if profile:
+        if operation not in profile["operations"]:
+            raise InputError("This operation is not included in the standalone app")
+        return [sys.executable, "--science-worker"], None
     from .extended_contracts import OPERATIONS as extended_operations
     if operation in OPERATIONS:
         group = "science"
@@ -181,7 +207,7 @@ class ScienceJobs:
             job = dict(id=uuid.uuid4().hex, state="QUEUED", operation=resolved["operation"], project=project,
                        created_utc=utc(), artifacts=artifacts, input_sha256=source["sha256"],
                        engine=operation_info(resolved["operation"])["engine"],
-                       isolation="Trusted subprocess; one CPU thread, 120 s wall / 110 s CPU, 1 MB result; observed RSS, no hard memory sandbox")
+                       isolation=isolation_description())
             self._persist(job)
             self.store.event(project, "science.queued", hashlib.sha256(raw).hexdigest(), artifacts,
                              dict(job_id=job["id"], operation=job["operation"], state="QUEUED"))
@@ -191,6 +217,14 @@ class ScienceJobs:
 
     @staticmethod
     def _stop(process):
+        if windows_platform():
+            try:
+                process.terminate()
+                process.wait(timeout=2)
+            except subprocess.TimeoutExpired:
+                process.kill()
+                process.wait(timeout=3)
+            return
         try:
             os.killpg(process.pid, signal.SIGTERM)
             process.wait(timeout=2)
@@ -242,7 +276,7 @@ class ScienceJobs:
                     env["PYTHONPATH"] = pythonpath
                 with (folder / "stdout.json").open("xb") as output, (folder / "stderr.log").open("xb") as errors:
                     process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=output, stderr=errors,
-                                               cwd=folder, env=env, start_new_session=True)
+                                               cwd=folder, env=env, **worker_process_options())
                     self.processes[job_id] = process
             try:
                 process.communicate(json.dumps(resolved, allow_nan=False).encode(), timeout=120)

@@ -12,7 +12,7 @@ import uuid
 
 from .validation import InputError
 from .chemistry import from_smiles, summary
-from .qwen_worker import MODEL_ID, MODEL_SHA, ADAPTER_SHA, assets
+from .qwen_worker import MODEL_ID, PUBLIC_FILES, deployment
 
 FIELDS = {'smiles','job_type','charge','multiplicity','method','basis','message'}
 
@@ -111,22 +111,22 @@ class Assistant:
         self._lock = threading.Lock()
 
     def status(self):
-        model, adapter = assets()
-        # Core is frozen under Resources/engine; worker assets use a different depth.
-        if getattr(sys, 'frozen', False):
-            root = Path(sys.executable).resolve().parent.parent/'models/qwen'
-            model, adapter = root/'model', root/'adapter'
+        # Core is under Resources/engine; the worker is under Resources/workers/qwen.
+        resources = Path(sys.executable).resolve().parent.parent if getattr(sys, 'frozen', False) else None
+        model, adapter, provenance = deployment(resources)
         command, _ = worker_command()
-        ready = Path(command[0]).is_file() and (model/'config.json').is_file() and (model/'model.safetensors-00001-of-00001.safetensors').is_file() and (adapter/'adapters.safetensors').is_file()
+        files_ready = all((model/name).is_file() for name in PUBLIC_FILES) if adapter is None else (model/'config.json').is_file() and (model/'model.safetensors-00001-of-00001.safetensors').is_file() and (adapter/'adapters.safetensors').is_file()
+        ready = Path(command[0]).is_file() and files_ready
         return {'status':'READY' if ready else 'UNAVAILABLE', 'model':MODEL_ID,
-                'detail':'Local experimental LoRA pilot: 25 updates. Drafts require review; no autonomous calculations.',
-                'adapter_sha256':ADAPTER_SHA, 'model_sha256':MODEL_SHA}
+                'detail':('Bundled 4-bit base model; no OpenChem fine-tuning. Experimental drafts require review; no autonomous calculations.' if adapter is None else 'Local experimental LoRA pilot: 25 updates. Drafts require review; no autonomous calculations.'),
+                **provenance}
 
     def propose(self, prompt):
         if not isinstance(prompt,str) or not 1 <= len(prompt.strip()) <= 4000:
             raise InputError('A prompt of 1..4000 characters is required')
-        if self.status()['status'] != 'READY':
-            raise InputError('Local Qwen worker, model or trained adapter is unavailable')
+        status = self.status()
+        if status['status'] != 'READY':
+            raise InputError('Local Qwen worker or model assets are unavailable')
         if not self._lock.acquire(blocking=False):
             raise InputError('Qwen is already drafting. Wait for that request to finish.')
         try:
@@ -142,7 +142,7 @@ class Assistant:
                     raise InputError('Local Qwen inference failed; nothing was applied')
             try:
                 result = json.loads(raw)
-                if result['model'] != MODEL_ID or result['adapter_sha256'] != ADAPTER_SHA:
+                if result['model'] != MODEL_ID or any(result.get(key) != status[key] for key in ('variant','adapter_sha256','model_sha256')):
                     raise ValueError('Worker provenance mismatch')
                 draft = validate_draft(result['raw'])
                 enforce_request(prompt,draft)
@@ -150,7 +150,7 @@ class Assistant:
                 if isinstance(exc, InputError):
                     raise
                 raise InputError('Qwen worker returned an invalid draft or provenance') from exc
-            draft.update(id=uuid.uuid4().hex, provenance={'model':MODEL_ID,'model_sha256':MODEL_SHA,'adapter_sha256':ADAPTER_SHA,'seconds':result['seconds'],'scope':'Experimental local draft, not chemical validation or a calculated result.'})
+            draft.update(id=uuid.uuid4().hex, provenance={'model':MODEL_ID,**{key:status[key] for key in ('variant','model_sha256','adapter_sha256')},'seconds':result['seconds'],'scope':'Experimental local draft, not chemical validation or a calculated result.'})
             directory = self.root/'.assistant'
             directory.mkdir(mode=0o700,parents=True,exist_ok=True)
             path = directory/f"{draft['id']}.json"

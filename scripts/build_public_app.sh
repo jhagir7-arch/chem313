@@ -10,6 +10,7 @@ fi
 mkdir -p "$OUT/Contents/MacOS" "$OUT/Contents/Resources"
 swiftc -target arm64-apple-macos14.0 -O -framework AppKit -framework WebKit desktop/OpenChem.swift -o "$OUT/Contents/MacOS/OpenChem"
 cp desktop/Info.plist "$OUT/Contents/Info.plist"
+cp desktop/OpenChem.icns "$OUT/Contents/Resources/"
 /usr/libexec/PlistBuddy -c 'Set :CFBundleIdentifier org.openchem.workbench.preview' "$OUT/Contents/Info.plist"
 /usr/libexec/PlistBuddy -c 'Add :OpenChemExternalRuntime bool true' "$OUT/Contents/Info.plist"
 cp LICENSE NOTICE THIRD_PARTY_NOTICES.md "$OUT/Contents/Resources/"

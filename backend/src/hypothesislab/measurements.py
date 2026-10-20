@@ -5,8 +5,6 @@ import io
 import math
 import warnings
 from scipy.stats import linregress
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_svg import FigureCanvasSVG
 from .validation import InputError
 
 def _parse_csv(data: str, x_column: str, y_column: str) -> tuple[list[float], list[float], int]:
@@ -60,6 +58,9 @@ def validate_csv_structure(csv: str, x_column: str, y_column: str) -> tuple[list
 
 
 def fit_csv(csv: str, x_column: str, y_column: str, x_unit: str, y_unit: str) -> tuple[dict, bytes]:
+    # Load plotting only when requested; building its font cache must not delay app launch.
+    from matplotlib.figure import Figure
+    from matplotlib.backends.backend_svg import FigureCanvasSVG
     xs, ys, column_count = _parse_csv(csv, x_column, y_column)
     with warnings.catch_warnings():
         warnings.filterwarnings("error", category=RuntimeWarning)

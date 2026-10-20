@@ -1,0 +1,5 @@
+SQLite is in the public domain.
+
+The Qwen worker's bundled libsqlite3.dylib is recorded by PyInstaller as the
+Homebrew sqlite shared library.  SQLite source and its public-domain statement
+are available from https://sqlite.org/copyright.html.

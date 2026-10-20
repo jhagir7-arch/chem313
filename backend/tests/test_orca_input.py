@@ -29,7 +29,7 @@ def test_prepared_input_binds_exact_generated_geometry_settings_and_artifacts(tm
     params = request()
     preview = engine.preview("orca.prepare_input", params, "ethanol")
     assert preview["prepared_input"].startswith("! B3LYP def2-SVP Opt Freq\n\n* xyz 0 1\n")
-    assert preview["checks"] == {"has_3d_conformer": True, "all_coordinates_finite": True, "all_hydrogens_explicit": True, "common_main_group_scope": True, "charge_spin_consistent": True}
+    assert preview["checks"] == {"has_3d_conformer": True, "all_coordinates_finite": True, "all_hydrogens_explicit": True, "common_main_group_scope": True, "charge_spin_consistent": True, "inchi_round_trip": True}
     assert preview["electron_count"] == 26
     assert not (tmp_path / "ethanol").exists()
     with pytest.raises(InputError):

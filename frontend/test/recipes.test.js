@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {DEFAULT_RECIPE, parseRecipeSource, recipeSource} from '../src/recipeSchema.mjs';
 
-const allowed = new Set(['pint.convert', 'numpy.summary']);
+const allowed = new Set(['scipy.line', 'numpy.summary']);
 const source = () => recipeSource(DEFAULT_RECIPE);
 
 test('accepts a bounded declarative recipe with allowed operations', () => {

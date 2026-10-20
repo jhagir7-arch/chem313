@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hypothesislab-local-core"
-version = "1.0.0-preview.1"
+version = "1.0.0-preview.5"
 description = "Local-first, auditable chemistry tool service and immutable artifact store"
 requires-python = ">=3.11"
 dependencies = ["rdkit>=2025.9.4,<2027", "numpy>=2,<3", "scipy>=1.14,<2", "matplotlib>=3.9,<4", "fastapi>=0.115,<1", "uvicorn>=0.30,<1"]

@@ -9,6 +9,52 @@ export function formula(atoms = []) {
   });
   return order.map(el => el + (counts.get(el) > 1 ? counts.get(el) : '')).join('');
 }
+/**
+ * Describe what the reader extracted without promoting an output to a
+ * scientifically validated result. This is deliberately separate from
+ * comparisonIssues(): a single imported file still deserves a clear, safe
+ * review path before anyone attempts a comparison.
+ */
+export function reviewSummary(record) {
+  const missing = [];
+  if (!record.recognized) missing.push('a recognizable ORCA output marker');
+  if (record.termination !== 'normal') missing.push('an explicit normal termination');
+  if (!record.energy) missing.push('a final electronic energy');
+  if (!record.geometry) missing.push('a complete Cartesian geometry');
+  if (!record.charge) missing.push('a printed charge');
+  if (!record.multiplicity) missing.push('a printed multiplicity');
+  if (!record.version) missing.push('a printed ORCA version');
+  if (!record.keywords?.length) missing.push('echoed input keywords');
+
+  const warningChecks = record.checks.filter((check) => check.severity === 'warning');
+  const unresolved = [
+    ...missing,
+    ...warningChecks.map((check) => check.title),
+    ...(record.multiJob ? ['a single, unambiguous ORCA job'] : []),
+    ...(record.optimization === 'unknown' ? ['an explicit optimization outcome'] : []),
+    ...(record.scf === 'unknown' ? ['an explicit SCF outcome'] : []),
+    ...(record.scf === 'not_converged' ? ['SCF convergence'] : []),
+    ...(record.optimization === 'not_converged' ? ['geometry optimization convergence'] : []),
+  ];
+  const uniqueUnresolved = [...new Set(unresolved)];
+  const evidenceCount = [record.version, record.termination === 'normal', record.energy, record.geometry, record.charge, record.multiplicity, record.keywords?.length].filter(Boolean).length;
+
+  if (!record.recognized) return {
+    state: 'hold', evidenceCount, missing: uniqueUnresolved,
+    title: 'Review on hold',
+    nextAction: 'Confirm that this is a complete ORCA output file. This reader does not infer results from unrecognized text.',
+  };
+  if (uniqueUnresolved.length) return {
+    state: 'review', evidenceCount, missing: uniqueUnresolved,
+    title: 'Review required',
+    nextAction: 'Inspect the printed source and resolve the listed gaps before using extracted values in a comparison or conclusion.',
+  };
+  return {
+    state: 'inspect', evidenceCount, missing: [],
+    title: 'Evidence extracted — inspect before use',
+    nextAction: 'Review the printed facts and source lines. Extracted evidence does not validate the calculation or chemical interpretation.',
+  };
+}
 export function comparisonIssues(results) {
   if (results.length < 2) return ['Import at least two calculations.'];
   const issues = new Set();
@@ -20,6 +66,7 @@ export function comparisonIssues(results) {
     if (r.termination !== 'normal') issues.add('Every calculation needs an explicit normal termination.');
     if (!r.energy) issues.add('Every calculation needs a final electronic energy.');
     if (!r.geometry) issues.add('Every calculation needs a complete geometry.');
+    if (r.scf === 'unknown') issues.add('SCF convergence is unresolved.');
     if (r.scf === 'not_converged' || r.optimization === 'not_converged') issues.add('A calculation reports non-convergence.');
     if (r.optimization === 'unknown') issues.add('Optimization convergence is unresolved.');
     if (!r.charge || !r.multiplicity) issues.add('Charge and multiplicity must be printed in every file.');

@@ -1,0 +1,4 @@
+intersection-observer 0.12.2 declares SPDX license Apache-2.0 in its installed package.json.
+Exact npm publication gitHead: a7874945a27061d01e4076b8aae8b30abc756e97.
+Its shipped source files retain the Google 2016 W3C notice in SOURCE-HEADER-W3C.txt;
+both that notice and the declared Apache-2.0 license text are redistributed.

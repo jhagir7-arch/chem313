@@ -1,0 +1,6 @@
+import React,{useState} from 'react';
+import {searchFeatures} from './featureIndex.mjs';
+export default function FeatureIndex({onNavigate}:{onNavigate:(id:any)=>void}){
+ const [query,setQuery]=useState('');const rows=searchFeatures(query);
+ return <section className="feature-index" aria-labelledby="feature-index-title"><h2 id="feature-index-title">Feature index</h2><p>Find a task and check what is included. Connecting a service does not mean a calculation has been validated.</p><label htmlFor="feature-search">Search tasks, engines or feature IDs</label><input id="feature-search" type="search" value={query} onChange={e=>setQuery(e.target.value)} placeholder="For example: atoms, energy, ORCA"/><p role="status">{rows.length} features</p><table><caption>Chem313 feature scope</caption><thead><tr><th scope="col">ID / task</th><th scope="col">Availability and limits</th><th scope="col">Open</th></tr></thead><tbody>{rows.map(row=><tr key={row.id}><th scope="row"><code>{row.id}</code><br/>{row.title}</th><td>{row.scope}</td><td><button type="button" className="secondary" onClick={()=>onNavigate(row.workspace)} aria-label={'Open '+row.title}>Open</button></td></tr>)}</tbody></table>{!rows.length&&<p>No matching task. Try “shape” or “input”.</p>}</section>;
+}

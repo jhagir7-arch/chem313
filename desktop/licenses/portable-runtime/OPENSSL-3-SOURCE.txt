@@ -1,0 +1,14 @@
+OpenSSL 3.x runtime notice
+
+The bundled libcrypto-3 and libssl-3 payloads are only mapped when
+PyInstaller records their source under the selected official CPython Windows
+runtime.  OpenSSL 3 is licensed under Apache License 2.0.
+
+Upstream license source:
+https://raw.githubusercontent.com/openssl/openssl/openssl-3.0.16/LICENSE.txt
+SHA-256 of retrieved upstream LICENSE.txt:
+7d5450cb2d142651b8afa315b5f238efc805dad827d91ba367d8516bc9d49e7a
+
+The complete Apache License 2.0 text is retained in this distribution as
+LICENSE.  This source record identifies the OpenSSL runtime attribution; it
+does not assert that a different OpenSSL version has the same terms.

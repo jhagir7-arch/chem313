@@ -117,3 +117,42 @@ def test_durable_state_recovers_finished_and_interrupted_without_replay(tmp_path
     recovered=OrcaRuntime(store,runtime.executable)
     assert recovered.status('a'*32)['state']=='INTERRUPTED'
     assert recovered._active is None
+
+
+def test_discover_executables_is_bounded_deduplicated_and_never_probes(tmp_path, monkeypatch):
+    from hypothesislab import orca_runtime
+
+    home = tmp_path / "home"
+    installation = home / "Applications" / "ORCA" / "orca"
+    installation.parent.mkdir(parents=True)
+    installation.write_text("#!/bin/sh\nexit 99\n")
+    installation.chmod(0o700)
+    duplicate = home / "software" / "orca"
+    duplicate.parent.mkdir(parents=True)
+    duplicate.symlink_to(installation)
+    ignored = home / "unrelated" / "orca"
+    ignored.parent.mkdir(parents=True)
+    ignored.write_text("#!/bin/sh\nexit 0\n")
+    ignored.chmod(0o700)
+    monkeypatch.delenv("OPENCHEM_ORCA_EXECUTABLE", raising=False)
+    monkeypatch.setattr(orca_runtime.shutil, "which", lambda name: str(installation))
+    monkeypatch.setattr(orca_runtime.subprocess, "run", lambda *args, **kwargs: pytest.fail("discovery must not probe ORCA"))
+
+    assert orca_runtime.discover_executables(home=home) == [installation.resolve()]
+    assert ignored.resolve() not in orca_runtime.discover_executables(home=home)
+
+
+def test_discover_executables_prefers_explicit_configured_path(tmp_path, monkeypatch):
+    from hypothesislab import orca_runtime
+
+    configured = tmp_path / "configured-orca"
+    configured.write_text("#!/bin/sh\nexit 0\n")
+    configured.chmod(0o700)
+    discovered = tmp_path / "home" / "orca" / "orca"
+    discovered.parent.mkdir(parents=True)
+    discovered.write_text("#!/bin/sh\nexit 0\n")
+    discovered.chmod(0o700)
+    monkeypatch.delenv("OPENCHEM_ORCA_EXECUTABLE", raising=False)
+    monkeypatch.setattr(orca_runtime.shutil, "which", lambda name: None)
+
+    assert orca_runtime.discover_executables(configured, home=tmp_path / "home") == [configured.resolve(), discovered.resolve()]

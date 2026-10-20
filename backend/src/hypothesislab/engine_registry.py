@@ -109,6 +109,10 @@ def pending_runtime(entry, probe):
 
 
 def manifest():
+    from .runtime_profile import bundled_profile, bundled_manifest
+    profile = bundled_profile()
+    if profile:
+        return bundled_manifest(profile)
     catalog = read("ENGINE_CATALOG.json", None)
     if catalog is None:
         catalog = read("registry/ENGINE_CATALOG.json", _public_core_catalog())

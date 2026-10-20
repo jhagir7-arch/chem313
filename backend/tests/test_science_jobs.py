@@ -36,7 +36,10 @@ def fixture_worker_command(operation):
     return [sys.executable, "-c", script], None
 
 
-def test_science_requires_bound_single_use_approval_and_rejects_invalid_inputs(tmp_path):
+def test_science_requires_bound_single_use_approval_and_rejects_invalid_inputs(tmp_path, monkeypatch):
+    # Approval validation must also run on clean hosts without optional engines.
+    monkeypatch.setattr("hypothesislab.workbench.worker_command", fixture_worker_command)
+    monkeypatch.setattr("hypothesislab.science_jobs.worker_command", fixture_worker_command)
     engine = WorkbenchEngine(tmp_path)
     try:
         params = {"operation": "numpy.summary", "inputs": {"values": [1.0, 2.0], "unit": "a.u."}}

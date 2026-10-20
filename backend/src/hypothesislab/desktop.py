@@ -11,19 +11,33 @@ import sys
 from datetime import datetime, timezone
 
 
-def main():
+def platform_data_dir(*, environ=None, system=None, home=None) -> Path:
+    """Return the per-user data directory without assuming macOS paths."""
+    environ = os.environ if environ is None else environ
+    system = sys.platform if system is None else system
+    home_path = Path.home() if home is None else Path(home)
+    if system.startswith("win"):
+        local = environ.get("LOCALAPPDATA")
+        return Path(local) / "OpenChem" if local else home_path / "AppData" / "Local" / "OpenChem"
+    if system.startswith("linux"):
+        xdg = environ.get("XDG_DATA_HOME")
+        return Path(xdg) / "OpenChem" if xdg else home_path / ".local" / "share" / "OpenChem"
+    return home_path / "Library" / "Application Support" / "OpenChem"
+
+
+def main(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument("--data")
     parser.add_argument("--ui")
     parser.add_argument("--port", type=int, default=0)
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
     if args.data:
         os.environ["HYPOTHESISLAB_DATA"] = args.data
     else:
-        os.environ.setdefault("HYPOTHESISLAB_DATA", str(Path.home()/"Library/Application Support/OpenChem"))
+        os.environ.setdefault("HYPOTHESISLAB_DATA", str(platform_data_dir()))
     os.environ.setdefault("MPLCONFIGDIR", str(Path(os.environ["HYPOTHESISLAB_DATA"])/".matplotlib"))
 
-    from . import api
+    from . import api, __version__
     from .workbench import WorkbenchEngine
     from .validation import InputError, PROJECT_RE
     from fastapi import Request, HTTPException, Security
@@ -37,6 +51,10 @@ def main():
     register(app, api)
     from .calculation_api import register as register_calculations
     register_calculations(app, api)
+    from .study_api import register as register_studies
+    register_studies(app, api)
+    from .qchem_api import register as register_qchem
+    register_qchem(app, api)
     from .assistant import Assistant
     from .orca_runtime import executable_status
 
@@ -49,7 +67,7 @@ def main():
         for p in sorted(api.ROOT.iterdir()):
             if not p.is_symlink() and p.is_dir() and PROJECT_RE.fullmatch(p.name):
                 projects.append(p.name)
-        return {"name": "OpenChem", "version": "1.0.0-preview.1", "projects": projects,
+        return {"name": "OpenChem", "version": __version__, "projects": projects,
                 "data_directory": str(api.ROOT), "engines": {"rdkit": rdBase.rdkitVersion,
                 "scipy": scipy.__version__, "ketcher": "3.18.0"},
                 "avogadro": api.engine.avogadro.status(), "orca_engine": executable_status(api.engine.orca.executable, discover=False),

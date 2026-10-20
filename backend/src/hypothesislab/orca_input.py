@@ -10,6 +10,7 @@ import math
 from typing import Any
 
 from .chemistry import from_molfile, mol_record_info
+from .identity import identity_check, mol_inchi
 from .validation import InputError
 
 
@@ -83,6 +84,10 @@ def prepare_orca_input(params: dict[str, Any]) -> dict[str, Any]:
     electrons = sum(atom.GetAtomicNum() for atom in mol.GetAtoms()) - charge
     if electrons <= 0 or multiplicity > electrons + 1 or (electrons + multiplicity) % 2 != 1:
         raise InputError("Charge and multiplicity are incompatible with this molecular electron count")
+    formal_charge = sum(atom.GetFormalCharge() for atom in mol.GetAtoms())
+    identity = identity_check(coordinates, expected_inchi=mol_inchi(mol), charge=formal_charge)
+    if identity["status"] == "mismatch":
+        raise InputError(identity["detail"])
 
     keywords = [method]
     if basis != "built-in":
@@ -94,7 +99,8 @@ def prepare_orca_input(params: dict[str, Any]) -> dict[str, Any]:
     rendered = "\n".join(lines)
     geometry_bytes = geometry_sdf.encode("utf-8")
     warnings = []
-    formal_charge = sum(atom.GetFormalCharge() for atom in mol.GetAtoms())
+    if identity["status"] == "inconclusive":
+        warnings.append("Identity check inconclusive: " + identity["detail"])
     if formal_charge != charge:
         warnings.append("Requested charge differs from the drawn structure's formal charge; review the intended protonation and electronic state.")
     if multiplicity != 1:
@@ -105,7 +111,8 @@ def prepare_orca_input(params: dict[str, Any]) -> dict[str, Any]:
         "input_sha256": hashlib.sha256(rendered.encode("utf-8")).hexdigest(),
         "atom_count": mol.GetNumAtoms(),
         "coordinate_units": "angstrom",
-        "coordinate_checks": {"has_3d_conformer": True, "all_coordinates_finite": True, "all_hydrogens_explicit": True, "common_main_group_scope": True, "charge_spin_consistent": True},
+        "coordinate_checks": {"has_3d_conformer": True, "all_coordinates_finite": True, "all_hydrogens_explicit": True, "common_main_group_scope": True, "charge_spin_consistent": True, "inchi_round_trip": identity["status"] == "match"},
+        "identity_check": identity,
         "electron_count": electrons,
         "settings": {"job_type": job_type, "charge": charge, "multiplicity": multiplicity, "method": method, "basis": basis},
         "source_input_format": record["input_format"],

@@ -1,57 +1,106 @@
-
 # Chem313
 
-A local molecular study workbench for beginners: build a small molecule, inspect its atoms, compare starting shapes, and prepare a calculation input you can review and keep.
+Chem313 is a local molecular study workbench for beginners. Build a small
+molecule, count its atoms, compare starting shapes, and prepare a calculation
+input you can inspect and keep.
 
-Formerly OpenChem. Independent of [Mariewelt/OpenChem](https://github.com/Mariewelt/OpenChem). The repository URL stays the same so existing links continue to work.
+Formerly called OpenChem. This project is independent of
+[Mariewelt/OpenChem](https://github.com/Mariewelt/OpenChem); the repository URL
+stays the same so existing links continue to work.
 
-## Download the current preview
+## Download
 
-[**Chem313 1.0.0-preview.4 — downloads, source and verification**](https://github.com/jhagir7-arch/openchem/releases/tag/v1.0.0-preview.4)
+[Chem313 1.0.0-preview.5: Apple Silicon Mac, source and checks](https://github.com/jhagir7-arch/openchem/releases/tag/v1.0.0-preview.5). No Python or Node setup for the Mac download.
 
-The Apple Silicon Mac DMG is **110 MB** and includes Python, RDKit, NumPy, SciPy, Matplotlib and the prebuilt interface. Drag Chem313.app to Applications; no Python or Node setup. macOS 14+ deployment target, tested on macOS 27 only. This research preview is **ad-hoc signed and unnotarized**; macOS may block an Internet download. Verify the release SHA-256 sums before opening.
+## What works in preview.5
 
-## A clearer molecular workspace
+- Classic white, black and neutral grey desktop controls, square panels and a native sidebar. No beige or decorative gradients.
+- Four core sections organise the app: **Learn**, **Molecule**, **Calculate**,
+  and **Records**. The native macOS shell supplies the same section sidebar;
+  optional engineering tools remain under Labs.
+- Molecule supports Ketcher drawing, RDKit inspection, explicit-hydrogen 3D
+  generation, and real MMFF/UFF force-field calculations. Shape-chart values
+  compare starting geometries of one molecule within one force field.
+- Calculate has an ORCA/Q-Chem engine setting. It prepares reviewed input and
+  configuration for separately licensed installations; choosing an engine does
+  not establish that it is installed or that a job ran.
+- The guided Q-Chem lesson presents formula, charge, multiplicity, and an
+  InChI identity state. “Identity verified” appears only for a server-reported
+  match; it does not validate geometry quality, electronic state, or method.
+- A recorded terminal result can show an electronic energy in Eh, kJ/mol, or
+  eV. The [NIST CCCBDB](https://cccbdb.nist.gov/) link is a reference lookup:
+  Chem313 makes no direct NIST comparison or experimental-validation claim.
+- Local records retain reviewed inputs and outputs. Qwen remains optional and
+  experimental; no model is bundled or downloaded for the core workflow.
 
-- **Learn:** a guided input lesson, visible answer cards with feedback, and a different-molecule practice task.
-- **Molecule:** draw, inspect atoms, generate 3D starting geometry and compare shapes with a relative-energy chart.
-- **Calculate:** prepare → run → result in one section; ORCA or Q-Chem is a setting. Automatic ORCA discovery checks common installation locations.
-- **Records:** local project files, notebook and saved calculation artifacts.
-- **Labs:** additional tools, hidden by default.
+**Scientific boundary:** the locally evidenced calculation is RDKit ETKDG plus
+MMFF/UFF force-field conformer generation and energy evaluation. It is not a
+quantum result, an experimental measurement, or evidence of a global minimum.
+No actual ORCA or Q-Chem quantum-chemistry run is recorded for this candidate.
 
-The Mac app now uses an AppKit sidebar and toolbar, monochrome light/dark appearance and first-launch choices. Molecule context, coordinate-derived identity checks and five workflow stages remain visible. Result cards use plain status, explicit real/simulated provenance, Eh/kJ/mol/eV units, one Save action and a downloads menu. Optional Qwen help has its own panel.
+## Screens from the compiled Mac app
 
-## What is verified, and what is pending
+![Real local force-field shape comparison](https://github.com/jhagir7-arch/openchem/releases/download/v1.0.0-preview.5/Chem313-shape-chart.png)
 
-Real bundled RDKit force-field calculations generated water, methane, ethanol and five butane shape samples. The compiled Mac workflow verified identity checks, answer feedback, chart/3D selection and saved interface preferences. **42 frontend tests and 59 focused backend tests passed**, along with the frozen scientific package, 243-file native-library audit and bundled-notice gate. The attached QA record describes the scope.
+![Checked input preparation; no quantum run](https://github.com/jhagir7-arch/openchem/releases/download/v1.0.0-preview.5/Chem313-input-review.png)
 
-A clearly labelled simulated browser-only fixture tested result presentation; it did not run a quantum engine. **No real ORCA or Q-Chem quantum calculation has completed here.** Both require separately licensed installations. Force-field energies do not establish reactions, experimental properties or medication predictions. NIST CCCBDB is a lookup link; no unmatched reference energy is shown. Qwen is optional, experimental and **not bundled**. Independent learner and scientific validation remain pending.
+## Downloads and platforms
 
-Windows/Linux native frozen-workflow CI passed on the previous source candidate: [run 39366818959](https://github.com/jhagir7-arch/openchem/actions/runs/39366818959). Preview.4 has not yet been verified there. Compiled downloads remain withheld pending Microsoft runtime redistribution review on Windows and exact GCC/libquadmath source obligations on Linux. Portable build scripts are included; a Mac binary cannot be converted into a Windows or Linux app.
+The preview.5 candidate uses a standalone Apple Silicon Mac build with Python,
+RDKit, NumPy, SciPy, Matplotlib, and the prebuilt interface. See [installation
+and scope](release/standalone/README.txt). It is ad-hoc signed and **not Apple
+Developer ID signed or notarized**; macOS may block an Internet download.
 
-## Corresponding source and project index
+Native Windows and Linux CI previously passed [run
+39366818959](https://github.com/jhagir7-arch/openchem/actions/runs/39366818959),
+but binaries are withheld while redistribution and license gates remain
+unresolved. They are not downloadable products. See [portable
+builds](release/portable/README.txt).
 
-Use [**Chem313-1.0.0-preview.4-Source.zip**](https://github.com/jhagir7-arch/openchem/releases/download/v1.0.0-preview.4/Chem313-1.0.0-preview.4-Source.zip) for this build's corresponding code, locks, build scripts, notices and verification record.
+## Try the beginner workflow
 
-Start with **PROJECT_INDEX.md** inside that ZIP. It maps the architecture and each feature to code, tests and current limits. The in-app feature directory searches the same capability set. This is project navigation, not RAG.
+1. In **Molecule**, draw water, methane, or ethanol and inspect the formula.
+2. Generate a starting geometry when appropriate; interpret chart values only
+   as force-field comparisons for that molecule.
+3. In **Learn**, complete the Q-Chem input prompts and review the InChI identity
+   state before export.
+4. In **Calculate**, choose ORCA or Q-Chem, configure a licensed local engine,
+   and read a result only after normal termination and SCF convergence are
+   recorded.
+5. In **Records**, save the reviewed input, output, and result metadata.
 
-| In the source ZIP | Purpose |
-| --- | --- |
-| PROJECT_INDEX.md | Overall architecture and feature-to-code-to-test map |
-| frontend/src | Interface and feature catalog |
-| backend/src/hypothesislab | Local API, chemistry validation and engine runtimes |
-| desktop | AppKit shell and portable launcher |
-| scripts | Builds, packaging, index validation and compiled-app QA |
-| release/standalone/BUILDING.md | Mac build and signing guide |
-| release/portable/README.txt | Windows/Linux build scope |
-| release/public-source/VERIFICATION.json | Recorded verification and limits |
+## Build and verify
 
-Run `python3 scripts/check_project_index.py` to validate index links and feature IDs.
+Maintainers need Python 3.13, Node 24, and the platform build tools. End users
+of a standalone package do not.
 
-**The repository application tree still contains the earlier preview.1 baseline.** GitHub's automatic Source code archives follow the tag commit; use the specifically named preview.4 Source.zip attachment for this binary. Private correspondence, user projects, model weights, training data and private adapters are excluded.
+```sh
+bash scripts/setup_public_runtime.sh
+npm --prefix frontend test
+npm --prefix frontend run build
+python3 scripts/check_project_index.py
+bash scripts/build_standalone_app.sh dist/chem313/Chem313.app
+.venv/bin/python scripts/test_standalone_package.py dist/chem313/Chem313.app build/chem313/api-check.json
+.venv/bin/python scripts/audit_standalone_binary.py dist/chem313/Chem313.app build/chem313/binary-audit.json
+```
 
-## Feedback and license
+See [Mac build instructions](release/standalone/BUILDING.md). Existing local
+project data stays in the `OpenChem` application-support folder for
+compatibility. Renaming the product does not migrate or erase it.
 
-Use [GitHub Issues](https://github.com/jhagir7-arch/openchem/issues) for confusing steps, reproducible bugs or classroom tasks you need. Please omit private research data and license credentials.
+## Build this with us
 
-Project-originated code and documentation use [Apache-2.0](LICENSE). Third-party components retain their own terms; consult the source snapshot's NOTICE, THIRD_PARTY_NOTICES.md and SOURCE_ORIGIN.md. Proprietary engine binaries are excluded.
+Chem313 is a community research preview. Start with [CONTRIBUTING.md](CONTRIBUTING.md), the [community guide](docs/COMMUNITY.md), and [PROJECT_INDEX.md](PROJECT_INDEX.md). Beginner walkthroughs, keyboard/accessibility checks, chemistry review and focused code changes are welcome. Use GitHub Issues for public feedback; no private email is published.
+
+## Feedback, provenance and license
+
+This is a research preview. Report reproducible bugs, confusing steps, or
+useful classroom tasks through [GitHub Issues](https://github.com/jhagir7-arch/openchem/issues).
+Do not include private research data or license credentials.
+
+Project-originated code and documentation are under [Apache-2.0](LICENSE).
+Third-party components retain their own terms. See [NOTICE](NOTICE),
+[third-party notices](THIRD_PARTY_NOTICES.md), [source origin](SOURCE_ORIGIN.md),
+[release scope](PUBLICATION_STATUS.md), [contributing](CONTRIBUTING.md), and
+[security](SECURITY.md). Proprietary engine binaries, private training data,
+and adapters are excluded.

@@ -1,0 +1,9 @@
+SQLite public-domain notice
+
+All of the code and documentation in SQLite has been dedicated to the public
+domain by the authors. All code authors, and representatives of the companies
+they work for, have signed affidavits dedicating their contributions to the
+public domain.
+
+Upstream source: https://www.sqlite.org/copyright.html
+SHA-256 of retrieved upstream page: 44ca9f793055c8e32fc65f65a4f5bcf813a33f5bdaaa084067dd617a4ed3cc70

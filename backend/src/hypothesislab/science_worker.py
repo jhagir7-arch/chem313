@@ -5,12 +5,34 @@ import io
 import json
 import math
 import os
-import resource
 import sys
 import time
 from .science_contracts import OPERATIONS, validate_operation
 
+try:
+    import resource
+except ImportError:  # Windows has no POSIX rlimit API.
+    resource = None
+
 DISTRIBUTIONS={'PymatgenCore':'pymatgen-core','ROCratePy':'rocrate','ORDschema':'ord-schema','Biopython':'biopython'}
+
+
+def resource_limits() -> dict:
+    if resource is None:
+        return {'cpu': 'UNAVAILABLE_ON_PLATFORM', 'file_size': 'UNAVAILABLE_ON_PLATFORM'}
+    resource.setrlimit(resource.RLIMIT_CPU, (110, 115))
+    resource.setrlimit(resource.RLIMIT_FSIZE, (1_500_000, 1_500_000))
+    return {'cpu': 'POSIX_RLIMIT_ENFORCED', 'file_size': 'POSIX_RLIMIT_ENFORCED'}
+
+
+def resource_usage() -> tuple[float | None, int | None]:
+    if resource is None:
+        return None, None
+    usage = resource.getrusage(resource.RUSAGE_SELF)
+    # macOS reports bytes; Linux reports KiB. Preserve the public bytes field.
+    max_rss_bytes = usage.ru_maxrss * 1024 if sys.platform.startswith('linux') else usage.ru_maxrss
+    return usage.ru_utime, max_rss_bytes
+
 def run(op,p):
     if op=='numpy.summary':
         import numpy as np
@@ -104,15 +126,17 @@ def main():
     start=time.monotonic()
     for key in ('OMP_NUM_THREADS','OPENBLAS_NUM_THREADS','MKL_NUM_THREADS','NUMEXPR_NUM_THREADS','RAYON_NUM_THREADS','POLARS_MAX_THREADS','VECLIB_MAXIMUM_THREADS'):
         os.environ[key]='1'
-    # CPU/file descriptor/output caps; this is process isolation, not an OS sandbox.
-    resource.setrlimit(resource.RLIMIT_CPU,(110,115));resource.setrlimit(resource.RLIMIT_FSIZE,(1500000,1500000))
+    # The parent enforces wall time and result acceptance size on every OS.
+    # POSIX CPU/file limits add defense in depth where the platform provides them.
+    limits = resource_limits()
     try:
         raw=sys.stdin.buffer.read(250001)
         if len(raw)>250000:raise ValueError('Input exceeds 250 KB')
         request=json.loads(raw);op=request['operation'];p=validate_operation(op,request['inputs'])
         with contextlib.redirect_stdout(sys.stderr):result=run(op,p)
         engine=OPERATIONS[op][0];dist=DISTRIBUTIONS.get(engine,engine)
-        result=dict(schema='openchem.science.result.v1',operation=op,engine=engine,version=metadata.version(dist),output=result,units=OPERATIONS[op][3],limitations=OPERATIONS[op][4],resources=dict(wall_seconds=time.monotonic()-start,user_cpu_seconds=resource.getrusage(resource.RUSAGE_SELF).ru_utime,max_rss_bytes=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,gpu=False,threads=1))
+        user_cpu_seconds, max_rss_bytes = resource_usage()
+        result=dict(schema='openchem.science.result.v1',operation=op,engine=engine,version=metadata.version(dist),output=result,units=OPERATIONS[op][3],limitations=OPERATIONS[op][4],resources=dict(wall_seconds=time.monotonic()-start,user_cpu_seconds=user_cpu_seconds,max_rss_bytes=max_rss_bytes,gpu=False,threads=1,limits=limits))
         encoded=json.dumps(result,allow_nan=False)
         if len(encoded.encode())>1000000:raise ValueError('Result exceeds 1 MB cap')
         print(encoded)

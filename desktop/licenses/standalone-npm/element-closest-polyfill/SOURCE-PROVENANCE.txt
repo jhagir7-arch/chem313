@@ -1,0 +1,4 @@
+element-closest-polyfill 1.0.7 declares SPDX license ISC in its installed package.json.
+Exact npm publication gitHead: 3163c54cfe6789bf4eadcffe73689476eeb0dd83.
+The corresponding upstream tree and npm tarball contain no separate license notice file;
+the ISC grant is retained here without inventing a copyright holder.

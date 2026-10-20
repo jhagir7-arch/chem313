@@ -4,4 +4,6 @@ import App from './App';
 import 'ketcher-react/dist/index.css';
 import './science.css';
 import './styles.css';
+import './workspace-shell.css';
+import './classic-desktop.css';
 createRoot(document.getElementById('root')!).render(<React.StrictMode><App/></React.StrictMode>);

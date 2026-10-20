@@ -13,6 +13,7 @@ from pathlib import Path
 import re
 import select
 import signal
+import shutil
 import stat
 import subprocess
 import tempfile
@@ -56,6 +57,48 @@ def configured_executable(root: Path | None = None) -> Path | None:
     if not stat.S_ISREG(info.st_mode) or not os.access(candidate, os.X_OK):
         raise InputError("Configured ORCA executable is not an executable regular file")
     return candidate.resolve()
+
+
+def discover_executables(preferred: Path | None = None, *, home: Path | None = None) -> list[Path]:
+    """Return executable candidates from a fixed local list without probing them.
+
+    This deliberately examines exact paths only.  It does not walk installation
+    trees, run a version command, or write configuration.  Resolved paths make
+    duplicate PATH and installation entries deterministic while requiring the
+    final target to be an executable regular file.
+    """
+    user_home = home or Path.home()
+    raw_candidates: list[Path] = []
+    if preferred is not None:
+        raw_candidates.append(preferred)
+    configured = os.environ.get("OPENCHEM_ORCA_EXECUTABLE")
+    if configured:
+        raw_candidates.append(Path(configured).expanduser())
+    located = shutil.which("orca")
+    if located:
+        raw_candidates.append(Path(located))
+    raw_candidates.extend([
+        user_home / "Applications" / "orca",
+        user_home / "Applications" / "ORCA" / "orca",
+        Path("/Applications") / "orca",
+        Path("/Applications") / "ORCA" / "orca",
+        user_home / "orca" / "orca",
+        user_home / "software" / "orca",
+        user_home / "software" / "ORCA" / "orca",
+    ])
+    found: list[Path] = []
+    seen: set[Path] = set()
+    for candidate in raw_candidates:
+        try:
+            resolved = candidate.resolve(strict=True)
+            info = resolved.stat()
+        except OSError:
+            continue
+        if not stat.S_ISREG(info.st_mode) or not os.access(resolved, os.X_OK) or resolved in seen:
+            continue
+        seen.add(resolved)
+        found.append(resolved)
+    return found
 
 
 def executable_status(executable: Path | None = None, *, discover: bool = True) -> dict[str, Any]:
