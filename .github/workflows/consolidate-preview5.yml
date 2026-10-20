@@ -22,7 +22,7 @@ jobs:
           set -euo pipefail
           release_id=$(gh api repos/jhagir7-arch/openchem/releases --jq '.[] | select(.name == "Chem313 preview.6 — your first real molecule calculation") | .id')
           test -n "$release_id"
-          asset_id=$(gh api "repos/jhagir7-arch/openchem/releases/$release_id/assets" --jq '.[] | select(.name == "Chem313-1.0.0-preview.6-Source.zip") | .id')
+          asset_id=$(gh api "repos/jhagir7-arch/openchem/releases/$release_id/assets" --jq '.[] | select(.name == "Chem313-1.0.0-preview.6-Source-portable-r3.zip") | .id')
           test -n "$asset_id"
           gh api -H 'Accept: application/octet-stream' "repos/jhagir7-arch/openchem/releases/assets/$asset_id" > /tmp/chem313-source.zip
       - name: Verify fixed checksum, safe paths and every declared file before copying
@@ -30,15 +30,15 @@ jobs:
         run: |
           import hashlib, json, pathlib, stat, zipfile
           archive = pathlib.Path('/tmp/chem313-source.zip')
-          assert hashlib.sha256(archive.read_bytes()).hexdigest() == 'f491539359badde6fc95d6ef148cf9b7a0cfeb3bf24594de6b2cded57009446c'
+          assert hashlib.sha256(archive.read_bytes()).hexdigest() == '278680f6f0a263dd85355eda26acaa3948cd48c01ac956c6327ac7902c62667c'
           with zipfile.ZipFile(archive) as z:
               assert z.testzip() is None
               assert sum(i.file_size for i in z.infolist()) < 50_000_000
-              prefix = 'Chem313-1.0.0-preview.6-Source/'
+              prefix = 'Chem313-1.0.0-preview.6-Source-portable-r3/'
               manifest = json.loads(z.read(prefix + 'BUNDLE_MANIFEST.json'))
               assert manifest['code_version'] == '1.0.0-preview.6'
               rows = manifest['files']
-              assert len(rows) == 290
+              assert len(rows) == 292
               declared = {prefix + r['path'] for r in rows} | {prefix + 'BUNDLE_MANIFEST.json'}
               assert set(z.namelist()) == declared
               staged = []
@@ -67,7 +67,7 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add --all
           if ! git diff --cached --quiet; then
-            git commit -m 'feat: add beginner real shape calculation and portable runtime clearance'
+            git commit -m 'fix: complete native runtime packaging and beginner calculation records'
             git push origin HEAD:main
           fi
           git rev-parse HEAD
