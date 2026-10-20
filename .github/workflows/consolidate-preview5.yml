@@ -1,0 +1,72 @@
+name: Consolidate reviewed Chem313 preview.5 source
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: consolidate-chem313-preview5
+  cancel-in-progress: false
+jobs:
+  source:
+    if: github.repository == 'jhagir7-arch/openchem' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download only the reviewed source asset from this repository
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          release_id=$(gh api repos/jhagir7-arch/openchem/releases --jq '.[] | select(.name == "Chem313 preview.5 — classic desktop, open community preview") | .id')
+          test -n "$release_id"
+          asset_id=$(gh api "repos/jhagir7-arch/openchem/releases/$release_id/assets" --jq '.[] | select(.name == "Chem313-1.0.0-preview.5-Source.zip") | .id')
+          test -n "$asset_id"
+          gh api -H 'Accept: application/octet-stream' "repos/jhagir7-arch/openchem/releases/assets/$asset_id" > /tmp/chem313-source.zip
+      - name: Verify fixed checksum, safe paths and every declared file before copying
+        shell: python
+        run: |
+          import hashlib, json, pathlib, stat, zipfile
+          archive = pathlib.Path('/tmp/chem313-source.zip')
+          assert hashlib.sha256(archive.read_bytes()).hexdigest() == '46d44c2e68a74cae97b64d1a426228e842b8a537d89041382f178fc76e039cd7'
+          with zipfile.ZipFile(archive) as z:
+              assert z.testzip() is None
+              assert sum(i.file_size for i in z.infolist()) < 50_000_000
+              prefix = 'public-source-release/'
+              manifest = json.loads(z.read(prefix + 'BUNDLE_MANIFEST.json'))
+              assert manifest['code_version'] == '1.0.0-preview.5'
+              rows = manifest['files']
+              assert len(rows) == 284
+              declared = {prefix + r['path'] for r in rows} | {prefix + 'BUNDLE_MANIFEST.json'}
+              assert set(z.namelist()) == declared
+              staged = []
+              for row in rows:
+                  relative = pathlib.PurePosixPath(row['path'])
+                  assert not relative.is_absolute() and '..' not in relative.parts and '.git' not in relative.parts
+                  info = z.getinfo(prefix + row['path'])
+                  assert not stat.S_ISLNK(info.external_attr >> 16)
+                  data = z.read(info)
+                  assert len(data) == row['bytes']
+                  assert hashlib.sha256(data).hexdigest() == row['sha256']
+                  if relative.parts[:2] == ('.github', 'workflows'):
+                      print('Retaining existing repository workflow:', relative)
+                      continue
+                  staged.append((pathlib.Path(row['path']), data))
+              staged.append((pathlib.Path('BUNDLE_MANIFEST.json'), z.read(prefix + 'BUNDLE_MANIFEST.json')))
+              for path, data in staged:
+                  path.parent.mkdir(parents=True, exist_ok=True)
+                  path.write_bytes(data)
+              print('Copied reviewed public source files:', len(staged))
+      - name: Commit consolidated source on main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add --all
+          if ! git diff --cached --quiet; then
+            git commit -m 'feat: consolidate Chem313 preview.5 classic desktop and community source'
+            git push origin HEAD:main
+          fi
+          git rev-parse HEAD
