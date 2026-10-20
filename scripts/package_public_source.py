@@ -12,14 +12,14 @@ TREES = ('backend/src', 'backend/tests', 'frontend/src', 'frontend/test',
          'frontend/scripts', 'native', 'environments', 'examples', 'release/public-source',
          'release/standalone', 'release/portable', 'release/qwen', 'desktop/licenses/standalone-npm', 'desktop/licenses/qwen',
          'desktop/licenses/portable-runtime')
-FILES = ('PROJECT_INDEX.md', 'CONTRIBUTING.md', 'docs/COMMUNITY.md', 'scripts/check_project_index.py', 'scripts/native_chem313_workflow.js', 'backend/pyproject.toml', 'frontend/package.json', 'frontend/package-lock.json',
+FILES = ('PROJECT_INDEX.md', 'CONTRIBUTING.md', 'docs/COMMUNITY.md', 'scripts/check_project_index.py', 'scripts/native_chem313_workflow.js', 'scripts/native_first_calculation_workflow.js', 'backend/pyproject.toml', 'frontend/package.json', 'frontend/package-lock.json',
          'frontend/tsconfig.json', 'frontend/vite.config.ts', 'frontend/index.html',
          'desktop/OpenChem.swift', 'desktop/Info.plist', 'desktop/service.py', 'desktop/portable.py',
          'desktop/science_service.py', 'desktop/extended_service.py',
          'desktop/bioscience_service.py', 'desktop/qwen_service.py',
          'scripts/build_public_app.sh', 'scripts/setup_public_runtime.sh',
          'scripts/build_standalone_app.sh', 'scripts/package_standalone_mac.sh',
-         'scripts/build_portable.py', 'scripts/test_portable_package.py',
+         'scripts/build_portable.py', 'scripts/prepare_linux_runtime_sources.py', 'scripts/test_portable_package.py',
          'scripts/build_public_qwen_worker.sh', 'scripts/assemble_qwen_app.py',
          'scripts/package_qwen_mac.sh', 'scripts/collect_qwen_licenses.py',
          'release/qwen/requirements-lock.txt',
@@ -88,7 +88,7 @@ def main():
         rows.append({'path': relative, 'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest()})
     if violations:
         raise ValueError('Public source scan failed: ' + json.dumps(violations))
-    manifest = {'schema': 'openchem.public-source-candidate.v1', 'code_version': '1.0.0-preview.5',
+    manifest = {'schema': 'openchem.public-source-candidate.v1', 'code_version': '1.0.0-preview.6',
                 'publication_status': 'PUBLIC_RESEARCH_PREVIEW',
                 'scope': 'Source only. No compiled application or installed engines.',
                 'excluded': ['Git history', 'Private Drive receipts and handoff archives',

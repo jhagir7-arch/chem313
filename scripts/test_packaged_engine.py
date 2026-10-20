@@ -62,6 +62,26 @@ assert r['result']['slope']==2 and r['result']['intercept']==1
 svg=next(a for a in r['artifacts'] if a['relative_path'].endswith('.svg'))
 project,group,name=svg['relative_path'].split('/')
 assert b'<svg' in call(f'/api/projects/{project}/artifact/{group}/{name}',token=token)
+# First lesson uses the included real MMFF94 engine and durable results, not a fixture.
+lesson=[]
+for smiles in ['CCO','O','C']:
+    payload={'action':'molecule.relax_geometry','params':{'smiles':smiles,'seed':42},'project':'first-real-calculation'}
+    preview=call('/api/preview',payload,token)
+    reply=call('/api/execute',{**payload,'approved':True,'preview_token':preview['preview_token']},token)
+    result=reply['result']
+    assert result['converged'] and result['engine_provenance']=='real',result
+    assert result['force_field']=='MMFF94' and result['energy_unit']=='kcal/mol'
+    assert result['final_energy_kcal_mol']<=result['initial_energy_kcal_mol']+1e-5
+    assert len(reply['artifacts'])==3
+    for artifact in reply['artifacts']:
+        project,group,name=artifact['relative_path'].split('/')
+        raw=call(f'/api/projects/{project}/artifact/{group}/{name}',token=token)
+        if isinstance(raw,bytes):assert hashlib.sha256(raw).hexdigest()==artifact['sha256']
+        else:assert raw['inchikey']==result['inchikey'] and raw['engine_provenance']=='real'
+    denied('/api/execute',422,{**payload,'approved':True,'preview_token':preview['preview_token']},token)
+    lesson.append({k:result[k] for k in ['name','inchikey','converged','initial_energy_kcal_mol','final_energy_kcal_mol','energy_change_kcal_mol','rdkit_version']})
+assert call('/api/projects/first-real-calculation/verify',token=token)['status']=='PASS'
+print(json.dumps({'real_first_calculation':lesson},indent=2))
 verify=call('/api/projects/frozen-proof/verify',token=token)
 assert verify['status']=='PASS',verify
 print(json.dumps({'status':'PASS','runtime':'running local OpenChem service','version':info['version'],'engines':info['engines'],'checks':['untrusted origin rejected','unauthenticated data rejected','RDKit MMFF 3D generation','ORCA input charge-spin rejection and exact source/input/report retrieval','UTF-8 byte-exact note storage/download','single-use receipt replay rejected','SciPy known-line fit','Matplotlib SVG artifact','stored artifact integrity']},indent=2))

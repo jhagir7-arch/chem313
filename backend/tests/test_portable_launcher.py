@@ -152,12 +152,13 @@ def test_store_preserves_raw_bytes_and_audit_records_on_native_host(tmp_path):
     assert store.verify_artifacts("portable")["status"] == "PASS"
 
 
-def test_gcc_runtime_binary_requires_source_review_before_distribution(tmp_path):
+def test_gcc_runtime_binary_requires_exception_review_before_distribution(tmp_path):
     library = tmp_path / "_internal/scipy.libs/libgfortran-123.so.5"
     library.parent.mkdir(parents=True)
     library.write_bytes(b"native fixture")
     review = build_portable.distribution_review(tmp_path)
     assert review["passed"] is False
-    assert review["pending_corresponding_source"] == ["_internal/scipy.libs/libgfortran-123.so.5"]
+    assert review["pending_gcc_runtime_exception_verification"] == ["_internal/scipy.libs/libgfortran-123.so.5"]
+    assert review["pending_lgpl_corresponding_source"] == []
     library.unlink()
     assert build_portable.distribution_review(tmp_path)["passed"] is True

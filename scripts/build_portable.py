@@ -12,6 +12,7 @@ import shutil
 import subprocess
 import sys
 import sysconfig
+import hashlib
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -29,7 +30,7 @@ def platform_id() -> str:
 def write_profile(path: Path) -> None:
     engines = []
     for name, package, domain, repo, license_name, operations in [
-        ("RDKit", "rdkit", "cheminformatics", "rdkit/rdkit", "BSD-3-Clause", ["molecule.inspect_smiles", "molecule.import_molfile", "molecule.fidelity_audit", "molecule.generate_conformer"]),
+        ("RDKit", "rdkit", "cheminformatics", "rdkit/rdkit", "BSD-3-Clause", ["molecule.inspect_smiles", "molecule.import_molfile", "molecule.fidelity_audit", "molecule.generate_conformer", "molecule.relax_geometry"]),
         ("NumPy", "numpy", "numerical_analysis", "numpy/numpy", "BSD-3-Clause and bundled notices", ["numpy.summary"]),
         ("SciPy", "scipy", "measurement_analysis", "scipy/scipy", "BSD-3-Clause and bundled notices", ["scipy.line", "measurement.fit_csv"]),
         ("Matplotlib", "matplotlib", "plotting", "matplotlib/matplotlib", "Matplotlib license and bundled notices", ["measurement.fit_csv"]),
@@ -46,22 +47,98 @@ def run(command: list[str], *, check: bool = True) -> subprocess.CompletedProces
     return subprocess.run(command, cwd=ROOT, check=check)
 
 
+def sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def linux_runtime_evidence(bundle: Path) -> dict:
+    path = bundle / "licenses" / "portable-core" / "linux-gcc-runtime" / "GCC-RUNTIME-PROVENANCE.json"
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    return value if isinstance(value, dict) else {}
+
+
 def distribution_review(bundle: Path) -> dict:
-    # A retained license is necessary but does not supply corresponding source
-    # for independent GCC/quadmath runtime binaries. Keep these out of download
-    # artifacts until the exact runtime sources and redistribution terms pass.
-    pending = [p.relative_to(bundle).as_posix() for p in sorted(bundle.rglob("*"))
-               if p.is_file() and re.match(r"(?:lib)?(?:gcc_s|stdc\+\+|gfortran|quadmath|gomp)[-_.]", p.name, re.I)]
-    return {"schema": "openchem.distribution-review.v1", "passed": not pending,
-            "pending_corresponding_source": pending,
-            "scope": "GCC and quadmath runtime source obligations; separate from notice collection and scientific tests"}
+    """Separate the GCC runtime exception from LGPL-only libquadmath.
+
+    The GCC Runtime Library Exception can cover libgcc, libstdc++, and
+    libgfortran only when the packaged target code came from an eligible
+    compilation process.  libquadmath is LGPL-2.1-or-later and does not share
+    that exception, so a releasable archive still needs its corresponding
+    source or a valid LGPL source offer.
+    """
+    pending_gcc_exception, pending_lgpl = [], []
+    for path in sorted(p for p in bundle.rglob("*") if p.is_file()):
+        relative = path.relative_to(bundle).as_posix()
+        name = path.name.lower()
+        if re.match(r"(?:lib)?(?:gcc_s|stdc\+\+|gfortran|gomp)[-_.]", name):
+            pending_gcc_exception.append(relative)
+        elif re.match(r"(?:lib)?quadmath[-_.]", name):
+            pending_lgpl.append(relative)
+    evidence = linux_runtime_evidence(bundle)
+    payloads = evidence.get("payloads", {})
+    archives = evidence.get("source_archives", {})
+    if not isinstance(payloads, dict) or not isinstance(archives, dict):
+        payloads, archives = {}, {}
+    cleared_gcc, cleared_quadmath = [], []
+    for relative in pending_gcc_exception[:]:
+        item = payloads.get(relative, {})
+        if (isinstance(item, dict) and item.get("sha256") == sha256(bundle / relative)
+                and isinstance(item.get("compiler"), str)
+                and isinstance(item.get("eligible_compilation_evidence"), str)
+                and (item["eligible_compilation_evidence"].startswith("https://")
+                     or (bundle / item["eligible_compilation_evidence"]).is_file())):
+            cleared_gcc.append(relative)
+    for relative in pending_lgpl[:]:
+        item = payloads.get(relative, {})
+        archive_keys = item.get("source_archives") if isinstance(item, dict) else None
+        if isinstance(item, dict) and isinstance(item.get("source_archive"), str):
+            archive_keys = [item["source_archive"]]
+        archive_records = [archives.get(key) for key in archive_keys] if isinstance(archive_keys, list) else []
+        if (isinstance(item, dict) and item.get("sha256") == sha256(bundle / relative)
+                and archive_records and all(isinstance(archive, dict)
+                    and isinstance(archive.get("path"), str)
+                    and isinstance(archive.get("sha256"), str)
+                    and isinstance(archive.get("url"), str)
+                    and archive["url"].startswith("https://")
+                    and (bundle / archive["path"]).is_file()
+                    and sha256(bundle / archive["path"]) == archive["sha256"]
+                    for archive in archive_records)):
+            cleared_quadmath.append(relative)
+    pending_gcc_exception = [item for item in pending_gcc_exception if item not in cleared_gcc]
+    pending_lgpl = [item for item in pending_lgpl if item not in cleared_quadmath]
+    return {
+        "schema": "openchem.distribution-review.v2",
+        "passed": not pending_gcc_exception and not pending_lgpl,
+        "pending_gcc_runtime_exception_verification": pending_gcc_exception,
+        "pending_lgpl_corresponding_source": pending_lgpl,
+        "cleared_gcc_runtime_exception": cleared_gcc,
+        "cleared_lgpl_corresponding_source": cleared_quadmath,
+        "scope": "GCC Runtime Library Exception and LGPL libquadmath obligations; separate from notice collection and scientific tests",
+        "conditions": [
+            "Each GCC Runtime Library Exception candidate remains release-blocking until retained notices and version/hash-bound evidence show that its target code was produced by an eligible compilation process.",
+            "Each libquadmath payload remains release-blocking until its exact corresponding source or a valid LGPL source offer is included."
+        ],
+    }
 
 
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--skip-frontend-build", action="store_true")
+    parser.add_argument("--review-bundle", type=Path,
+                        help="rewrite a finished bundle's hash-bound distribution review")
     args = parser.parse_args(argv)
+    if args.review_bundle:
+        target = args.review_bundle.resolve()
+        if not target.is_dir():
+            raise SystemExit(f"bundle missing: {target}")
+        (target / "DISTRIBUTION_REVIEW.json").write_text(
+            json.dumps(distribution_review(target), indent=2) + "\n", encoding="utf-8"
+        )
+        return 0
     target = args.output or ROOT / "dist" / "portable" / f"{PRODUCT_NAME}-core-{platform_id()}-{platform.machine().lower()}"
     target = target.resolve()
     if target.exists():

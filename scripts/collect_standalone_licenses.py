@@ -32,6 +32,7 @@ WINDOWS_MICROSOFT_RUNTIME_TERMS = (
     "https://learn.microsoft.com/cpp/windows/redistributing-visual-cpp-files",
     "https://raw.githubusercontent.com/python/cpython/v3.13.16/PC/crtlicense.txt",
 )
+WINDOWS_CPYTHON_CRT_NOTICE = "CPYTHON-3.13.16-CRTLICENSE.txt"
 
 
 def sha256(path: Path) -> str:
@@ -393,13 +394,14 @@ def windows_cpython_runtime_owner(source: Path, runtime: Path | None, output: Pa
     }
 
 
-def windows_microsoft_runtime_diagnostic(source: Path, runtime: Path | None) -> dict | None:
-    """Explain why CPython-bundled Microsoft runtime DLLs remain gate-blocked.
+def windows_cpython_microsoft_runtime_owner(source: Path, runtime: Path | None, output: Path,
+                                            project_root: Path) -> dict | None:
+    """Map CPython's bundled Microsoft code only with CPython's exact terms.
 
-    CPython's ``PC/crtlicense.txt`` makes redistribution conditional on the
-    Microsoft terms.  The collector cannot establish the distributor's Visual
-    Studio license or preserve the applicable Microsoft terms from a bare DLL,
-    so it must not turn the Python installer provenance into a license mapping.
+    CPython 3.13.16's official ``PC/crtlicense.txt`` permits downstream
+    distribution subject to its conditions.  This mapping is intentionally
+    confined to files in the pinned CPython runtime and copies those conditions
+    into the portable notice set; arbitrary Microsoft DLLs remain unmapped.
     """
     if sys.platform != "win32" or runtime is None or safe_relative(source, runtime) is None:
         return None
@@ -407,11 +409,17 @@ def windows_microsoft_runtime_diagnostic(source: Path, runtime: Path | None) -> 
     if not (name.startswith("api-ms-win-core-") or name.startswith("api-ms-win-crt-")
             or name in {"ucrtbase.dll", "vcruntime140.dll", "vcruntime140_1.dll"}):
         return None
+    notice = project_root / "desktop" / "licenses" / "portable-runtime" / WINDOWS_CPYTHON_CRT_NOTICE
+    if not notice.is_file():
+        return None
     return {
-        "code": "MICROSOFT_REDISTRIBUTION_TERMS_UNVERIFIED",
-        "source_path": str(source),
+        "owner": "Microsoft Distributable Code via CPython 3.13.16",
+        "source": str(source),
+        "source_sha256": sha256(source),
+        "strict_source_sha256": True,
+        "notices": [copy(notice, output / "windows-cpython-runtime" / notice.name, output)],
         "official_terms": list(WINDOWS_MICROSOFT_RUNTIME_TERMS),
-        "review": "RETAIN_APPLICABLE_MICROSOFT_TERMS_AND_VERIFY_DISTRIBUTOR_RIGHTS",
+        "review": "CPython CRT redistribution conditions retained; do not alter Microsoft notices, imply endorsement, or distribute for non-Microsoft platforms.",
     }
 
 
@@ -455,7 +463,9 @@ def pyinstaller_toc(path: Path | None, site: Path, ownership: dict, python_runti
             }
         elif output is not None:
             owner = windows_cpython_runtime_owner(source, python_runtime, output, project_root) if project_root else None
-            diagnostic = windows_microsoft_runtime_diagnostic(source, python_runtime)
+            if owner is None and project_root:
+                owner = windows_cpython_microsoft_runtime_owner(source, python_runtime, output, project_root)
+            diagnostic = None
             if owner is None:
                 debian_owner, debian_diagnostic = debian_system_owner_detail(source, output)
                 owner = debian_owner
@@ -483,7 +493,7 @@ def mapped_native_row(path: str, packaged_sha256: str, owner: dict, mapping_meth
     row = {"path": path, "owner": owner["owner"], "source": owner["source"],
            "source_sha256": owner["source_sha256"], "packaged_sha256": packaged_sha256,
            "mapping_method": mapping_method, "notices": owner["notices"]}
-    for key in ("wheel_record_sha256", "package", "package_version"):
+    for key in ("wheel_record_sha256", "package", "package_version", "official_terms", "review"):
         if key in owner:
             row[key] = owner[key]
     return row
@@ -506,7 +516,7 @@ def native(bundle: Path, ownership: dict, py_runtime: dict, toc: dict) -> list[d
                        "notices": [], "diagnostic": owner["diagnostic"]}
             elif owner and (not owner.get("strict_source_sha256") or owner["source_sha256"] == packaged_sha256):
                 method = CPYTHON_EXTENSION_MAPPING if owner["owner"] == "CPython" else (
-                    WINDOWS_CPYTHON_RUNTIME_MAPPING if owner["owner"] in {"OpenSSL-3", "libffi", "SQLite"} else
+                    WINDOWS_CPYTHON_RUNTIME_MAPPING if owner["owner"] in {"OpenSSL-3", "libffi", "SQLite", "Microsoft Distributable Code via CPython 3.13.16"} else
                     DEBIAN_SYSTEM_MAPPING if "package" in owner else PYINSTALLER_MAPPING)
                 row = mapped_native_row(path, packaged_sha256, owner, method)
             elif owner:

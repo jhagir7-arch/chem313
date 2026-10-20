@@ -1,5 +1,6 @@
 // Public product index: scope is explicit; availability is checked at runtime.
 export const FEATURE_INDEX = Object.freeze([
+ {id:'CHEM-015',title:'Run a first shape calculation',workspace:'calculate',scope:'Included · real MMFF94 relaxation with saved geometries and energies',evidence:'backend/tests/test_first_calculation.py'},
  {id:'CHEM-001',title:'Build and count atoms',workspace:'structures',scope:'Included · local RDKit and molecular editor',evidence:'frontend/test/beginner.test.js'},
  {id:'CHEM-002',title:'Compare starting shapes',workspace:'structures',scope:'Included · force-field energies, not quantum results',evidence:'frontend/test/beginner.test.js'},
  {id:'CHEM-003',title:'Energy comparison chart',workspace:'structures',scope:'Included · same molecule, model and units only',evidence:'frontend/src/ShapeEnergyChart.tsx'},

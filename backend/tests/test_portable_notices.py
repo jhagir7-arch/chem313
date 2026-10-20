@@ -10,6 +10,16 @@ SPEC = importlib.util.spec_from_file_location(
 notices = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(notices)
 
+BUILD_SPEC = importlib.util.spec_from_file_location(
+    "build_portable", Path(__file__).resolve().parents[2] / "scripts/build_portable.py")
+portable_build = importlib.util.module_from_spec(BUILD_SPEC)
+BUILD_SPEC.loader.exec_module(portable_build)
+
+LAUNCHER_SPEC = importlib.util.spec_from_file_location(
+    "portable_launcher", Path(__file__).resolve().parents[2] / "desktop/portable.py")
+portable_launcher = importlib.util.module_from_spec(LAUNCHER_SPEC)
+LAUNCHER_SPEC.loader.exec_module(portable_launcher)
+
 
 def test_portable_toc_mapping_keeps_owner_for_transformed_payload():
     owner = {"owner": "rdkit", "source_sha256": "verified-source"}
@@ -28,6 +38,72 @@ def test_windows_native_payload_cannot_evade_license_gate(tmp_path):
     gate = notices.gate({"notices": [1, 2]}, {"required": False}, rows, [], [])
     assert not gate["passed"]
     assert any("unknown.dll" in error for error in gate["failures"])
+
+
+def test_distribution_review_separates_gcc_runtime_exception_from_lgpl_quadmath(tmp_path):
+    for name in ("libgcc_s.so.1", "libstdc++.so.6", "libgfortran-x.so.5", "libquadmath-x.so.0"):
+        (tmp_path / name).write_bytes(b"payload")
+    review = portable_build.distribution_review(tmp_path)
+    assert review["schema"] == "openchem.distribution-review.v2"
+    assert review["pending_gcc_runtime_exception_verification"] == [
+        "libgcc_s.so.1", "libgfortran-x.so.5", "libstdc++.so.6"
+    ]
+    assert review["pending_lgpl_corresponding_source"] == ["libquadmath-x.so.0"]
+    assert not review["passed"]
+
+
+def test_distribution_review_requires_hash_bound_gcc_and_quadmath_evidence(tmp_path):
+    gcc = tmp_path / "_internal/libgfortran-test.so.5"
+    quadmath = tmp_path / "_internal/libquadmath-test.so.0"
+    gcc.parent.mkdir(parents=True)
+    gcc.write_bytes(b"gcc runtime")
+    quadmath.write_bytes(b"quadmath runtime")
+    evidence_dir = tmp_path / "licenses/portable-core/linux-gcc-runtime"
+    evidence_dir.mkdir(parents=True)
+    archive = evidence_dir / "gcc-10.2.1.tar.xz"
+    archive.write_bytes(b"official GCC source fixture")
+    evidence = {
+        "payloads": {
+            "_internal/libgfortran-test.so.5": {
+                "sha256": portable_build.sha256(gcc),
+                "compiler": "GCC 10.2.1",
+                "eligible_compilation_evidence": "https://example.test/scipy-wheel-build",
+            },
+            "_internal/libquadmath-test.so.0": {
+                "sha256": portable_build.sha256(quadmath),
+                "source_archive": "gcc-10.2.1",
+            },
+        },
+        "source_archives": {
+            "gcc-10.2.1": {
+                "path": "licenses/portable-core/linux-gcc-runtime/gcc-10.2.1.tar.xz",
+                "sha256": portable_build.sha256(archive),
+                "url": "https://ftp.gnu.org/gnu/gcc/gcc-10.2.1/gcc-10.2.1.tar.xz",
+            }
+        },
+    }
+    (evidence_dir / "GCC-RUNTIME-PROVENANCE.json").write_text(json.dumps(evidence), encoding="utf-8")
+    review = portable_build.distribution_review(tmp_path)
+    assert review["passed"]
+    assert review["cleared_gcc_runtime_exception"] == ["_internal/libgfortran-test.so.5"]
+    assert review["cleared_lgpl_corresponding_source"] == ["_internal/libquadmath-test.so.0"]
+
+
+def test_windows_runtime_terms_acceptance_is_hash_bound(tmp_path):
+    terms = tmp_path / portable_launcher.WINDOWS_RUNTIME_TERMS
+    terms.write_text("CPython terms", encoding="utf-8")
+    args = type("Args", (), {"data": str(tmp_path / "data")})()
+    opened = []
+    assert portable_launcher.accept_windows_runtime_terms(
+        args, terms, open_terms=opened.append, confirm=lambda: True
+    )
+    assert opened == [str(terms)]
+    assert portable_launcher.windows_runtime_terms_accepted(args, terms)
+    terms.write_text("changed CPython terms", encoding="utf-8")
+    assert not portable_launcher.windows_runtime_terms_accepted(args, terms)
+    assert not portable_launcher.accept_windows_runtime_terms(
+        args, terms, open_terms=opened.append, confirm=lambda: False
+    )
 
 
 def test_toc_maps_only_hashed_cpython_standard_extensions(tmp_path):
@@ -88,8 +164,8 @@ def test_toc_maps_documented_windows_cpython_third_party_runtime_dlls(tmp_path, 
         "libffi-8.dll": b"libffi",
         "sqlite3.dll": b"sqlite",
         "api-ms-win-core-fibers-l1-1-0.dll": b"Microsoft API-set",
-        "ucrtbase.dll": b"must remain unmapped",
-        "VCRUNTIME140.dll": b"must remain unmapped",
+        "ucrtbase.dll": b"Microsoft UCRT",
+        "VCRUNTIME140.dll": b"Microsoft VCRUNTIME",
     }
     bundle = tmp_path / "bundle/_internal"
     bundle.mkdir(parents=True)
@@ -106,6 +182,7 @@ def test_toc_maps_documented_windows_cpython_third_party_runtime_dlls(tmp_path, 
     retained.mkdir(parents=True)
     for filename in {item[1] for item in notices.WINDOWS_CPYTHON_RUNTIME_NOTICES.values()}:
         (retained / filename).write_text(filename, encoding="utf-8")
+    (retained / notices.WINDOWS_CPYTHON_CRT_NOTICE).write_text("CPython CRT conditions", encoding="utf-8")
     output = tmp_path / "notices"
     output.mkdir()
     monkeypatch.setattr(notices.sys, "platform", "win32")
@@ -117,11 +194,12 @@ def test_toc_maps_documented_windows_cpython_third_party_runtime_dlls(tmp_path, 
     assert rows["_internal/libffi-8.dll"]["owner"] == "libffi"
     assert rows["_internal/sqlite3.dll"]["owner"] == "SQLite"
     assert rows["_internal/libffi-8.dll"]["mapping_method"] == notices.WINDOWS_CPYTHON_RUNTIME_MAPPING
-    assert rows["_internal/ucrtbase.dll"]["owner"] == "UNMAPPED"
+    assert rows["_internal/ucrtbase.dll"]["owner"] == "Microsoft Distributable Code via CPython 3.13.16"
+    assert rows["_internal/VCRUNTIME140.dll"]["owner"] == "Microsoft Distributable Code via CPython 3.13.16"
     for name in ("api-ms-win-core-fibers-l1-1-0.dll", "ucrtbase.dll", "VCRUNTIME140.dll"):
-        diagnostic = rows[f"_internal/{name}"]["diagnostic"]
-        assert diagnostic["code"] == "MICROSOFT_REDISTRIBUTION_TERMS_UNVERIFIED"
-        assert diagnostic["official_terms"] == list(notices.WINDOWS_MICROSOFT_RUNTIME_TERMS)
+        row = rows[f"_internal/{name}"]
+        assert row["official_terms"] == list(notices.WINDOWS_MICROSOFT_RUNTIME_TERMS)
+        assert row["notices"][0]["path"].endswith(notices.WINDOWS_CPYTHON_CRT_NOTICE)
 
 
 def test_linux_system_library_requires_package_copyright(tmp_path, monkeypatch):

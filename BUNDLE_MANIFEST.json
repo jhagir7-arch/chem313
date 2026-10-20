@@ -1,6 +1,6 @@
 {
   "schema": "openchem.public-source-candidate.v1",
-  "code_version": "1.0.0-preview.5",
+  "code_version": "1.0.0-preview.6",
   "publication_status": "PUBLIC_RESEARCH_PREVIEW",
   "scope": "Source only. No compiled application or installed engines.",
   "excluded": [
@@ -23,8 +23,8 @@
     },
     {
       "path": ".github/workflows/portable.yml",
-      "bytes": 6315,
-      "sha256": "be3f738d3605c3c10b21a03f62e6546414749f85a0d8d4f0b816c20ee8b24a01"
+      "bytes": 9091,
+      "sha256": "f8091c97c7227abb58c68b4624913258c4dbb213b080dba28f661cf3c9662e2d"
     },
     {
       "path": ".gitignore",
@@ -53,8 +53,8 @@
     },
     {
       "path": "PROJECT_INDEX.md",
-      "bytes": 8577,
-      "sha256": "8e1e90ab2e1af3eaa159640bc982495f9ff83f2ce089d4040a4155f8262a4e3f"
+      "bytes": 9215,
+      "sha256": "0a1e096686e2e42d7f2e14ebb459f70d7f139c17cad825eb05248ac9f66b2d6e"
     },
     {
       "path": "PUBLICATION_STATUS.md",
@@ -63,8 +63,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 5685,
-      "sha256": "e44320201ccd738ac7de30d927f7c0f4c0e686348b4d1cc701d3516ecd207349"
+      "bytes": 6370,
+      "sha256": "6a2ef5a9cc97ce290f56dd32bdc2aa026f4112431d9e76dd90dcb6ca2819289a"
     },
     {
       "path": "RELEASE_CHECKS.md",
@@ -94,12 +94,12 @@
     {
       "path": "backend/pyproject.toml",
       "bytes": 607,
-      "sha256": "8117af11d83ea99778b14f8f393c285fcf6dcc4fafa7f1163da6bf4887592fdc"
+      "sha256": "c458eb99b0c112d31419ef3a9297aa823f61c45eaca87aa0601c6891dcae8c13"
     },
     {
       "path": "backend/src/hypothesislab/__init__.py",
       "bytes": 86,
-      "sha256": "debd331040ba24530a4c33ca68a7241f0189e06c3df95906515d2467df0a10d4"
+      "sha256": "8335a6c5693e861c17f066ac57af4538828fbd1585e5938daffa93e6b62b7a62"
     },
     {
       "path": "backend/src/hypothesislab/__main__.py",
@@ -163,8 +163,8 @@
     },
     {
       "path": "backend/src/hypothesislab/conformers.py",
-      "bytes": 2853,
-      "sha256": "ff706b63737fa979159d43e77a75c9c1a1a285c16434d9a795844126ad50c97b"
+      "bytes": 6919,
+      "sha256": "38ecba1594ee2d09440c57d13ab83d3ca998fa424eb93b2426424ba75fec8f68"
     },
     {
       "path": "backend/src/hypothesislab/desktop.py",
@@ -288,8 +288,8 @@
     },
     {
       "path": "backend/src/hypothesislab/workbench.py",
-      "bytes": 11703,
-      "sha256": "60f2cf18641a28b5cc18d81b7d9f21cbcab8464b8bec40c3c4c87c82f9ba72c4"
+      "bytes": 13097,
+      "sha256": "d155edd4ec13f536fd0a8d8e02655fa9edcdda2dd692e59850683d7532427ced"
     },
     {
       "path": "backend/src/hypothesislab/workflows.py",
@@ -342,6 +342,11 @@
       "sha256": "85481c34fa81cbee4315cde9365d8f12ddda959e887cf8fccb835dc67e94e09b"
     },
     {
+      "path": "backend/tests/test_first_calculation.py",
+      "bytes": 2949,
+      "sha256": "c7c686bd71a1d73a35e2dbca4cf4761122c664782d3225cad0f5861fb8db8230"
+    },
+    {
       "path": "backend/tests/test_handoff_regressions.py",
       "bytes": 3449,
       "sha256": "f0fa7390a576304cbc89ce92d9d4c39e7a4727b096e9dea8e52f655bd3868036"
@@ -368,13 +373,13 @@
     },
     {
       "path": "backend/tests/test_portable_launcher.py",
-      "bytes": 7211,
-      "sha256": "ca388f2d533a409990eb00f5e3d05edf2c387abfe08637d9eccfd294effe900d"
+      "bytes": 7289,
+      "sha256": "5fdb7d825064704c8be55c34f03ad69d08f089a55231cb07414b166c8441b3e0"
     },
     {
       "path": "backend/tests/test_portable_notices.py",
-      "bytes": 12902,
-      "sha256": "61c9a831f6a3aa9ab1d93fa7c29c1b7bd109269e0139163dff0c98b0d4bf97e6"
+      "bytes": 16736,
+      "sha256": "fce3d676f3548d21ca7b998334e89e55282dc9f4b15a269e9fd44219a463ccb8"
     },
     {
       "path": "backend/tests/test_public_runtime_registry.py",
@@ -547,6 +552,11 @@
       "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
     },
     {
+      "path": "desktop/licenses/portable-runtime/CPYTHON-3.13.16-CRTLICENSE.txt",
+      "bytes": 1738,
+      "sha256": "3c71b3ae243121f6f227374cd1ef7c59ed07b1969b330d0e947f91a3a1b3fd73"
+    },
+    {
       "path": "desktop/licenses/portable-runtime/LIBFFI-3.4.6-LICENSE.txt",
       "bytes": 1316,
       "sha256": "0ef9b3fe3ea61f2fe29ac993191a4e0d89a37fa13f4bb68b61f212f043fb83ed"
@@ -693,8 +703,8 @@
     },
     {
       "path": "desktop/portable.py",
-      "bytes": 3134,
-      "sha256": "55041567f0bfc7b73163334ba9244d98d096ca8cebb4292cbac2ffe71e831521"
+      "bytes": 6066,
+      "sha256": "dab692a6196df1bee1f3796f2faa9d642413b79fb5fbda0084376016950f8fbc"
     },
     {
       "path": "desktop/qwen_service.py",
@@ -759,12 +769,12 @@
     {
       "path": "frontend/package-lock.json",
       "bytes": 245234,
-      "sha256": "d4ed390bef9d297542971e396cb98b7179a3543f08dfc97ee8a3e3945c017037"
+      "sha256": "f8878f2ac43026575717d3ff3ac91f8410560957be81f7f464014e19ee9e0817"
     },
     {
       "path": "frontend/package.json",
       "bytes": 851,
-      "sha256": "0643a37aa65133ced54912692b1381b9079111772292602b0a76fbe2e3efd116"
+      "sha256": "7c983d4311fd6cd6094f6e2d796e5e01341a0f86be02bb4befde8c8febb51ac1"
     },
     {
       "path": "frontend/scripts/copy-assets.mjs",
@@ -778,8 +788,8 @@
     },
     {
       "path": "frontend/src/App.tsx",
-      "bytes": 50584,
-      "sha256": "2a970a4c7de298a669b0ef49460f38effd5cc3bb1a4bfaedd741d17bdb561126"
+      "bytes": 50855,
+      "sha256": "41ef13b29feff47948b519af24eff1dbec5f42b94d5c98ff68cc250cfb78dc59"
     },
     {
       "path": "frontend/src/Assistant.tsx",
@@ -800,6 +810,11 @@
       "path": "frontend/src/FeatureDirectory.tsx",
       "bytes": 1277,
       "sha256": "63c1c5fb0bb838bef36f6730dd99a5090734d63bb76ba76578870897dfb1c732"
+    },
+    {
+      "path": "frontend/src/FirstCalculation.tsx",
+      "bytes": 10520,
+      "sha256": "8bb3f340e4549b5abfeaff3a5659e6732d8e45e99fb348ac3d6094e8ec24cdb3"
     },
     {
       "path": "frontend/src/Guide.tsx",
@@ -918,8 +933,13 @@
     },
     {
       "path": "frontend/src/featureIndex.mjs",
-      "bytes": 2095,
-      "sha256": "1dac5f029a844af80702c9b16097cb46f3e1c191cd24d08684214be822b890e5"
+      "bytes": 2302,
+      "sha256": "c85171708895422851d1273e6f481a07ce9a1d87d74725b30158c4c776c106b4"
+    },
+    {
+      "path": "frontend/src/first-calculation.css",
+      "bytes": 5274,
+      "sha256": "a778eefdbb7f8a6831dcdc8b334b381950914c7cff4e34571626db0d3d9deaa7"
     },
     {
       "path": "frontend/src/main.tsx",
@@ -1193,8 +1213,8 @@
     },
     {
       "path": "release/portable/README.txt",
-      "bytes": 1574,
-      "sha256": "43f5f4d3961118cf9cc217c3c2234bf65de2c1a08d227b294e1846ae10b5bcbe"
+      "bytes": 2013,
+      "sha256": "cab345e95a5408452ad5315995baa00e35fd05176e7465d87d329a6e789a4203"
     },
     {
       "path": "release/public-source/.github/workflows/ci.yml",
@@ -1203,8 +1223,8 @@
     },
     {
       "path": "release/public-source/.github/workflows/portable.yml",
-      "bytes": 6315,
-      "sha256": "be3f738d3605c3c10b21a03f62e6546414749f85a0d8d4f0b816c20ee8b24a01"
+      "bytes": 9091,
+      "sha256": "f8091c97c7227abb58c68b4624913258c4dbb213b080dba28f661cf3c9662e2d"
     },
     {
       "path": "release/public-source/.gitignore",
@@ -1238,8 +1258,8 @@
     },
     {
       "path": "release/public-source/README.md",
-      "bytes": 5685,
-      "sha256": "e44320201ccd738ac7de30d927f7c0f4c0e686348b4d1cc701d3516ecd207349"
+      "bytes": 6370,
+      "sha256": "6a2ef5a9cc97ce290f56dd32bdc2aa026f4112431d9e76dd90dcb6ca2819289a"
     },
     {
       "path": "release/public-source/RELEASE_CHECKS.md",
@@ -1298,8 +1318,8 @@
     },
     {
       "path": "release/standalone/README.txt",
-      "bytes": 2072,
-      "sha256": "d8a3d332281aa7e5d0a68355af91f481fd7080d02073d9250ad6478e74d3c492"
+      "bytes": 2309,
+      "sha256": "1c301135f5c5276870ea898956cce634c7b3d69f8780b4af6dd7a69b46f5692d"
     },
     {
       "path": "scripts/assemble_qwen_app.py",
@@ -1318,8 +1338,8 @@
     },
     {
       "path": "scripts/build_portable.py",
-      "bytes": 7121,
-      "sha256": "07a13def97cd8ce0377d8aae49d4f5cd63906fb275ba89f1117b811bc88230ec"
+      "bytes": 11195,
+      "sha256": "272df700586d42691ecc491d0b9ebef10b8d68d2fa0a2cb1359bb9144a180530"
     },
     {
       "path": "scripts/build_public_app.sh",
@@ -1339,7 +1359,7 @@
     {
       "path": "scripts/build_standalone_app.sh",
       "bytes": 3124,
-      "sha256": "50cd3fc2d1557db12b89888bdb9f44e597c107d08be9f62732aeda962f4af873"
+      "sha256": "13101fcc11c3992c90b9d8082b34ec5dc6468779b6c0d13e849032bc0cee2c84"
     },
     {
       "path": "scripts/check_project_index.py",
@@ -1353,8 +1373,8 @@
     },
     {
       "path": "scripts/collect_standalone_licenses.py",
-      "bytes": 31000,
-      "sha256": "4a04d36d738729f9a432c7d7c5d66d98cd49f38c787e366fe4bf6f5f2d4fa9e2"
+      "bytes": 31715,
+      "sha256": "e89f870a6d65c8ace319ed0aa5e39fd89c10dff3ab239a3a9be1e3e98a635c77"
     },
     {
       "path": "scripts/install_engines.sh",
@@ -1365,6 +1385,11 @@
       "path": "scripts/native_chem313_workflow.js",
       "bytes": 13304,
       "sha256": "172e08eacc35517406fee06d75d8f6c6bf82c7c9e13a741521a831d5feaea88b"
+    },
+    {
+      "path": "scripts/native_first_calculation_workflow.js",
+      "bytes": 8053,
+      "sha256": "226a9cfac2e67fc13b275e02e068066f131ea2f9b1561e500758ae2bd2a370ee"
     },
     {
       "path": "scripts/native_public_workflow.js",
@@ -1378,8 +1403,8 @@
     },
     {
       "path": "scripts/package_public_source.py",
-      "bytes": 7039,
-      "sha256": "2aa6e0249778f0e79d9f28212790e6caec3c4b2f91a2149e91854dfaaf2896ff"
+      "bytes": 7131,
+      "sha256": "c887f3dbf1044d151d871b7241f933612360901c8f48568443bd774724343d03"
     },
     {
       "path": "scripts/package_qwen_mac.sh",
@@ -1389,7 +1414,12 @@
     {
       "path": "scripts/package_standalone_mac.sh",
       "bytes": 1626,
-      "sha256": "a4bdbb3bb11382d786f717630faa349e530dc04eba382e6d927ec2ec52ac9085"
+      "sha256": "8b083100d05c771a83dc2f3f6e47346df1d4e685a7100811148efd0633a4d4be"
+    },
+    {
+      "path": "scripts/prepare_linux_runtime_sources.py",
+      "bytes": 4965,
+      "sha256": "be17ce34591074f6a9cad00ac3edecdca4bb40544195806c1543e7267c12de19"
     },
     {
       "path": "scripts/render_app_icon.swift",
@@ -1403,8 +1433,8 @@
     },
     {
       "path": "scripts/standalone_profile.py",
-      "bytes": 2006,
-      "sha256": "c0e8a3ff59b2df99c40ca9db54f4bf2900206770dab1a113beac759cee61705c"
+      "bytes": 2033,
+      "sha256": "7947ce46b8d09c14a556fddda53734e1d3c9ce99e785d78f9d1aa7bdccbcade0"
     },
     {
       "path": "scripts/test_bioscience_engines.py",
@@ -1418,8 +1448,8 @@
     },
     {
       "path": "scripts/test_packaged_engine.py",
-      "bytes": 4247,
-      "sha256": "645a002753290092a3bce7e412fa3476ae27a8a5ac5c277bccbd5878dfe1b994"
+      "bytes": 5749,
+      "sha256": "1f3b86be2e27ee4ae1ef266663e0ed4ac4fd9ca77593b6b4ba39c05ffd64c7a7"
     },
     {
       "path": "scripts/test_portable_package.py",

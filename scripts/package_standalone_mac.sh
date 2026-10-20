@@ -3,7 +3,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 APP="${1:-dist/chem313/Chem313.app}"
-PREFIX="${2:-dist/chem313/Chem313-1.0.0-preview.5-Mac-arm64}"
+PREFIX="${2:-dist/chem313/Chem313-1.0.0-preview.6-Mac-arm64}"
 if [ -e "$PREFIX.dmg" ] || [ -e "$PREFIX.zip" ]; then echo "Package output exists: $PREFIX" >&2; exit 1; fi
 codesign --verify --deep --strict "$APP"
 .venv/bin/python - "$APP" <<'PY'

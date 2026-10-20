@@ -1,6 +1,6 @@
 # Chem313 project index
 
-**Version candidate:** Chem313 1.0.0-preview.5
+**Version candidate:** Chem313 1.0.0-preview.6
 **Purpose:** a maintained navigation map for the local Chem313 workbench. This
 is a project index, not an AI memory, retrieval, or RAG system.
 
@@ -31,19 +31,19 @@ coverage, then update the relevant feature-map row and run the index checker. Fo
 new build target, begin with its script and release notes before changing desktop or
 portable packaging.
 
-## Preview.5 candidate surface
+## Preview.6 candidate surface
 
 | Core section | Primary surface | Current status |
 | --- | --- | --- |
 | Learn | [guided Q-Chem workflow](frontend/src/QchemWorkflow.tsx) | Five-stage beginner lesson with reviewed input and an honest InChI identity state. |
 | Molecule | [application shell](frontend/src/App.tsx); [structure viewer](frontend/src/Viewer.tsx) | Drawing, inspection, 3D starting geometry, and force-field shape comparison. |
-| Calculate | [application shell](frontend/src/App.tsx); [engine registry](backend/src/hypothesislab/engine_registry.py) | ORCA/Q-Chem selection and configuration surface; a selection is not a run. |
+| Calculate | [first calculation](frontend/src/FirstCalculation.tsx); [relaxation engine](backend/src/hypothesislab/conformers.py) | Included RDKit ETKDGv3/MMFF94 shape relaxation for ethanol, water and methane; saved 3D before/after SDFs, signed energies, convergence, InChI match, report and hash record. Licensed ORCA remains optional. |
 | Records | [project store](backend/src/hypothesislab/store.py); [result card](frontend/src/CalculationResult.tsx) | Local reviewed artifacts and result context, including electronic-energy unit conversion. |
 
 The macOS shell renders these four sections in its native sidebar. Labs is an
 opt-in area for additional tools. The result card links to NIST CCCBDB as a
 reference lookup only; it makes no direct NIST comparison or experimental claim.
-Native Windows and Linux CI previously passed [run 39366818959](https://github.com/jhagir7-arch/openchem/actions/runs/39366818959), but distributable binaries remain withheld pending redistribution and license gates.
+Windows and Linux source/runtime-clearance fixes are implemented, but native CI is pending. Distributable artifacts remain withheld until native behavior, notice, and distribution gates pass.
 
 ## Capability boundary
 
@@ -61,6 +61,7 @@ this checkout. The captured native workflow reports ORCA as
 
 | Feature | Product surface and source | Focused test or local evidence | Current status |
 | --- | --- | --- | --- |
+| `CHEM-015` First shape calculation | [beginner calculation](frontend/src/FirstCalculation.tsx); [MMFF94 relaxation](backend/src/hypothesislab/conformers.py) | [independent saved-geometry energy check](backend/tests/test_first_calculation.py); [compiled UI workflow](scripts/native_first_calculation_workflow.js) | Included real ETKDGv3/MMFF94 relaxation, initial/final SDF, signed energies, convergence, InChI match and reproducible report/hash record; ethanol `6.831185 -> -1.336852` kcal/mol; not quantum chemistry. |
 | `CHEM-001` Build and count atoms | [feature catalog](frontend/src/featureIndex.mjs); [structure viewer](frontend/src/Viewer.tsx) | [beginner workflow test](frontend/test/beginner.test.js) | Local structure editing and RDKit inspection are implemented. |
 | `CHEM-002` Compare starting shapes | [feature catalog](frontend/src/featureIndex.mjs); [RDKit conformer adapter](backend/src/hypothesislab/conformers.py) | [conformer handoff test](backend/tests/test_conformer_handoff.py) | Real local force-field conformer generation; no quantum interpretation. |
 | `CHEM-003` Energy comparison chart | [shape-energy chart](frontend/src/ShapeEnergyChart.tsx) | [RDKit conformer adapter](backend/src/hypothesislab/conformers.py) | Relative MMFF/UFF model energies for one molecule and unit set only. |

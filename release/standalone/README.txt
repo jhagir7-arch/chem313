@@ -1,4 +1,4 @@
-Chem313 1.0.0-preview.5 — standalone Apple Silicon Mac research preview
+Chem313 1.0.0-preview.6 — standalone Apple Silicon Mac research preview
 
 Drag Chem313.app to Applications. Python, Node, Homebrew and terminal setup
 are not prerequisites for this standalone app. Apple Silicon, macOS 14+.
@@ -9,11 +9,14 @@ The app is ad-hoc signed, not Apple Developer ID signed or notarized. macOS
 may block an Internet download. Only use Privacy & Security > Open Anyway
 for a copy whose provenance and checksum you trust.
 
-Start in Molecule with water, methane or ethanol. Inspect the formula,
-build a starting structure and compare shapes. Bars show relative MMFF/UFF
-force-field energies for the same molecule and model, not quantum results.
-Use the Q-Chem lesson to review atoms, coordinates, fixed-geometry settings,
-a coordinate-derived identity check and the exact input before downloading.
+Start in Calculate > First calculation. Choose ethanol and click Run shape
+calculation. See its relaxed 3D shape, before/after MMFF94 energies, convergence,
+and a saved project report. Download record exports parameters, model version,
+values and file hashes. Water and methane are also included. No code, engine
+account, AI model or internet connection is needed for this lesson.
+This is a real molecular mechanics calculation, not a quantum calculation or
+a prediction of a reaction. Compare energies only within the same molecule,
+model and run. The ORCA option remains available for licensed installations.
 
 Included: Ketcher/Indigo, RDKit, 3Dmol, embedded Python, NumPy, SciPy and
 Matplotlib, project records and reviewed JSON research operations. Four core

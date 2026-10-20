@@ -10,9 +10,16 @@ stays the same so existing links continue to work.
 
 ## Download
 
-[Chem313 1.0.0-preview.5: Apple Silicon Mac, source and checks](https://github.com/jhagir7-arch/openchem/releases/tag/v1.0.0-preview.5). No Python or Node setup for the Mac download.
+[Chem313 1.0.0-preview.6: downloads, source and checks](https://github.com/jhagir7-arch/openchem/releases/tag/v1.0.0-preview.6). No Python or Node setup for the Mac download.
 
-## What works in preview.5
+## What works in preview.6
+
+- **First calculation:** open Calculate, choose ethanol, then Run shape calculation.
+  The included RDKit/MMFF94 engine relaxes its shape and saves both SDF files
+  plus a report. See signed before/after energy values, convergence and 3D
+  geometry; download a reproducible record with file hashes. Water and methane
+  are also available. This is real force-field molecular mechanics, not quantum
+  chemistry or a reaction predictor. No engine account or AI setup is required.
 
 - Classic white, black and neutral grey desktop controls, square panels and a native sidebar. No beige or decorative gradients.
 - Four core sections organise the app: **Learn**, **Molecule**, **Calculate**,
@@ -40,22 +47,23 @@ No actual ORCA or Q-Chem quantum-chemistry run is recorded for this candidate.
 
 ## Screens from the compiled Mac app
 
-![Real local force-field shape comparison](https://github.com/jhagir7-arch/openchem/releases/download/v1.0.0-preview.5/Chem313-shape-chart.png)
+![Real local force-field shape comparison (preview.5 screenshot)](https://github.com/jhagir7-arch/openchem/releases/download/v1.0.0-preview.5/Chem313-shape-chart.png)
 
-![Checked input preparation; no quantum run](https://github.com/jhagir7-arch/openchem/releases/download/v1.0.0-preview.5/Chem313-input-review.png)
+![Checked input preparation; no quantum run (preview.5 screenshot)](https://github.com/jhagir7-arch/openchem/releases/download/v1.0.0-preview.5/Chem313-input-review.png)
 
 ## Downloads and platforms
 
-The preview.5 candidate uses a standalone Apple Silicon Mac build with Python,
+The preview.6 candidate uses a standalone Apple Silicon Mac build with Python,
 RDKit, NumPy, SciPy, Matplotlib, and the prebuilt interface. See [installation
 and scope](release/standalone/README.txt). It is ad-hoc signed and **not Apple
 Developer ID signed or notarized**; macOS may block an Internet download.
 
-Native Windows and Linux CI previously passed [run
-39366818959](https://github.com/jhagir7-arch/openchem/actions/runs/39366818959),
-but binaries are withheld while redistribution and license gates remain
-unresolved. They are not downloadable products. See [portable
-builds](release/portable/README.txt).
+Compiled Mac AppKit QA passed for all three beginner molecules. The download
+record bridge and stale-project checks passed; a fresh-home frozen API check
+also passed without Python or Node. Windows and Linux source/runtime-clearance
+fixes are implemented, but native CI is pending. Artifacts will be offered
+only after native behavior, notice, and distribution gates pass; no
+Windows/Linux download is currently claimed. See [portable builds](release/portable/README.txt).
 
 ## Try the beginner workflow
 

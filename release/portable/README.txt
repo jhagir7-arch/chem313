@@ -27,3 +27,12 @@ licenses/portable-core/MANIFEST.json and DISTRIBUTION_REVIEW.json pass.
 
 App code is Apache-2.0. See LICENSE, NOTICE, THIRD_PARTY_NOTICES.md, and
 licenses/portable-core for retained runtime notices.
+
+Windows runtime terms
+
+The Windows build includes Microsoft Distributable Code supplied with CPython.
+Before its first launch, Chem313 opens the retained terms at
+licenses/portable-core/windows-cpython-runtime/CPYTHON-3.13.16-CRTLICENSE.txt
+and requires an explicit Yes click. The acceptance record is tied to that
+file's SHA-256; a changed terms file is shown and accepted again. This is a
+condition of using the Windows portable build.

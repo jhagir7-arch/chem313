@@ -7,7 +7,7 @@ from .engine import Engine
 from .approval import request_digest, TTL_SECONDS
 from .validation import InputError, PROJECT_RE
 from .chemistry import from_smiles, from_molfile, mol_record_info, summary, svg_for
-from .conformers import molecule_conformer
+from .conformers import molecule_conformer, relax_geometry, validate_relaxation
 from .avogadro_host import AvogadroHost
 from .science_jobs import ScienceJobs, validated_params, operation_info, worker_command
 from .orca_input import prepare_orca_input
@@ -15,7 +15,7 @@ from .orca_runtime import OrcaRuntime
 
 
 class WorkbenchEngine(Engine):
-    _actions = {"molecule.generate_conformer": "read_only", "project.save_note": "project_write",
+    _actions = {"molecule.relax_geometry": "project_write", "molecule.generate_conformer": "read_only", "project.save_note": "project_write",
                 "orca.prepare_input": "project_write", "orca.run": "project_write", "avogadro.ping": "external_read_only", "avogadro.start": "external_write",
                 "avogadro.send": "external_write", "avogadro.capture": "project_write", "science.run": "project_write"}
 
@@ -34,6 +34,12 @@ class WorkbenchEngine(Engine):
             raise InputError("Use a project name starting with a letter, with letters, numbers, hyphens or underscores (48 characters maximum)")
         if not isinstance(params, dict):
             raise InputError("Parameters must be an object")
+        if action == "molecule.relax_geometry":
+            try:
+                validate_relaxation(params)
+            except ValueError as exc:
+                raise InputError(str(exc)) from exc
+            return "project_write"
         if action == "science.run":
             validated_params(params)
             worker_command(params["operation"])
@@ -105,6 +111,20 @@ class WorkbenchEngine(Engine):
         effect = self._validate_desktop(action, params, project)
         if approved is not True:
             raise InputError("Apply requires explicit approved=true")
+        if action == "molecule.relax_geometry":
+            self.approvals.consume(preview_token, self._review_digest(action, params, project, effect))
+            self.store.preflight_event_log(project)
+            try:
+                result = relax_geometry(params)
+            except (ValueError, RuntimeError) as exc:
+                raise InputError(str(exc)) from exc
+            artifacts = [self.store.put(project, "originals", "sdf", result["initial_sdf"].encode("utf-8")),
+                         self.store.put(project, "derived", "sdf", result["sdf"].encode("utf-8"))]
+            report = {key: value for key, value in result.items() if key not in {"initial_sdf", "sdf", "svg"}}
+            report["geometry_artifacts"] = artifacts.copy()
+            artifacts.append(self.store.put(project, "reports", "json", json.dumps(report, indent=2).encode("utf-8")))
+            self.store.event(project, action, self._sha(params), artifacts, report)
+            return {"status": "EXECUTED", "action": action, "project": project, "result": result, "artifacts": artifacts}
         if action == "orca.run":
             self.approvals.consume(preview_token, self._review_digest(action, params, project, effect))
             job = self.orca.start(project, params["source_artifact"])
