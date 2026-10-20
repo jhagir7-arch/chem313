@@ -1,3 +1,4 @@
+
 name: Chem313 portable core candidate
 on:
   workflow_dispatch:
@@ -11,7 +12,7 @@ on:
         required: true
         type: string
 permissions:
-  contents: read
+  contents: write
 jobs:
   native:
     strategy:
@@ -23,11 +24,12 @@ jobs:
           - os: windows-2022
             label: windows-amd64
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 40
+    timeout-minutes: 90
     steps:
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          # The retained CPython CRT conditions are source-pinned below.
+          python-version: '3.13.16'
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
@@ -66,6 +68,23 @@ jobs:
               archive.extractall('unpacked')
           pathlib.Path('unpacked', roots.pop()).rename('source')
           PY
+      - name: Build Linux numerical dependencies from pinned source
+        if: runner.os == 'Linux'
+        working-directory: source
+        shell: bash
+        run: |
+          # Keep deb-src enabled: the completed bundle retains the exact Ubuntu
+          # source archives for every copied GCC runtime library.
+          if [ -f /etc/apt/sources.list.d/ubuntu.sources ]; then
+            sudo sed -i 's/^Types: deb$/Types: deb deb-src/' /etc/apt/sources.list.d/ubuntu.sources
+          else
+            sudo sed -n 's/^deb /deb-src /p' /etc/apt/sources.list | sudo tee /etc/apt/sources.list.d/chem313-source.list
+          fi
+          sudo apt-get update
+          sudo apt-get install -y build-essential gfortran libopenblas-dev pkg-config ninja-build libgcc-s1 libstdc++6 libgfortran5 libquadmath0
+          python -m pip install meson-python Cython pybind11 pythran
+          python -m pip install --force-reinstall --no-deps --no-binary=numpy --no-build-isolation -Ccompile-args=-j2 numpy==2.5.4
+          python -m pip install --no-deps --no-binary=scipy --no-build-isolation -Ccompile-args=-j2 scipy==1.18.1
       - name: Install build dependencies
         working-directory: source
         run: python -m pip install -e "backend[test]" "pyinstaller>=6.19,<7"
@@ -74,7 +93,7 @@ jobs:
         run: npm --prefix frontend ci
       - name: Check portable behavior
         working-directory: source
-        run: python -m pytest backend/tests/test_portable_launcher.py backend/tests/test_portable_notices.py backend/tests/test_standalone_profile.py backend/tests/test_science_jobs.py -q -k "not real_numpy_and_pint_jobs_persist_reports_and_verify_project"
+        run: python -m pytest backend/tests/test_first_calculation.py backend/tests/test_workbench.py backend/tests/test_portable_launcher.py backend/tests/test_portable_notices.py backend/tests/test_standalone_profile.py backend/tests/test_science_jobs.py -q -k "not real_numpy_and_pint_jobs_persist_reports_and_verify_project"
       - name: Build frozen application and inspect license gate
         # Run scientific smoke tests on the local candidate even when notice
         # collection fails. The smoke script still blocks all download archives
@@ -82,6 +101,14 @@ jobs:
         continue-on-error: true
         working-directory: source
         run: python scripts/build_portable.py --output dist/Chem313-core-${{ matrix.label }}
+      - name: Retain exact Ubuntu GCC runtime sources and refresh Linux review
+        if: runner.os == 'Linux'
+        working-directory: source
+        shell: bash
+        run: |
+          bundle="dist/Chem313-core-${{ matrix.label }}"
+          python scripts/prepare_linux_runtime_sources.py "$bundle" --build-command 'pinned NumPy 2.5.4 and SciPy 1.18.1 source build in this workflow'
+          python scripts/build_portable.py --review-bundle "$bundle"
       - name: Exercise frozen workflow without Python or Node on PATH
         working-directory: source
         shell: bash
@@ -112,13 +139,36 @@ jobs:
         working-directory: source
         env:
           BUNDLE_NAME: Chem313-core-${{ matrix.label }}
-        run: python -c "import hashlib,os,pathlib,shutil; n=os.environ['BUNDLE_NAME']; p=pathlib.Path(shutil.make_archive('dist/'+n,'zip','dist',n)); p.with_suffix('.zip.sha256').write_text(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+p.name+'\n')"
+        shell: bash
+        run: |
+          python - <<'PYARCHIVE'
+          import hashlib,os,pathlib,shutil
+          n=os.environ['BUNDLE_NAME']
+          kind='zip' if os.name=='nt' else 'gztar'
+          p=pathlib.Path(shutil.make_archive('dist/'+n,kind,'dist',n))
+          p.with_name(p.name+'.sha256').write_text(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+p.name+'\n')
+          PYARCHIVE
+      - name: Publish only the tested and cleared native download
+        if: steps.release_gate.outputs.releasable == 'true'
+        working-directory: source
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_URL: ${{ inputs.source_url }}
+          BUNDLE_NAME: Chem313-core-${{ matrix.label }}
+        run: |
+          tag=$(python -c "import os; print(os.environ['SOURCE_URL'].split('/download/')[1].split('/')[0])")
+          if [ "$RUNNER_OS" = "Windows" ]; then extension=zip; else extension=tar.gz; fi
+          gh release upload "$tag" "dist/$BUNDLE_NAME.$extension" "dist/$BUNDLE_NAME.$extension.sha256" --repo jhagir7-arch/openchem
+          cp build/portable/workflow.json "build/portable/$BUNDLE_NAME-QA.json"
+          gh release upload "$tag" "build/portable/$BUNDLE_NAME-QA.json" --repo jhagir7-arch/openchem
       - uses: actions/upload-artifact@v4
         if: steps.release_gate.outputs.releasable == 'true'
         with:
           name: Chem313-core-${{ matrix.label }}-tested-candidate
           path: |
             source/dist/*.zip
+            source/dist/*.tar.gz
             source/dist/*.sha256
           if-no-files-found: error
       - uses: actions/upload-artifact@v4
