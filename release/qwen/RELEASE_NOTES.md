@@ -1,6 +1,6 @@
-# OpenChem 1.0.0-preview.2 — standalone Apple Silicon preview
+# Chem313 1.0.0-preview.2 — standalone Apple Silicon preview (historical OpenChem bundle)
 
-OpenChem is a local chemistry workbench for molecule editing, checked input
+Chem313 is a local chemistry workbench for molecule editing, checked input
 preparation, results review, and traceable project records. This preview adds
 an offline 4-bit Qwen3.5-2B-Base calculation-draft assistant to the bundled
 core workflow.
@@ -8,7 +8,8 @@ core workflow.
 ## Download and install
 
 Download the Apple Silicon archive, verify its published SHA-256 checksum,
-then drag `OpenChem.app` to Applications.
+then drag `OpenChem.app` to Applications. This historical preview retains its
+original bundle name.
 
 Apple Silicon (M-series) Mac; macOS 26.2 or newer. Tested on macOS 27. No Python or Node installation is required.
 
@@ -36,10 +37,10 @@ Avogadro, PySCF, and tblite are optional and are not bundled.
 ## Known limitations
 
 Qwen writes local drafts. It can produce invalid or conflicting proposals;
-OpenChem's independent checks can reject detected problems, but passing a
+Chem313's independent checks can reject detected problems, but passing a
 check does not establish scientific correctness. Review all drafts and every
 structure, charge, multiplicity, method, and generated input before use.
 This preview makes no scientific benchmark claim.
 
-OpenChem code is Apache-2.0. Third-party components and the Qwen model retain
+Chem313 code is Apache-2.0. Third-party components and the Qwen model retain
 their respective terms; see the bundled license and notice materials.

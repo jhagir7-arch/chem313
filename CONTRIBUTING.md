@@ -1,6 +1,6 @@
 # Contributing to Chem313
 
-Chem313 is a research preview. Use [GitHub Issues](https://github.com/jhagir7-arch/openchem/issues) for all public questions, bug reports, and proposals. Do not post private research data, credentials, proprietary engine files, or personal paths.
+Chem313 is a research preview. Use [GitHub Issues](https://github.com/jhagir7-arch/chem313/issues) for all public questions, bug reports, and proposals. Do not post private research data, credentials, proprietary engine files, or personal paths.
 
 ## Start small
 

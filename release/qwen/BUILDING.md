@@ -1,4 +1,4 @@
-# Standalone Qwen edition
+# Chem313 standalone Qwen edition
 
 Recipients download the compiled app; these steps are only for maintainers.
 Use an Apple Silicon Mac and Apple's command-line tools. Build the core as

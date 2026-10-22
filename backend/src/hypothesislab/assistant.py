@@ -118,7 +118,7 @@ class Assistant:
         files_ready = all((model/name).is_file() for name in PUBLIC_FILES) if adapter is None else (model/'config.json').is_file() and (model/'model.safetensors-00001-of-00001.safetensors').is_file() and (adapter/'adapters.safetensors').is_file()
         ready = Path(command[0]).is_file() and files_ready
         return {'status':'READY' if ready else 'UNAVAILABLE', 'model':MODEL_ID,
-                'detail':('Bundled 4-bit base model; no OpenChem fine-tuning. Experimental drafts require review; no autonomous calculations.' if adapter is None else 'Local experimental LoRA pilot: 25 updates. Drafts require review; no autonomous calculations.'),
+                'detail':('Bundled 4-bit base model; no Chem313 fine-tuning. Experimental drafts require review; no autonomous calculations.' if adapter is None else 'Local experimental LoRA pilot: 25 updates. Drafts require review; no autonomous calculations.'),
                 **provenance}
 
     def propose(self, prompt):

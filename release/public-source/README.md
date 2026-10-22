@@ -5,12 +5,12 @@ molecule, count its atoms, compare starting shapes, and prepare a calculation
 input you can inspect and keep.
 
 Formerly called OpenChem. This project is independent of
-[Mariewelt/OpenChem](https://github.com/Mariewelt/OpenChem); the repository URL
-stays the same so existing links continue to work.
+[Mariewelt/OpenChem](https://github.com/Mariewelt/OpenChem). The current
+repository is [jhagir7-arch/chem313](https://github.com/jhagir7-arch/chem313).
 
 ## Download
 
-[Chem313 1.0.0-preview.6: downloads, source and checks](https://github.com/jhagir7-arch/openchem/releases/tag/v1.0.0-preview.6). No Python or Node setup for the Mac download.
+[Chem313 1.0.0-preview.6: downloads, source and checks](https://github.com/jhagir7-arch/chem313/releases/tag/v1.0.0-preview.6). Standalone packages for Windows x64, Linux x86_64 and Apple Silicon Mac. No Python or Node setup required.
 
 ## What works in preview.6
 
@@ -47,23 +47,29 @@ No actual ORCA or Q-Chem quantum-chemistry run is recorded for this candidate.
 
 ## Screens from the compiled Mac app
 
-![Real local force-field shape comparison (preview.5 screenshot)](https://github.com/jhagir7-arch/openchem/releases/download/v1.0.0-preview.5/Chem313-shape-chart.png)
+![Real local force-field shape comparison (preview.5 screenshot)](https://github.com/jhagir7-arch/chem313/releases/download/v1.0.0-preview.5/Chem313-shape-chart.png)
 
-![Checked input preparation; no quantum run (preview.5 screenshot)](https://github.com/jhagir7-arch/openchem/releases/download/v1.0.0-preview.5/Chem313-input-review.png)
+![Checked input preparation; no quantum run (preview.5 screenshot)](https://github.com/jhagir7-arch/chem313/releases/download/v1.0.0-preview.5/Chem313-input-review.png)
 
 ## Downloads and platforms
 
-The preview.6 candidate uses a standalone Apple Silicon Mac build with Python,
-RDKit, NumPy, SciPy, Matplotlib, and the prebuilt interface. See [installation
-and scope](release/standalone/README.txt). It is ad-hoc signed and **not Apple
-Developer ID signed or notarized**; macOS may block an Internet download.
+- **Windows x64:** [download ZIP](https://github.com/jhagir7-arch/chem313/releases/download/v1.0.0-preview.6/Chem313-core-windows-amd64.zip). Extract the entire folder and open `Chem313.exe`. Windows 10+ / Server 2022+; native automated checks ran on Server 2022.
+- **Linux x86_64:** [download tar.gz](https://github.com/jhagir7-arch/chem313/releases/download/v1.0.0-preview.6/Chem313-core-linux-x86_64.tar.gz). Extract the entire folder and run `./Chem313`. Tested on Ubuntu 22.04; requires glibc 2.35+. Other distributions and ARM systems are unverified.
+- **Apple Silicon Mac, macOS 14+:** [download DMG](https://github.com/jhagir7-arch/chem313/releases/download/v1.0.0-preview.6/Chem313-1.0.0-preview.6-Mac-arm64.dmg). See [Mac installation and scope](release/standalone/README.txt). Ad-hoc signed, **not Apple Developer ID signed or notarized**; macOS may block an Internet download.
 
-Compiled Mac AppKit QA passed for all three beginner molecules. The download
-record bridge and stale-project checks passed; a fresh-home frozen API check
-also passed without Python or Node. Windows and Linux source/runtime-clearance
-fixes are implemented, but native CI is pending. Artifacts will be offered
-only after native behavior, notice, and distribution gates pass; no
-Windows/Linux download is currently claimed. See [portable builds](release/portable/README.txt).
+Windows and Linux open the interface in your browser from a compiled local
+service. Keep the launcher running while you work. No system Python or Node
+is needed. The executables are unsigned. On first Windows launch, review the
+retained Microsoft runtime terms and choose Yes only if you accept them.
+See [portable installation instructions](release/portable/README.txt).
+
+The compiled Mac interface passed all three beginner molecules, 3D/chart
+rendering, record bridge payload and stale-result checks. Native frozen
+Windows and Linux workflow checks passed all three real calculations from a
+fresh home and relocated directory without Python or Node on PATH. Interactive
+GUI checks on Windows and Linux still need community testers. Published
+packages passed runtime notice and distribution gates; platform QA reports
+and SHA-256 checksums are attached to the release.
 
 ## Try the beginner workflow
 
@@ -105,7 +111,7 @@ Chem313 is a community research preview. Start with [CONTRIBUTING.md](CONTRIBUTI
 ## Feedback, provenance and license
 
 This is a research preview. Report reproducible bugs, confusing steps, or
-useful classroom tasks through [GitHub Issues](https://github.com/jhagir7-arch/openchem/issues).
+useful classroom tasks through [GitHub Issues](https://github.com/jhagir7-arch/chem313/issues).
 Do not include private research data or license credentials.
 
 Project-originated code and documentation are under [Apache-2.0](LICENSE).

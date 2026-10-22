@@ -32,7 +32,7 @@ Formerly OpenChem. Existing data remains in ~/Library/Application Support/
 OpenChem for compatibility. Quit the app before backing up that folder.
 This research preview does not establish general scientific accuracy.
 
-Source and feedback: https://github.com/jhagir7-arch/openchem
+Source and feedback: https://github.com/jhagir7-arch/chem313
 Use GitHub Issues; keep private research files and credentials out of reports.
 App code: Apache-2.0. Dependencies retain their own terms. Notices and the
 native payload checksum manifest are in Contents/Resources/licenses/standalone-core.

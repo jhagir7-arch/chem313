@@ -11,7 +11,7 @@ fi
 mkdir -p "$BUILD"
 npm --prefix frontend run build
 .venv/bin/python scripts/standalone_profile.py "$BUILD/bundle.json"
-.venv/bin/python -m PyInstaller --noconfirm --clean --name openchem-engine \
+.venv/bin/python -m PyInstaller --noconfirm --clean --name chem313-engine \
   --paths backend/src --distpath "$BUILD/engine-dist" --workpath "$BUILD/pyinstaller" \
   --specpath "$BUILD" --add-data "$PWD/frontend/dist:ui" --add-data "$PWD/$BUILD/bundle.json:." \
   --collect-data rdkit --copy-metadata rdkit --copy-metadata numpy --copy-metadata scipy \
@@ -24,18 +24,18 @@ npm --prefix frontend run build
   --exclude-module pandas --exclude-module torch --exclude-module PyQt5 --exclude-module PySide6 \
   desktop/service.py > "$BUILD/freeze.log" 2>&1
 mkdir -p "$OUT/Contents/MacOS" "$OUT/Contents/Resources/engine"
-swiftc -target arm64-apple-macos14.0 -O -framework AppKit -framework WebKit desktop/OpenChem.swift -o "$OUT/Contents/MacOS/OpenChem"
+swiftc -target arm64-apple-macos14.0 -O -framework AppKit -framework WebKit desktop/Chem313.swift -o "$OUT/Contents/MacOS/Chem313"
 cp desktop/Info.plist "$OUT/Contents/Info.plist"
 /usr/libexec/PlistBuddy -c 'Set :CFBundleIdentifier org.openchem.workbench.preview' "$OUT/Contents/Info.plist"
 /usr/libexec/PlistBuddy -c 'Set :CFBundleShortVersionString 1.0.0-preview.6' "$OUT/Contents/Info.plist"
 /usr/libexec/PlistBuddy -c 'Set :CFBundleVersion 26' "$OUT/Contents/Info.plist"
 /usr/libexec/PlistBuddy -c 'Add :OpenChemStandalone bool true' "$OUT/Contents/Info.plist"
-cp -R "$BUILD/engine-dist/openchem-engine/" "$OUT/Contents/Resources/engine/"
-if [ -f desktop/OpenChem.icns ]; then cp desktop/OpenChem.icns "$OUT/Contents/Resources/"; fi
+cp -R "$BUILD/engine-dist/chem313-engine/" "$OUT/Contents/Resources/engine/"
+if [ -f desktop/Chem313.icns ]; then cp desktop/Chem313.icns "$OUT/Contents/Resources/"; fi
 cp LICENSE NOTICE THIRD_PARTY_NOTICES.md release/standalone/README.txt "$OUT/Contents/Resources/"
 .venv/bin/python scripts/collect_standalone_licenses.py \
   --site-packages .venv/lib/python3.13/site-packages --package-lock frontend/package-lock.json \
-  --ui-provenance frontend/dist/ui-provenance.json --node-modules frontend/node_modules --bundle "$OUT" --pyinstaller-toc "$BUILD/pyinstaller/openchem-engine/COLLECT-00.toc" --output "$OUT/Contents/Resources/licenses/standalone-core"
+  --ui-provenance frontend/dist/ui-provenance.json --node-modules frontend/node_modules --bundle "$OUT" --pyinstaller-toc "$BUILD/pyinstaller/chem313-engine/COLLECT-00.toc" --output "$OUT/Contents/Resources/licenses/standalone-core"
 # PyInstaller signs embedded Mach-O files during collection. Sign the outer app last.
 codesign --force --sign - "$OUT"
 codesign --verify --deep --strict "$OUT"

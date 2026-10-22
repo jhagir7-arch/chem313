@@ -89,7 +89,7 @@ class AvogadroHost:
             return {"status": "RESPONDED" if live else "STOPPED", "version": "2.0.0",
                     "installed": app is not None, "application": str(app) if app else None,
                     "socket": str(self.socket) if self.socket else None,
-                    "scope": "Dedicated OpenChem companion window; native plugins are not all verified"}
+                    "scope": "Dedicated Chem313 companion window; native plugins are not all verified"}
 
     def start(self):
         with self.lock:
@@ -97,7 +97,7 @@ class AvogadroHost:
                 return self.status()
             app = application_path()
             if app is None:
-                raise InputError("Avogadro is missing. Use the complete OpenChem Mac package.")
+                raise InputError("Avogadro is missing. Use the Chem313 Mac package.")
             if self.process is None or self.process.poll() is not None:
                 # macOS Unix socket names have a small fixed length limit. Create the
                 # directory before Qt starts, outside a potentially long data path.

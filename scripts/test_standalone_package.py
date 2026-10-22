@@ -13,7 +13,7 @@ import urllib.request
 
 app = Path(sys.argv[1]).resolve()
 report_path = Path(sys.argv[2]).resolve()
-engine = app / 'Contents/Resources/engine/openchem-engine'
+engine = app / 'Contents/Resources/engine/chem313-engine'
 checks = []
 with tempfile.TemporaryDirectory(prefix='OpenChem standalone QA ') as temporary:
     root = Path(temporary)

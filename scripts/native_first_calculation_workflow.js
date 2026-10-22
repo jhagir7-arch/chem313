@@ -25,7 +25,7 @@ try{
   await click('Run shape calculation',root);
   const result=await wait(()=>root.querySelector('.first-result'),'saved '+expectedId+' result');
   if(!result.innerText.includes(expectedFormula)||!result.innerText.includes('MMFF94 energy · kcal/mol'))throw Error('Missing visible formula or units for '+expectedId);
-  if(!result.querySelector('.viewer-wrap canvas'))throw Error('No visible 3D viewer for '+expectedId);
+  await wait(()=>{const canvas=result.querySelector('.viewer-wrap canvas');return visible(canvas)?canvas:null;},'visible 3D viewer for '+expectedId);
   if(!result.querySelector('.two-bars')||result.querySelectorAll('.two-bars strong').length!==2)throw Error('Before/after energy chart missing for '+expectedId);
   if(!result.innerText.includes('SAVED LOCAL RESULT · REAL CALCULATION')||!result.innerText.includes('Identity: MATCH')||!result.innerText.includes('Did it prove a reaction?'))throw Error('Required result provenance or feedback missing for '+expectedId);
   await click('No',result);if(!result.innerText.includes('Correct. It only relaxed the shape'))throw Error('Reaction feedback did not respond for '+expectedId);

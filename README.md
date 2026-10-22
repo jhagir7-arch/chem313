@@ -5,12 +5,12 @@ molecule, count its atoms, compare starting shapes, and prepare a calculation
 input you can inspect and keep.
 
 Formerly called OpenChem. This project is independent of
-[Mariewelt/OpenChem](https://github.com/Mariewelt/OpenChem); the repository URL
-stays the same so existing links continue to work.
+[Mariewelt/OpenChem](https://github.com/Mariewelt/OpenChem). The current
+repository is [jhagir7-arch/chem313](https://github.com/jhagir7-arch/chem313).
 
 ## Download
 
-[Chem313 1.0.0-preview.6: downloads, source and checks](https://github.com/jhagir7-arch/openchem/releases/tag/v1.0.0-preview.6). Standalone packages for Windows x64, Linux x86_64 and Apple Silicon Mac. No Python or Node setup required.
+[Chem313 1.0.0-preview.6: downloads, source and checks](https://github.com/jhagir7-arch/chem313/releases/tag/v1.0.0-preview.6). Standalone packages for Windows x64, Linux x86_64 and Apple Silicon Mac. No Python or Node setup required.
 
 ## What works in preview.6
 
@@ -47,15 +47,15 @@ No actual ORCA or Q-Chem quantum-chemistry run is recorded for this candidate.
 
 ## Screens from the compiled Mac app
 
-![Real local force-field shape comparison (preview.5 screenshot)](https://github.com/jhagir7-arch/openchem/releases/download/v1.0.0-preview.5/Chem313-shape-chart.png)
+![Real local force-field shape comparison (preview.5 screenshot)](https://github.com/jhagir7-arch/chem313/releases/download/v1.0.0-preview.5/Chem313-shape-chart.png)
 
-![Checked input preparation; no quantum run (preview.5 screenshot)](https://github.com/jhagir7-arch/openchem/releases/download/v1.0.0-preview.5/Chem313-input-review.png)
+![Checked input preparation; no quantum run (preview.5 screenshot)](https://github.com/jhagir7-arch/chem313/releases/download/v1.0.0-preview.5/Chem313-input-review.png)
 
 ## Downloads and platforms
 
-- **Windows x64:** [download ZIP](https://github.com/jhagir7-arch/openchem/releases/download/v1.0.0-preview.6/Chem313-core-windows-amd64.zip). Extract the entire folder and open `Chem313.exe`. Windows 10+ / Server 2022+; native automated checks ran on Server 2022.
-- **Linux x86_64:** [download tar.gz](https://github.com/jhagir7-arch/openchem/releases/download/v1.0.0-preview.6/Chem313-core-linux-x86_64.tar.gz). Extract the entire folder and run `./Chem313`. Tested on Ubuntu 22.04; requires glibc 2.35+. Other distributions and ARM systems are unverified.
-- **Apple Silicon Mac, macOS 14+:** [download DMG](https://github.com/jhagir7-arch/openchem/releases/download/v1.0.0-preview.6/Chem313-1.0.0-preview.6-Mac-arm64.dmg). See [Mac installation and scope](release/standalone/README.txt). Ad-hoc signed, **not Apple Developer ID signed or notarized**; macOS may block an Internet download.
+- **Windows x64:** [download ZIP](https://github.com/jhagir7-arch/chem313/releases/download/v1.0.0-preview.6/Chem313-core-windows-amd64.zip). Extract the entire folder and open `Chem313.exe`. Windows 10+ / Server 2022+; native automated checks ran on Server 2022.
+- **Linux x86_64:** [download tar.gz](https://github.com/jhagir7-arch/chem313/releases/download/v1.0.0-preview.6/Chem313-core-linux-x86_64.tar.gz). Extract the entire folder and run `./Chem313`. Tested on Ubuntu 22.04; requires glibc 2.35+. Other distributions and ARM systems are unverified.
+- **Apple Silicon Mac, macOS 14+:** [download DMG](https://github.com/jhagir7-arch/chem313/releases/download/v1.0.0-preview.6/Chem313-1.0.0-preview.6-Mac-arm64.dmg). See [Mac installation and scope](release/standalone/README.txt). Ad-hoc signed, **not Apple Developer ID signed or notarized**; macOS may block an Internet download.
 
 Windows and Linux open the interface in your browser from a compiled local
 service. Keep the launcher running while you work. No system Python or Node
@@ -111,7 +111,7 @@ Chem313 is a community research preview. Start with [CONTRIBUTING.md](CONTRIBUTI
 ## Feedback, provenance and license
 
 This is a research preview. Report reproducible bugs, confusing steps, or
-useful classroom tasks through [GitHub Issues](https://github.com/jhagir7-arch/openchem/issues).
+useful classroom tasks through [GitHub Issues](https://github.com/jhagir7-arch/chem313/issues).
 Do not include private research data or license credentials.
 
 Project-originated code and documentation are under [Apache-2.0](LICENSE).

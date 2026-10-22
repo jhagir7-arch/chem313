@@ -52,7 +52,7 @@ OPERATIONS = {
 }
 
 EXAMPLES = {
-    "pyenzyme.document": {"name": "OpenChem bioscience example"},
+    "pyenzyme.document": {"name": "Chem313 bioscience example"},
     "pysb.first_order_decay": {
         "initial_A": 1.0,
         "rate_per_time": 1.0,

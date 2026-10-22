@@ -490,7 +490,7 @@ final class DesktopApp: NSObject, NSApplicationDelegate, WKUIDelegate, WKNavigat
 
     @objc func about() {
         let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "Development"
-        let credits = "Chem313 (formerly OpenChem). A local chemistry workbench. Structures, reviewed calculation inputs and immutable research records. Standalone builds include the core chemistry and numerical runtimes. The Qwen edition also bundles an offline base model; additional engines and Avogadro require separate local installation. ORCA requires a separately licensed executable. See the distribution README and third-party notices for scope and validation limits."
+        let credits = "Chem313. A local chemistry workbench. Structures, reviewed calculation inputs and immutable research records. Standalone builds include the core chemistry and numerical runtimes. The Qwen edition also bundles an offline base model; additional engines and Avogadro require separate local installation. ORCA requires a separately licensed executable. See the distribution README and third-party notices for scope and validation limits."
         NSApp.orderFrontStandardAboutPanel(options: [.applicationName: "Chem313", .applicationVersion: version, .credits: NSAttributedString(string: credits)])
     }
 
@@ -507,14 +507,14 @@ final class DesktopApp: NSObject, NSApplicationDelegate, WKUIDelegate, WKNavigat
         if let path = env ?? saved {
             let root = URL(fileURLWithPath: path, isDirectory: true)
             if ready(root) { return root }
-            if env != nil { fail("OPENCHEM_SOURCE_ROOT needs a configured OpenChem checkout. Run bash scripts/setup_public_runtime.sh there first."); return nil }
+            if env != nil { fail("OPENCHEM_SOURCE_ROOT needs a configured Chem313 checkout. Run bash scripts/setup_public_runtime.sh there first."); return nil }
         }
         let panel = NSOpenPanel()
         panel.title = "Choose your installed Chem313 source folder"
         panel.message = "First run bash scripts/setup_public_runtime.sh in the downloaded source folder. Then choose that folder here. The native shell does not bundle Python, engines, browser dependencies or models."
         panel.canChooseDirectories = true; panel.canChooseFiles = false; panel.allowsMultipleSelection = false
         guard panel.runModal() == .OK, let root = panel.url else { NSApp.terminate(nil); return nil }
-        guard ready(root) else { fail("This folder is not ready. Run bash scripts/setup_public_runtime.sh in the OpenChem source folder, then reopen OpenChem."); return nil }
+        guard ready(root) else { fail("This folder is not ready. Run bash scripts/setup_public_runtime.sh in the Chem313 source folder, then reopen Chem313."); return nil }
         UserDefaults.standard.set(root.path, forKey: "OpenChemSourceRoot")
         return root
     }
@@ -535,7 +535,7 @@ final class DesktopApp: NSObject, NSApplicationDelegate, WKUIDelegate, WKNavigat
                 child.currentDirectoryURL = root
                 child.arguments = ["-m", "hypothesislab.desktop", "--ui", root.appendingPathComponent("frontend/dist").path, "--data", dataRoot]
             } else {
-                child.executableURL = resources.appendingPathComponent("engine/openchem-engine")
+                child.executableURL = resources.appendingPathComponent("engine/chem313-engine")
                 child.arguments = ["--data", dataRoot]
             }
             let pipe = Pipe()

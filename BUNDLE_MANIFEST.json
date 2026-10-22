@@ -23,8 +23,8 @@
     },
     {
       "path": ".github/workflows/portable.yml",
-      "bytes": 10200,
-      "sha256": "7ebebec02f5b25ef2874d195e2df4c6792b536a9bf9b56377fc8db26820f3740"
+      "bytes": 10198,
+      "sha256": "f5d7e3450d2bc797ccfb8ae3dcd9600c1aea72df908c71f40e573cfc13d0f597"
     },
     {
       "path": ".gitignore",
@@ -33,8 +33,8 @@
     },
     {
       "path": "CONTRIBUTING.md",
-      "bytes": 2503,
-      "sha256": "bddbd440bbf6458bd18e8d971f21f1c360c04bcc87641d85e4ec0429226850f4"
+      "bytes": 2502,
+      "sha256": "110a1a78b2f04bb5a2eca59b4e4acafcccc754fe2334cbdcd63d8b66fcbf3c92"
     },
     {
       "path": "GITHUB_RELEASE_DRAFT.md",
@@ -48,13 +48,13 @@
     },
     {
       "path": "NOTICE",
-      "bytes": 581,
-      "sha256": "4d3aa35454df5ef6e462e479a021e812613725bce01c1e804f7b0b7482320c62"
+      "bytes": 611,
+      "sha256": "05c028ec9c022419b23099705b967b718a0d509cad3aae1ee4e39c4b5b803f66"
     },
     {
       "path": "PROJECT_INDEX.md",
-      "bytes": 9215,
-      "sha256": "0a1e096686e2e42d7f2e14ebb459f70d7f139c17cad825eb05248ac9f66b2d6e"
+      "bytes": 9213,
+      "sha256": "79e227972a84d6e99752be91ce6b6a860bdb722e996b68ccce05867fa385d2b7"
     },
     {
       "path": "PUBLICATION_STATUS.md",
@@ -63,8 +63,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 6471,
-      "sha256": "2e0e0a1d5c7404961bbc61c23f95f902e724e643a2e12a5d67e88bc3fb112385"
+      "bytes": 7525,
+      "sha256": "50f1343276ad418e90334155e78cb2995e664524bda0b3f637e13c02e9cc6405"
     },
     {
       "path": "RELEASE_CHECKS.md",
@@ -118,8 +118,8 @@
     },
     {
       "path": "backend/src/hypothesislab/assistant.py",
-      "bytes": 9156,
-      "sha256": "1e376be77adb6534e89ff096658d1007c6dd2928340b4db986367aa8da7d1a4e"
+      "bytes": 9155,
+      "sha256": "96ce181370d4b32daa74fcb5351f75f4f13602535f46c7436777a8986cfb4744"
     },
     {
       "path": "backend/src/hypothesislab/avogadro.py",
@@ -128,13 +128,13 @@
     },
     {
       "path": "backend/src/hypothesislab/avogadro_host.py",
-      "bytes": 7941,
-      "sha256": "3b75f9b0a19ab25e14b351da1880c634ca6964e87f72896ddebe9a8cffa7c09e"
+      "bytes": 7930,
+      "sha256": "c882ee7582830bd8a6a3de4e7b072623a3361ed70d256e7d1209f137f92aeab9"
     },
     {
       "path": "backend/src/hypothesislab/bioscience_contracts.py",
-      "bytes": 3496,
-      "sha256": "60f6e4c617def0c9b501f23028a394526972729311d4e5a7f89c5f185caa3fbe"
+      "bytes": 3495,
+      "sha256": "29e2cdb73dc9aab4e5d88cd9bf61bb0263a0eeebed1b00ea857fe83536564e6a"
     },
     {
       "path": "backend/src/hypothesislab/bioscience_worker.py",
@@ -168,8 +168,8 @@
     },
     {
       "path": "backend/src/hypothesislab/desktop.py",
-      "bytes": 6627,
-      "sha256": "344849699fddcc849e5efae2c282f49e9b880eb38fb5ed40b9bde379b756535b"
+      "bytes": 6626,
+      "sha256": "2c4c12ac85df625661c638685eddc2c19353031d75f5ac64b624e3a3b3a02701"
     },
     {
       "path": "backend/src/hypothesislab/engine.py",
@@ -248,8 +248,8 @@
     },
     {
       "path": "backend/src/hypothesislab/science_contracts.py",
-      "bytes": 9528,
-      "sha256": "5b66432669fc9152c11db83c67a598a723de8f4f9633433542c39faa584e1f47"
+      "bytes": 9527,
+      "sha256": "cbea9116a14f7756ddce6625010fdc4ee80a95635f9f85111e4310a703d6b0da"
     },
     {
       "path": "backend/src/hypothesislab/science_jobs.py",
@@ -268,8 +268,8 @@
     },
     {
       "path": "backend/src/hypothesislab/study_agent.py",
-      "bytes": 14017,
-      "sha256": "544811336744f7246536a4c91b50db58220a028efbc9e87a4d23707c2cc989d1"
+      "bytes": 14016,
+      "sha256": "078443ef107814789090d2e2bb7f8a87085799c82f05ee63f0a1d51e90c2fb00"
     },
     {
       "path": "backend/src/hypothesislab/study_api.py",
@@ -403,8 +403,8 @@
     },
     {
       "path": "backend/tests/test_qwen_deployment.py",
-      "bytes": 3087,
-      "sha256": "4cf04468aef08932254e458acd1e04a75a457eec7ca08b98eeb647d6eaaa821b"
+      "bytes": 3085,
+      "sha256": "1dbe07c7094f5fed12a575fc5d38a58367fcaf74ae1c9989e5978d01d9d02f12"
     },
     {
       "path": "backend/tests/test_rc1_hardening.py",
@@ -518,18 +518,18 @@
     },
     {
       "path": "desktop/Info.plist",
-      "bytes": 866,
-      "sha256": "ad96a64470e5dc319d41c7d596a5266889bcdc24c7844162c32cfb86f382773e"
+      "bytes": 864,
+      "sha256": "058d997184f7b7c6548e29ac9a2d3ac468ce2e2bbf7739f9eb8bce4efaa0c76f"
     },
     {
-      "path": "desktop/OpenChem.icns",
+      "path": "desktop/Chem313.icns",
       "bytes": 116267,
       "sha256": "d7afd641e4aef82dc57469afc3975a902a9385492e89e3cd0525ae319044347a"
     },
     {
-      "path": "desktop/OpenChem.swift",
-      "bytes": 43026,
-      "sha256": "f1739cd26340cbb2353086090eb06c4c76bdc90125c25b0735ed05c793d7406d"
+      "path": "desktop/Chem313.swift",
+      "bytes": 43002,
+      "sha256": "1d747a47f9700c45120e86cfbdf77ec4a572ef7d2510b82d9d60c5b41515a470"
     },
     {
       "path": "desktop/bioscience_service.py",
@@ -537,7 +537,7 @@
       "sha256": "d50352b5f7895cba1530dc5b3bc05695ad09e1282b4fc6862949075268ad1ef3"
     },
     {
-      "path": "desktop/branding/OpenChem.png",
+      "path": "desktop/branding/Chem313.png",
       "bytes": 53185,
       "sha256": "4ee0137cdfaaf7603d0c79ffead6b47cc2118f2f0131fe4ee074602a7c53a7ea"
     },
@@ -728,8 +728,8 @@
     },
     {
       "path": "docs/COMMUNITY.md",
-      "bytes": 1709,
-      "sha256": "e9ead30fdd93b9f3b6a19fc0e509db1af2faef2dc816d6739833fd0ca6b34af8"
+      "bytes": 1708,
+      "sha256": "11dce797508673a97c6f7d6bbf98934e3468ecfa29584f48281241115a17be01"
     },
     {
       "path": "environments/bioscience-macos-arm64.lock",
@@ -768,13 +768,13 @@
     },
     {
       "path": "frontend/package-lock.json",
-      "bytes": 245234,
-      "sha256": "f8878f2ac43026575717d3ff3ac91f8410560957be81f7f464014e19ee9e0817"
+      "bytes": 245232,
+      "sha256": "52aea02d997328ee5906d3748a60b55ac8f78e8811b13b04eee1a26678dce1a4"
     },
     {
       "path": "frontend/package.json",
-      "bytes": 851,
-      "sha256": "7c983d4311fd6cd6094f6e2d796e5e01341a0f86be02bb4befde8c8febb51ac1"
+      "bytes": 850,
+      "sha256": "aa2e92c2a9c498b6083dc58c5ffd92dcbc25d0b61db822c7e3168938bf80c7d1"
     },
     {
       "path": "frontend/scripts/copy-assets.mjs",
@@ -788,8 +788,8 @@
     },
     {
       "path": "frontend/src/App.tsx",
-      "bytes": 50855,
-      "sha256": "41ef13b29feff47948b519af24eff1dbec5f42b94d5c98ff68cc250cfb78dc59"
+      "bytes": 50853,
+      "sha256": "2c5773899a06459f53d96aa04de6aafe3a70740f0ead39283321117c575e7b43"
     },
     {
       "path": "frontend/src/Assistant.tsx",
@@ -818,8 +818,8 @@
     },
     {
       "path": "frontend/src/Guide.tsx",
-      "bytes": 4144,
-      "sha256": "4f240cc15f4be341d6147b0243fedd5f64a9d43ca84d0fc712bad202edbd2eb7"
+      "bytes": 4143,
+      "sha256": "951dae69c3f4fa7151311044c157553f67288a5db2e3521963a01178b934227f"
     },
     {
       "path": "frontend/src/IdentityCheck.tsx",
@@ -843,13 +843,13 @@
     },
     {
       "path": "frontend/src/OrcaRun.tsx",
-      "bytes": 8188,
-      "sha256": "77ec3eb72b9e13bb5ac2236b99a6b23ecafec205ddd95bed66cc0a33138abe54"
+      "bytes": 8187,
+      "sha256": "f40dc1f9cc35c134f1c4b2a80adb4257f6cdd02bde721277c08a6648462fcb36"
     },
     {
       "path": "frontend/src/QchemCoach.tsx",
-      "bytes": 4096,
-      "sha256": "f7b46674c57aefc2e30807c037dbabc28822db6e1c0e745e1bde20a541ff8aa8"
+      "bytes": 4095,
+      "sha256": "e63ae6b99c5204cc706f0abc829365f4de012b42ddfe115832b48feed96c7665"
     },
     {
       "path": "frontend/src/QchemPreparation.tsx",
@@ -858,8 +858,8 @@
     },
     {
       "path": "frontend/src/QchemRun.tsx",
-      "bytes": 13172,
-      "sha256": "bb4e350034da003fc10b8a1bdd4627def0144400e8264b86c45861244bdb72dc"
+      "bytes": 13169,
+      "sha256": "6414ba5300160fbbf79a2d89f1148e4d9e438cf0c3529eff435fb145afa55866"
     },
     {
       "path": "frontend/src/QchemWorkflow.tsx",
@@ -873,13 +873,13 @@
     },
     {
       "path": "frontend/src/Recipes.tsx",
-      "bytes": 13553,
-      "sha256": "18fc76914b2cba96e42103f8ed91b5bd263818ba9e1429070eb84e617a9a4dd6"
+      "bytes": 13551,
+      "sha256": "5f27f38023e8cc90e7e366b03c64880d8e0eb57d235afb81321aca487cbb90f5"
     },
     {
       "path": "frontend/src/RepresentationLesson.tsx",
-      "bytes": 4988,
-      "sha256": "c41e46544fe4116d1eb3da5556e5cc78c49df76f7910b4f124403723fe62573c"
+      "bytes": 4986,
+      "sha256": "eeb7de3aa49e1d7565ed00c5a3fb544ab4d23013156a14eee452436c91b2136f"
     },
     {
       "path": "frontend/src/Science.tsx",
@@ -893,8 +893,8 @@
     },
     {
       "path": "frontend/src/StudyAgent.tsx",
-      "bytes": 16468,
-      "sha256": "f611240b3c96c144a7056c65b9a6031ccbc256975483fbfb7661c139502c9822"
+      "bytes": 16466,
+      "sha256": "817472303b9fd17f496cb7132c60269148c7594f2c206950daa9997128e7199a"
     },
     {
       "path": "frontend/src/Viewer.tsx",
@@ -918,8 +918,8 @@
     },
     {
       "path": "frontend/src/calculationReview.mjs",
-      "bytes": 2037,
-      "sha256": "dad71b4f91a4e760191f49f7e8b14f0d3b1b47b7347fbccd860a538c2d916320"
+      "bytes": 2036,
+      "sha256": "7d669bbddf9f32742a86a13cb3ddba2c055f2813dca4ccdd6c595530aed83634"
     },
     {
       "path": "frontend/src/classic-desktop.css",
@@ -1013,8 +1013,8 @@
     },
     {
       "path": "frontend/src/representationData.mjs",
-      "bytes": 2286,
-      "sha256": "05c10cb90bd88657be9b8a53ea68d55cc258565aaa0946dce3211ad5b79b1ec4"
+      "bytes": 2285,
+      "sha256": "8f483929ed9abfa8e2069c24dcba9b6eb3506984bf66336920fde52ac9251996"
     },
     {
       "path": "frontend/src/result-card.css",
@@ -1053,8 +1053,8 @@
     },
     {
       "path": "frontend/src/studyReport.mjs",
-      "bytes": 3376,
-      "sha256": "ec6686dc7ae9841fe6fbbb79e63cbca8d9e6f6d70cc32754a8a9cc5e1e8b2839"
+      "bytes": 3374,
+      "sha256": "e81eb9108f4e639e59e2ad6d909aad1294a83b030e0fd4f9565c7aa1ba67a8a4"
     },
     {
       "path": "frontend/src/styles.css",
@@ -1238,8 +1238,8 @@
     },
     {
       "path": "release/public-source/GITHUB_RELEASE_DRAFT.md",
-      "bytes": 3761,
-      "sha256": "411590eb9555afa2af983354b517da63e0892b5e380e445aec6452b1399db5de"
+      "bytes": 3756,
+      "sha256": "8d2ae35cdb9d1864a41572ebbdc59acfa395fd97c4fdba3bd77a8ab6e7e7903b"
     },
     {
       "path": "release/public-source/LICENSE",
@@ -1248,8 +1248,8 @@
     },
     {
       "path": "release/public-source/NOTICE",
-      "bytes": 581,
-      "sha256": "4d3aa35454df5ef6e462e479a021e812613725bce01c1e804f7b0b7482320c62"
+      "bytes": 611,
+      "sha256": "05c028ec9c022419b23099705b967b718a0d509cad3aae1ee4e39c4b5b803f66"
     },
     {
       "path": "release/public-source/PUBLICATION_STATUS.md",
@@ -1258,8 +1258,8 @@
     },
     {
       "path": "release/public-source/README.md",
-      "bytes": 6471,
-      "sha256": "2e0e0a1d5c7404961bbc61c23f95f902e724e643a2e12a5d67e88bc3fb112385"
+      "bytes": 7525,
+      "sha256": "50f1343276ad418e90334155e78cb2995e664524bda0b3f637e13c02e9cc6405"
     },
     {
       "path": "release/public-source/RELEASE_CHECKS.md",
@@ -1268,8 +1268,8 @@
     },
     {
       "path": "release/public-source/SECURITY.md",
-      "bytes": 522,
-      "sha256": "0c0c4e89b1f86159c103292dea1f5b0947d9d500b9b537f3a3f951fbca481d68"
+      "bytes": 521,
+      "sha256": "d8a3cf329efbf0ffe7793114aca5d3447448b32ac4520d5eec22ac9fffd53911"
     },
     {
       "path": "release/public-source/SOURCE_ORIGIN.md",
@@ -1288,18 +1288,18 @@
     },
     {
       "path": "release/qwen/BUILDING.md",
-      "bytes": 3076,
-      "sha256": "e82fa94f832e921eeb4fd6a212e267e2f839d77ba432d3fd1ece3eff530443bc"
+      "bytes": 3084,
+      "sha256": "84c11eb0e6bc7749912eb24db2de0c1239711fc24044abe0d4f3ce10b78b326f"
     },
     {
       "path": "release/qwen/README.txt",
-      "bytes": 1984,
-      "sha256": "458cab2a9de0d4caca32bfc019bb45cb3db4e5151da305660cc388746114ccb1"
+      "bytes": 2071,
+      "sha256": "fca8f0699f018a050d9bff01c6f5119ca7597400cc0e59f37b6f07b454b8b137"
     },
     {
       "path": "release/qwen/RELEASE_NOTES.md",
-      "bytes": 2002,
-      "sha256": "2ef46f4e233b04bb00f9493d7a5485636a18a5feaec74a2328fcff2b68b09ebf"
+      "bytes": 2085,
+      "sha256": "f3d2c757ee6e79e164642e614545a56c91917897bc8eb1dbc80ef63429c5235e"
     },
     {
       "path": "release/qwen/VERIFICATION.md",
@@ -1318,8 +1318,8 @@
     },
     {
       "path": "release/standalone/README.txt",
-      "bytes": 2309,
-      "sha256": "1c301135f5c5276870ea898956cce634c7b3d69f8780b4af6dd7a69b46f5692d"
+      "bytes": 2308,
+      "sha256": "434a092db0ab8d701458f9b70b0156c75cacbd9a098e07bba30b10cdee63653b"
     },
     {
       "path": "scripts/assemble_qwen_app.py",
@@ -1343,8 +1343,8 @@
     },
     {
       "path": "scripts/build_public_app.sh",
-      "bytes": 1240,
-      "sha256": "a6fad669bd0bde87cf2f1bdb15233c0422dd982ffee2e854086a7ea6f7141098"
+      "bytes": 1236,
+      "sha256": "10a6787ed045c62b85ab872f3f2cc9c0f9ddaed39e08ca2b8d8c933e0eb2b174"
     },
     {
       "path": "scripts/build_public_qwen_worker.sh",
@@ -1358,8 +1358,8 @@
     },
     {
       "path": "scripts/build_standalone_app.sh",
-      "bytes": 3124,
-      "sha256": "13101fcc11c3992c90b9d8082b34ec5dc6468779b6c0d13e849032bc0cee2c84"
+      "bytes": 3117,
+      "sha256": "53f285c27f132e17ce02d5072e4d238c3231b3831a3077a46e33efe786abd94b"
     },
     {
       "path": "scripts/check_project_index.py",
@@ -1388,8 +1388,8 @@
     },
     {
       "path": "scripts/native_first_calculation_workflow.js",
-      "bytes": 8053,
-      "sha256": "226a9cfac2e67fc13b275e02e068066f131ea2f9b1561e500758ae2bd2a370ee"
+      "bytes": 8100,
+      "sha256": "73830646e772b6a3e77ca4ce73c59c76638602437cd84b7e09ba585d871323fa"
     },
     {
       "path": "scripts/native_public_workflow.js",
@@ -1403,8 +1403,8 @@
     },
     {
       "path": "scripts/package_public_source.py",
-      "bytes": 7214,
-      "sha256": "2abb080e22d0dd1b4c68bf6547fc335f2bf5d37321e094b31c968f1051fb5ead"
+      "bytes": 7211,
+      "sha256": "3c23fbcc93a77b7be335e6d2151de121e7ce814ca96e36367ce3a85c78531592"
     },
     {
       "path": "scripts/package_qwen_mac.sh",
@@ -1423,8 +1423,8 @@
     },
     {
       "path": "scripts/render_app_icon.swift",
-      "bytes": 2848,
-      "sha256": "2a82ed840999d4e85a24248901db188207f69e55a2da6f95f2bd6670bc0162d9"
+      "bytes": 2844,
+      "sha256": "ed1da094042ab6097172ff5e06bbfb53641a290b93519c785e7dd7bc7f1a9646"
     },
     {
       "path": "scripts/setup_public_runtime.sh",
@@ -1453,8 +1453,8 @@
     },
     {
       "path": "scripts/test_packaged_engine.py",
-      "bytes": 5749,
-      "sha256": "1f3b86be2e27ee4ae1ef266663e0ed4ac4fd9ca77593b6b4ba39c05ffd64c7a7"
+      "bytes": 5747,
+      "sha256": "9bd7aa48d111f11375016494bff9c94001564ecbba1e454a65c778902e05ea50"
     },
     {
       "path": "scripts/test_portable_package.py",
@@ -1473,8 +1473,8 @@
     },
     {
       "path": "scripts/test_standalone_package.py",
-      "bytes": 6443,
-      "sha256": "4926f69ea952b94c757e215dfc4fad7b0930cb62fcc2345b8e913964451c7b9d"
+      "bytes": 6442,
+      "sha256": "805c2d920a6250de47bfa4e59c39d71d91f9542c1c9e2dd5480d8bca5e69a162"
     }
   ]
 }

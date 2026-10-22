@@ -13,7 +13,7 @@ export function studyReport(project, plan, study) {
   const rows = Array.isArray(result.candidates) ? result.candidates : [];
   const score = value => typeof value === 'number' && Number.isFinite(value) ? String(value) : 'not reported';
   const lines = [
-    'OpenChem molecule study', `Project: ${project}`, `Study: ${study.id}`, `Status: ${study.status}`,
+    'Chem313 molecule study', `Project: ${project}`, `Study: ${study.id}`, `Status: ${study.status}`,
     `Question: ${scope.prompt ?? 'not recorded'}`, `Molecule: ${scope.molecule ?? 'not reported'}`,
     `Formula: ${scope.formula ?? 'not reported'}`, `SMILES: ${scope.canonical_smiles ?? 'not reported'}`,
     `Completed samples: ${study.completed ?? result.completed ?? 0} of ${study.requested ?? result.requested ?? scope.samples ?? 'not reported'}`,
@@ -32,6 +32,6 @@ export function studyReport(project, plan, study) {
   if (study.error) lines.push('', `Run error: ${study.error}`);
   lines.push('', 'Traceability', `Planner model: ${scope.provenance?.model ?? 'not reported'}`, `Model variant: ${scope.provenance?.variant ?? 'not reported'}`, `Model SHA-256: ${scope.provenance?.model_sha256 ?? 'not reported'}`);
   if (scope.planner_note) lines.push(`Planner note: ${scope.planner_note}`);
-  lines.push('Export JSON in OpenChem retains the exact coordinates, sampling settings, model provenance and saved artifact hashes. This readable report is a summary, not a replacement for that record.');
+  lines.push('Export JSON in Chem313 retains the exact coordinates, sampling settings, model provenance and saved artifact hashes. This readable report is a summary, not a replacement for that record.');
   return lines.join('\n') + '\n';
 }

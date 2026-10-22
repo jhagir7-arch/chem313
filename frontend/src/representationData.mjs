@@ -8,7 +8,7 @@ export function lessonAtoms(geometry){
  return numbers.map((atomicNumber,index)=>{if(!Number.isInteger(atomicNumber)||!Object.hasOwn(SYMBOLS,atomicNumber))fail('Lesson geometry supports integer hydrogen, carbon, and oxygen atomic numbers only.');const point=coordinates[index];if(!Array.isArray(point)||point.length!==3||point.some(value=>!Number.isFinite(value)))fail('Lesson geometry has a malformed coordinate.');return {index:index+1,atomicNumber,symbol:SYMBOLS[atomicNumber],coordinates:[...point]};});
 }
 export function countFormula(atoms){const counts={C:0,H:0,O:0};for(const atom of atoms){if(!Object.hasOwn(counts,atom.symbol))fail('Unsupported lesson atom.');counts[atom.symbol]++;}return ['C','H','O'].filter(symbol=>counts[symbol]).map(symbol=>symbol+(counts[symbol]===1?'':counts[symbol])).join('');}
-export function xyzText(atoms,comment='OpenChem generated starting geometry'){return [String(atoms.length),comment,...atoms.map(atom=>`${atom.symbol} ${atom.coordinates.map(value=>value.toFixed(6)).join(' ')}`)].join('\n')+'\n';}
+export function xyzText(atoms,comment='Chem313 generated starting geometry'){return [String(atoms.length),comment,...atoms.map(atom=>`${atom.symbol} ${atom.coordinates.map(value=>value.toFixed(6)).join(' ')}`)].join('\n')+'\n';}
 export function incompleteHydrogenExercise(atoms,variant=0){
  if(!Number.isSafeInteger(variant))fail('Exercise variant must be an integer.');
  const hydrogens=atoms.filter(atom=>atom.atomicNumber===1);if(!hydrogens.length)fail('A hydrogen atom is needed for the incomplete-coordinate exercise.');

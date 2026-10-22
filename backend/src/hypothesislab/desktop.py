@@ -67,7 +67,7 @@ def main(argv=None):
         for p in sorted(api.ROOT.iterdir()):
             if not p.is_symlink() and p.is_dir() and PROJECT_RE.fullmatch(p.name):
                 projects.append(p.name)
-        return {"name": "OpenChem", "version": __version__, "projects": projects,
+        return {"name": "Chem313", "version": __version__, "projects": projects,
                 "data_directory": str(api.ROOT), "engines": {"rdkit": rdBase.rdkitVersion,
                 "scipy": scipy.__version__, "ketcher": "3.18.0"},
                 "avogadro": api.engine.avogadro.status(), "orca_engine": executable_status(api.engine.orca.executable, discover=False),

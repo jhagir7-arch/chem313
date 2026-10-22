@@ -1,4 +1,4 @@
-// Original OpenChem identity. Rebuild: swift scripts/render_app_icon.swift
+// Original Chem313 identity. Rebuild: swift scripts/render_app_icon.swift
 import AppKit
 import Foundation
 
@@ -45,10 +45,10 @@ for base in [16, 32, 128, 256, 512] {
     try render(base).write(to: iconset.appendingPathComponent("icon_\(base)x\(base).png"))
     try render(base*2).write(to: iconset.appendingPathComponent("icon_\(base)x\(base)@2x.png"))
 }
-try render(1024).write(to: root.appendingPathComponent("desktop/branding/OpenChem.png"))
+try render(1024).write(to: root.appendingPathComponent("desktop/branding/Chem313.png"))
 let task = Process()
 task.executableURL = URL(fileURLWithPath: "/usr/bin/iconutil")
-task.arguments = ["-c", "icns", iconset.path, "-o", root.appendingPathComponent("desktop/OpenChem.icns").path]
+task.arguments = ["-c", "icns", iconset.path, "-o", root.appendingPathComponent("desktop/Chem313.icns").path]
 try task.run(); task.waitUntilExit()
 guard task.terminationStatus == 0 else { fatalError("iconutil failed") }
-print("Rendered OpenChem icon at all macOS sizes.")
+print("Rendered Chem313 icon at all macOS sizes.")

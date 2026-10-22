@@ -24,7 +24,7 @@ denied('/api/session',403,origin='https://untrusted.invalid')
 token=call('/api/session')['session_token']
 denied('/api/workbench',403)
 info=call('/api/workbench',token=token)
-assert info['name']=='OpenChem' and info['engines']['rdkit']
+assert info['name']=='Chem313' and info['engines']['rdkit']
 r=call('/api/execute',{'action':'molecule.generate_conformer','params':{'smiles':'CCO'},'project':'frozen-proof','approved':True},token)
 assert r['result']['coordinate_count']==9 and r['result']['converged']
 geometry=r['result']['sdf']
@@ -84,4 +84,4 @@ assert call('/api/projects/first-real-calculation/verify',token=token)['status']
 print(json.dumps({'real_first_calculation':lesson},indent=2))
 verify=call('/api/projects/frozen-proof/verify',token=token)
 assert verify['status']=='PASS',verify
-print(json.dumps({'status':'PASS','runtime':'running local OpenChem service','version':info['version'],'engines':info['engines'],'checks':['untrusted origin rejected','unauthenticated data rejected','RDKit MMFF 3D generation','ORCA input charge-spin rejection and exact source/input/report retrieval','UTF-8 byte-exact note storage/download','single-use receipt replay rejected','SciPy known-line fit','Matplotlib SVG artifact','stored artifact integrity']},indent=2))
+print(json.dumps({'status':'PASS','runtime':'running local Chem313 service','version':info['version'],'engines':info['engines'],'checks':['untrusted origin rejected','unauthenticated data rejected','RDKit MMFF 3D generation','ORCA input charge-spin rejection and exact source/input/report retrieval','UTF-8 byte-exact note storage/download','single-use receipt replay rejected','SciPy known-line fit','Matplotlib SVG artifact','stored artifact integrity']},indent=2))

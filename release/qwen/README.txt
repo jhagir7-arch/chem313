@@ -1,10 +1,11 @@
-OpenChem 1.0.0-preview.2 — Apple Silicon Mac
+Chem313 1.0.0-preview.2 — Apple Silicon Mac (historical OpenChem bundle)
 
 Install
 
 1. Download the release archive and verify its published SHA-256 checksum.
-2. Open the archive and drag OpenChem.app to Applications.
-3. Open OpenChem from Applications.
+2. Open the archive and drag `OpenChem.app` to Applications; that historical
+   bundle name is retained for this preview.
+3. Open Chem313 from Applications.
 
 Apple Silicon (M-series) Mac; macOS 26.2 or newer. Tested on macOS 27. No Python or Node installation is required.
 
@@ -16,7 +17,7 @@ disable macOS security protections in Terminal.
 
 Included
 
-OpenChem bundles Ketcher and Indigo for molecule editing, RDKit structure
+Chem313 bundles Ketcher and Indigo for molecule editing, RDKit structure
 inspection and 3D preparation, 3Dmol, NumPy, SciPy, Matplotlib, a Python
 runtime, and the recipes plus input/results workflow. It also bundles a 4-bit
 Qwen3.5-2B-Base model for local calculation drafts. The upstream model is
@@ -33,7 +34,7 @@ are not bundled.
 Use and limits
 
 Qwen produces drafts only. It can produce invalid or internally conflicting
-proposals, which OpenChem may reject through its independent checks. Review
+proposals, which Chem313 may reject through its independent checks. Review
 every surviving proposal, molecular structure, charge, multiplicity, method,
 and generated input before use. It does not replace chemical judgment or
 scientific validation.
@@ -41,5 +42,5 @@ scientific validation.
 Project data is stored locally in ~/Library/Application Support/OpenChem.
 Keep original source files and back up projects after quitting the app.
 
-OpenChem code is Apache-2.0. Bundled components retain their own terms; see
+Chem313 code is Apache-2.0. Bundled components retain their own terms; see
 LICENSE, NOTICE, THIRD_PARTY_NOTICES.md, and the app's bundled licenses.

@@ -126,7 +126,7 @@ Cl1 Cl 0.5 0.5 0.5
  'openmm.harmonic': {'distance_nm':0.2, 'equilibrium_nm':0.1, 'k_kJ_mol_nm2':100.0},
  'mdtraj.distance': {'coordinates_nm':[[0,0,0],[1,0,0],[0,0,0],[2,0,0]]},
  'mdanalysis.geometry': {'coordinates_nm':[[0,0,0],[2,0,0]]},
- 'rocrate.manifest': {'name':'OpenChem runtime example'},
+ 'rocrate.manifest': {'name':'Chem313 runtime example'},
  'ord.reaction': {'smiles':'CCO'},
 }
 

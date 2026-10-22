@@ -89,7 +89,7 @@ def validate_plan(prompt, raw):
             if len(set(counts))>1 or counts and not 1<=counts[0]<=8:
                 raise InputError('Choose one count between one and eight; nothing ran.')
             checked=validate_plan(prompt,json.dumps({'task':'shapes','molecule':normalized,'samples':counts[0] if counts else 5}))
-            checked['planner_note']='Qwen asked for clarification. OpenChem recognized the explicit molecule and shape request and prepared this checked fallback plan. Review it before Run.'
+            checked['planner_note']='Qwen asked for clarification. Chem313 recognized the explicit molecule and shape request and prepared this checked fallback plan. Review it before Run.'
             checked['message']=checked['planner_note']+' '+checked['message']
             return checked
         return {'task':'clarify','message':'Please choose one supported molecule and a count from one to eight. Available: '+', '.join(CATALOG)+'. No structure was guessed.'}

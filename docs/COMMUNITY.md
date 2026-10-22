@@ -1,6 +1,6 @@
 # Chem313 community guidance
 
-Chem313 welcomes public, reproducible feedback through [GitHub Issues](https://github.com/jhagir7-arch/openchem/issues). There is no email support channel in this preview.
+Chem313 welcomes public, reproducible feedback through [GitHub Issues](https://github.com/jhagir7-arch/chem313/issues). There is no email support channel in this preview.
 
 ## Helpful reports
 

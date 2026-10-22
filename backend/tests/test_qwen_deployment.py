@@ -30,7 +30,7 @@ def test_public_model_never_requires_private_adapter(tmp_path, monkeypatch):
 
 def test_public_status_uses_engine_relative_resources(tmp_path, monkeypatch):
     model = public_resources(tmp_path)
-    executable = tmp_path/'engine/openchem-engine'
+    executable = tmp_path/'engine/chem313-engine'
     runtime = tmp_path/'workers/qwen/qwen-worker'
     runtime.parent.mkdir(parents=True); runtime.touch()
     monkeypatch.setattr(assistant.sys, 'frozen', True, raising=False)
@@ -39,7 +39,7 @@ def test_public_status_uses_engine_relative_resources(tmp_path, monkeypatch):
     status = service.status()
     assert status['status'] == 'READY'
     assert status['adapter_sha256'] is None
-    assert 'no OpenChem fine-tuning' in status['detail']
+    assert 'no Chem313 fine-tuning' in status['detail']
     (model/'tokenizer.json').unlink()
     assert service.status()['status'] == 'UNAVAILABLE'
 

@@ -1,9 +1,9 @@
-OpenChem
-Copyright 2026 OpenChem contributors
+Chem313
+Copyright 2026 Chem313 contributors (formerly OpenChem contributors)
 Maintained by Jhagir Abdul.
 
 Licensed under the Apache License, Version 2.0. This grant covers
-OpenChem-originated source and documentation supplied in this release.
+Chem313-originated source and documentation supplied in this release.
 Third-party dependencies, separately attributed material, external programs,
 models and datasets retain their own licenses and are not relicensed.
 The standalone Qwen edition includes separately licensed runtimes and a
