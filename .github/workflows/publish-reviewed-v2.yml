@@ -1,4 +1,4 @@
-name: Import reviewed v2 source
+name: Import community handoff
 on:
   workflow_dispatch:
 permissions:
@@ -15,15 +15,15 @@ jobs:
         run: |
           import hashlib, json, pathlib, stat, subprocess, zipfile
           root = pathlib.Path.cwd()
-          archive = 'reviewed-source-2.0.0-alpha.1-final.zip'
+          archive = 'chem313-community-handoff.zip'
           workflow = '.github/workflows/publish-reviewed-v2.yml'
-          base = '108b52baab4d034db5a872c7c99c75192dd3c6e4'
+          base = 'e5213b012f59cc4a66e694e1e2c17b01a0310667'
           subprocess.run(['git', 'merge-base', '--is-ancestor', base, 'HEAD'], check=True)
           changed = set(subprocess.check_output(['git', 'diff', '--name-only', base, 'HEAD'], text=True).splitlines())
           assert changed <= {archive, workflow}, 'Concurrent repository edits require review'
           data = (root / archive).read_bytes()
-          assert hashlib.sha256(data).hexdigest() == '74fdd1b4859f4cf982d5f2ab1ec972caf0a25c8bd5e1ed031715dddb3dd33d2b'
-          prefix = 'reviewed-source-2.0.0-alpha.1-final/'
+          assert hashlib.sha256(data).hexdigest() == '0640c00fbb3cbd8e312cdabdfdd246db7fd3376e5e8c2788d2e03831004a9e59'
+          prefix = 'chem313-community-handoff/'
           with zipfile.ZipFile(root / archive) as z:
               names = z.namelist()
               assert len(names) == len(set(names)) and len(names) < 1000
@@ -53,5 +53,5 @@ jobs:
           subprocess.run(['git', 'config', 'user.name', 'github-actions[bot]'], check=True)
           subprocess.run(['git', 'config', 'user.email', '41898282+github-actions[bot]@users.noreply.github.com'], check=True)
           subprocess.run(['git', 'add', '-A'], check=True)
-          subprocess.run(['git', 'commit', '-m', 'feat: reviewed Chem313 v2 source alpha with release gates'], check=True)
+          subprocess.run(['git', 'commit', '-m', 'docs: preserve community handoff and historical module source'], check=True)
           subprocess.run(['git', 'push', 'origin', 'HEAD:main'], check=True)
