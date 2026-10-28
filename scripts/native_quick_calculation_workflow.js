@@ -1,0 +1,101 @@
+// Explicit QA hook in the compiled app. Never substitutes a fake engine for ORCA.
+const checks=[];
+const tick=()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+const visible=e=>!!e?.getClientRects().length;
+const button=name=>[...document.querySelectorAll('button')].find(e=>visible(e)&&e.textContent.trim()===name);
+const scopedButton=(root,name)=>[...root.querySelectorAll('button')].find(e=>visible(e)&&e.textContent.trim()===name);
+const setInput=(input,value)=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(input,value);input.dispatchEvent(new Event('input',{bubbles:true}));};
+const wait=async(fn,label,ms=30000)=>{const end=Date.now()+ms;while(Date.now()<end){const value=await fn();if(value)return value;await new Promise(r=>setTimeout(r,100));}throw Error('Timed out: '+label);};
+const assert=(ok,label)=>{if(!ok)throw Error(label);};
+const click=async name=>{const e=await wait(()=>{const b=button(name);return b&&!b.disabled?b:null},name);e.click();await tick();};
+try{
+ await click('Calculate');
+ const root=document.querySelector('.quick-calculation');
+ const token=(await(await fetch('/api/session')).json()).session_token;
+ const api=async path=>{const r=await fetch(path,{headers:{'X-HypothesisLab-Session':token}});if(!r.ok)throw Error('API '+r.status);return r.json();};
+ const project=document.getElementById('current-project').value;
+ const eventsBefore=(await api('/api/projects/'+project+'/events')).events;
+ const initialStatus=await api('/api/orca/status');
+ const controls=root.querySelectorAll('select');
+ for(const [name,formula,atoms] of [['methane','CH4',5],['ethanol','C2H6O',9],['water','H2O',3]]){
+  Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(controls[0],name);controls[0].dispatchEvent(new Event('change',{bubbles:true}));await tick();
+  await click('Prepare calculation');
+  await wait(()=>root.querySelector('.quick-review pre'),'reviewed '+name);
+  const input=root.querySelector('.quick-review pre').textContent;
+  assert(input.includes('! HF def2-SVP')&&input.includes('* xyz 0 1'),'Wrong checked model/state');
+  assert(root.querySelector('.quick-choices').textContent.includes(formula),'Wrong formula '+formula);
+  assert(input.split('\n').filter(line=>/^[A-Z][a-z]?\s+[-+\d]/.test(line)).length===atoms,'Wrong atom count');
+  await wait(()=>root.querySelector('.quick-geometry canvas'),'3D view '+name);
+  assert(root.querySelector('.quick-geometry summary').textContent.includes('Text alternative'),'Missing geometry text alternative');
+  const lesson=await wait(()=>root.querySelector('.representation-lesson'),'representation lesson '+name);
+  const practice=lesson.querySelector('input[type="number"]');
+  setInput(practice,String(atoms));await tick();
+  scopedButton(lesson,'Check answer').click();
+  await wait(()=>lesson.querySelector('.lesson-result'),'practice answer '+name);
+  assert(lesson.querySelector('.lesson-result').textContent.includes('Correct.')&&lesson.querySelector('.lesson-result').textContent.includes(String(atoms)+' atoms'),'Atom practice did not confirm '+atoms);
+  const coordinates=lesson.querySelector('.representation-coordinates');coordinates.open=true;coordinates.dispatchEvent(new Event('toggle'));await tick();
+  assert(lesson.querySelectorAll('tbody tr').length===atoms,'Complete coordinate table count '+name);
+  assert(scopedButton(lesson,'Download complete geometry as XYZ text'),'Complete XYZ control missing');
+  const edited=lesson.querySelector('.missing-h-exercise');
+  assert(Number(edited.querySelector('pre').textContent.split('\n')[0])===atoms-1,'Edited teaching copy has wrong count');
+  assert(!/hydrogen|omitted|missing/i.test(edited.querySelector('pre').textContent.split('\n')[1]),'Edited copy discloses answer before reveal');
+  assert(!edited.textContent.includes('hydrogen from atom row'),'Edited copy discloses explanation before reveal');
+  scopedButton(edited,'Reveal explanation').click();await wait(()=>edited.querySelector('.lesson-result'),'edited explanation '+name);
+  assert(edited.querySelector('.lesson-result').textContent.includes('hydrogen from atom row'),'Edited copy explanation missing');
+  const oxygen=lesson.querySelector('#oxygen-coordinate-row');
+  if(oxygen){
+   assert(lesson.querySelectorAll('#oxygen-coordinate-row').length===1,'Oxygen row identifier is not unique');
+   lesson.querySelector('a[href="#oxygen-coordinate-row"]').click();await tick();
+   assert(document.activeElement===oxygen,'Oxygen row link did not focus its row');
+  }
+  const qchem=await wait(()=>root.querySelector('.qchem-preparation'),'Q-Chem preparation '+name);
+  const qchemInput=qchem.querySelector('pre[aria-label="Exact Q-Chem input"]').textContent;
+  assert(qchemInput.includes('$molecule\n0 1\n')&&qchemInput.includes('$rem\nJOBTYPE sp\nMETHOD hf\nBASIS def2-SVP\n$end'),'Invalid Q-Chem syntax '+name);
+  assert(qchemInput.split('\n').filter(line=>/^[A-Z][a-z]?\s+[-+\d]/.test(line)).length===atoms,'Wrong Q-Chem atom count '+name);
+  assert(scopedButton(qchem,'Download Q-Chem input'),'Q-Chem download control missing');
+  const charge=qchem.querySelector('input[aria-label="Q-Chem charge"]');
+  setInput(charge,'');await tick();
+  await wait(()=>qchem.querySelector('[role="alert"]'),'Q-Chem required charge rejection '+name);
+  assert(!scopedButton(qchem,'Download Q-Chem input'),'Q-Chem download remained enabled with blank charge');
+  setInput(charge,'0');await tick();
+  await wait(()=>qchem.querySelector('pre[aria-label="Exact Q-Chem input"]'),'Q-Chem charge reset '+name);
+  const multiplicity=qchem.querySelector('input[aria-label="Q-Chem multiplicity"]');
+  setInput(multiplicity,'2');await tick();
+  await wait(()=>qchem.querySelector('[role="alert"]'),'Q-Chem parity rejection '+name);
+  assert(qchem.textContent.includes('incompatible parity'),'Q-Chem parity error is unclear');
+  setInput(multiplicity,'1');await tick();
+  await wait(()=>qchem.querySelector('pre[aria-label="Exact Q-Chem input"]'),'Q-Chem valid reset '+name);
+  checks.push('Q-Chem preparation '+name+': exact HF/def2-SVP single-point input with '+atoms+' generated coordinates; blank charge and incompatible charge-spin parity rejected');
+  checks.push('Real local structure inspection and RDKit 3D for '+name+'; checked HF/def2-SVP neutral-singlet input with '+atoms+' atoms');
+  checks.push('Representation lesson '+name+': practice count, complete '+atoms+'-row table, separately edited '+(atoms-1)+'-row teaching copy, and complete-geometry XYZ control verified'+(oxygen?'; oxygen row focus verified':''));
+ }
+ const ready=['READY','UNVERIFIED'].includes(initialStatus.status);
+ if(!ready){
+  assert(button('Save and run reviewed calculation').disabled,'Run enabled with no ORCA');
+  assert(root.textContent.includes('separately licensed'),'Setup explanation absent');
+  const after=(await api('/api/projects/'+project+'/events')).events;
+  assert(after.filter(e=>e.action==='orca.run_started').length===eventsBefore.filter(e=>e.action==='orca.run_started').length,'Unexpected engine launch');
+  checks.push('Missing ORCA visibly blocks execution; no engine run event or fabricated result');
+  return JSON.stringify({status:'PASS',scope:'Compiled app preparation and missing-engine handling only',orca_calculation:'NOT_RUN',blocker:initialStatus,checks,project,url:location.href});
+ }
+ await click('Save and run reviewed calculation');
+ await wait(()=>root.querySelector('.quick-job .tag')&&['SUCCEEDED','FAILED','TIMED_OUT','CANCELLED','INTERRUPTED'].includes(root.querySelector('.quick-job .tag').textContent),'actual ORCA terminal state',340000);
+ await wait(()=>root.querySelector('.quick-result'),'saved output review');
+ const events=(await api('/api/projects/'+project+'/events')).events;
+ const finished=events.filter(e=>e.action==='orca.run_finished').at(-1);
+ assert(finished,'No finished audit event');
+ const reportArtifact=finished.artifacts.find(a=>a.relative_path.endsWith('.json'));
+ const read=async a=>{const [p,g,f]=a.relative_path.split('/');const r=await fetch('/api/projects/'+p+'/artifact/'+g+'/'+f,{headers:{'X-HypothesisLab-Session':token}});if(!r.ok)throw Error('Saved artifact unavailable');return r.arrayBuffer();};
+ const report=JSON.parse(new TextDecoder().decode(await read(reportArtifact)));
+ assert(report.state==='SUCCEEDED'&&report.normal_termination_marker,'Actual ORCA process did not succeed: '+JSON.stringify(report));
+ assert(root.querySelector('.quick-result h3').textContent==='Printed result ready to inspect','Required convergence/energy markers absent');
+ const output=finished.artifacts.find(a=>a.relative_path.endsWith('.txt'));
+ const digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',await read(output)))).map(v=>v.toString(16).padStart(2,'0')).join('');
+ assert(digest===output.sha256&&digest===report.output_sha256,'Stored output hash mismatch');
+ assert((await api('/api/projects/'+project+'/verify')).status==='PASS','Project integrity failure');
+ checks.push('Real configured ORCA ran water; successful process, normal termination, SCF convergence and finite energy; saved output hash and project integrity verified');
+ const resultText=root.querySelector('.quick-result').textContent;
+ await click('Open full output reader');
+ await wait(()=>document.querySelector('.orca-workspace')?.innerText.includes('SAVED LOCAL RUN'),'saved-run provenance in full reader');
+ return JSON.stringify({status:'PASS',scope:'Actual ORCA end to end in compiled app',orca_calculation:'RUN',checks,project,report,result_text:resultText,output,url:location.href});
+}catch(error){return JSON.stringify({status:'FAIL',error:String(error),stack:error.stack,checks,body:document.body.innerText.slice(-6000)});}

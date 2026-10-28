@@ -11,11 +11,11 @@ from sync_version import package_version
 
 ROOT = Path(__file__).resolve().parents[1]
 TREES = ('app/src', 'app/test', 'app/scripts', 'app/src-tauri/src', 'app/src-tauri/capabilities', 'app/src-tauri/icons', 'design',
-         'backend/src', 'backend/tests', 'frontend/src', 'frontend/test',
+         'backend/src', 'backend/tests', 'frontend/src', 'frontend/test', 'training/public',
          'frontend/scripts', 'native', 'environments', 'examples', 'release/public-source',
          'release/standalone', 'release/portable', 'release/qwen', 'desktop/licenses/standalone-npm', 'desktop/licenses/qwen',
          'desktop/licenses/portable-runtime', 'desktop/licenses/rust-v2', 'scripts/tests')
-FILES = ('PROJECT_INDEX.md', 'CHANGELOG.md', 'app/README.md', 'app/package.json', 'app/package-lock.json', 'app/vite.config.ts', 'app/tsconfig.json', 'app/index.html', 'app/.gitignore',
+FILES = ('docs/history/2026-10-17-desktop-ui-refinement.md', 'docs/history/2026-10-17-research-workspace.md', 'docs/history/2026-10-17-standalone-mac.md', 'docs/history/2026-10-18-beginner-workflow.md', 'docs/history/2026-10-18-qchem-beginner.md', 'docs/history/2026-10-18-qchem-execution.md', 'docs/history/2026-10-18-qwen-study-agent.md', 'docs/history/2026-10-18-qwen-study-agent-spec.md', 'docs/history/2026-10-19-chem313-workspace.md', 'docs/history/2026-10-24-v2-direction.md', 'PROJECT_INDEX.md', 'CHANGELOG.md', 'app/README.md', 'app/package.json', 'app/package-lock.json', 'app/vite.config.ts', 'app/tsconfig.json', 'app/index.html', 'app/.gitignore',
          'app/src-tauri/Cargo.toml', 'app/src-tauri/Cargo.lock', 'app/src-tauri/build.rs', 'app/src-tauri/tauri.conf.json', 'app/src-tauri/.gitignore',
          'CONTRIBUTING.md', 'docs/COMMUNITY.md', 'scripts/check_project_index.py', 'scripts/native_chem313_workflow.js', 'scripts/native_first_calculation_workflow.js', 'backend/pyproject.toml', 'frontend/package.json', 'frontend/package-lock.json',
          'frontend/tsconfig.json', 'frontend/vite.config.ts', 'frontend/index.html',
@@ -37,6 +37,14 @@ FILES = ('PROJECT_INDEX.md', 'CHANGELOG.md', 'app/README.md', 'app/package.json'
          'desktop/requirements-lock.txt', 'scripts/install_engines.sh', 'scripts/build_science_workers.sh',
          'scripts/build_bioscience_worker.sh', 'scripts/test_science_engines.py',
          'scripts/test_extended_engines.py', 'scripts/test_bioscience_engines.py',
+         'scripts/collect_runtime_licenses.py', 'scripts/native_beginner_workflow.js', 'scripts/native_orca_review_workflow.js',
+         'scripts/native_qchem_workflow.js', 'scripts/native_quick_calculation_workflow.js', 'scripts/native_study_agent_workflow.js',
+         'scripts/native_study_cancel_workflow.js', 'scripts/probe_extended_engines.py', 'scripts/release_parts.py',
+         'scripts/test_avogadro_integration.py', 'scripts/test_avogadro_ui.py', 'scripts/test_beginner_workflow_ui.py',
+         'scripts/test_orca_preparation_ui.py', 'scripts/test_orca_review_ui.py', 'scripts/test_packaged_science.py',
+         'scripts/test_qchem_execution_ui.py', 'scripts/test_qchem_workflow_ui.py', 'scripts/test_quick_calculation_ui.py',
+         'scripts/test_recipe_lifecycle_ui.py', 'scripts/test_research_workspace_ui.py', 'scripts/test_science_ui.py',
+         'scripts/test_study_agent_ui.py', 'scripts/test_workbench_ui.py',
          'scripts/package_public_source.py', 'benchmarks/run.py', 'benchmarks/verify_bundle.py',
          'contracts/openapi.generated.json', 'contracts/desktop.openapi.generated.json',
          'contracts/tool-actions.schema.json', 'contracts/example-fit.json',
@@ -46,7 +54,8 @@ EXCLUDED = {'__pycache__', '.pytest_cache', 'node_modules', '.DS_Store', 'public
 
 
 def eligible(relative):
-    return not any(p in EXCLUDED or p.endswith('.egg-info') for p in relative.parts) and relative.suffix not in {'.pyc', '.pyo'}
+    parts = relative.parts
+    return not any((p in EXCLUDED and not (p == 'public' and parts[:2] == ('training', 'public'))) or p.endswith('.egg-info') for p in parts) and relative.suffix not in {'.pyc', '.pyo'}
 
 
 def main():

@@ -4,9 +4,13 @@ A local molecular study workbench: draw a small molecule, relax its shape with R
 
 Formerly OpenChem; independent of [Mariewelt/OpenChem](https://github.com/Mariewelt/OpenChem).
 
+## Community handoff — development paused
+
+Maintainer development is paused as of 28 October 2026. The repository stays open for community contributions through issues and pull requests. This is a research alpha, not a finished scientific product. Start with the [community handoff and remaining gaps](COMMUNITY_HANDOFF.md). No ongoing support or delivery date is promised.
+
 ## Current development release: 2.0.0-alpha.1
 
-This consolidates the interface into one Tauri desktop app with Structure, 3D, Setup and Results views. The included engine performs real MMFF94/UFF molecular mechanics. No Python, Node, engine account or AI model is required to run an installer.
+This consolidates the interface into one Tauri desktop app with Structure, 3D, Setup and Results views. The included engine performs real MMFF94/UFF molecular mechanics. The desktop packaging is designed to bundle its runtime. No ready-to-run v2 installer is currently cleared for distribution; building from source requires the development tools in the build instructions.
 
 1. Choose a starter molecule in the Navigator, or use File → New molecule to enter SMILES. You can also draw in Ketcher or import one `.mol`/`.sdf` record.
 2. Open Setup, choose MMFF94 or UFF and select Run.
@@ -30,3 +34,7 @@ See [app build instructions](app/README.md), [CONTRIBUTING.md](CONTRIBUTING.md),
 Use [GitHub Issues](https://github.com/jhagir7-arch/chem313/issues) for bugs, beginner walkthroughs, chemistry review and accessibility feedback. Please omit private research and license credentials. The new Tauri shell stores calculations under its org.chem313.desktop application-data directory. Legacy OpenChem project data is preserved separately and is not automatically migrated.
 
 Project-originated source and documentation use [Apache-2.0](LICENSE). Dependencies retain their terms: see [NOTICE](NOTICE), [third-party notices](THIRD_PARTY_NOTICES.md) and [source origin](SOURCE_ORIGIN.md). Binary installers carry a dependency inventory and license texts under their resources/notices directory; source-only archives do not include proprietary engines, model weights or private data.
+
+## Qwen and historical modules
+
+The historical assistant source and pinned base-model conversion instructions are retained in [release/qwen](release/qwen/BUILDING.md); the [training pilot](training/public/README.md) explains its reproducibility limits. Obtain upstream model weights separately under their own license. The private adapter and dataset have no completed redistribution clearance and are excluded. These modules are not integrated into the current v2 desktop workflow. See the [module index and roadmap](COMMUNITY_HANDOFF.md) before choosing work.

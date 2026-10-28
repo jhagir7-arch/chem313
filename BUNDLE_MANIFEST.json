@@ -57,6 +57,11 @@
       "sha256": "5b6383666cdd77bc4feabdc604eaa45bc23108b0f6832c86dcb740271f97d452"
     },
     {
+      "path": "COMMUNITY_HANDOFF.md",
+      "bytes": 3714,
+      "sha256": "f31e21b95a304df692280bbd5fc4c44f1dee650412cca642698abe3d91bc9cee"
+    },
+    {
       "path": "CONTRIBUTING.md",
       "bytes": 4096,
       "sha256": "48acc04d2b88a6d23d89bf3ad3be6012a61f31b399b05b7bddf95e8a4092cd58"
@@ -83,13 +88,13 @@
     },
     {
       "path": "PUBLICATION_STATUS.md",
-      "bytes": 1886,
-      "sha256": "43d9b6a6c5f9ce0038449aa3f5dbef11103339d251d0896cc6470aa68e4c929b"
+      "bytes": 1946,
+      "sha256": "af19b4b6549bcae83d952b7b2239eac9780585d736de718d1125382df135fb8c"
     },
     {
       "path": "README.md",
-      "bytes": 3283,
-      "sha256": "7bb20347dafd39ebb576e7f19048f421520a7e39c60dfcda8403729ab3d2792b"
+      "bytes": 4350,
+      "sha256": "c02c153540a9761478670fd8e5c305f86e2d1b1d1ef516c1092afba15a00415f"
     },
     {
       "path": "RELEASE_CHECKS.md",
@@ -117,9 +122,19 @@
       "sha256": "da88760f502c0280eac6791cafe61af5866cf59af93d2c414919e65b43523cce"
     },
     {
+      "path": "V2_FROZEN_QA.json",
+      "bytes": 2998,
+      "sha256": "26da8c031367d78568ad5603c0eeb3c9a8978c8233fc458231e277e16bcb1b6a"
+    },
+    {
       "path": "VERIFICATION.json",
       "bytes": 5445,
       "sha256": "ed24d553367ebcdd99d686cf7d39db2695c8dc2cdc1a5a2f6b543cf8213c05fb"
+    },
+    {
+      "path": "VERIFICATION_FINAL.md",
+      "bytes": 3585,
+      "sha256": "685dca768dfa3820864a77606b8cebb740313429e77b20c043f09da12f1ad275"
     },
     {
       "path": "app/.gitignore",
@@ -703,8 +718,8 @@
     },
     {
       "path": "backend/src/hypothesislab/store.py",
-      "bytes": 13664,
-      "sha256": "228c745330a38843e26b47f45c6541224516736d8d6a7a72d97f7d8ea5d0da6b"
+      "bytes": 13952,
+      "sha256": "39c265bc7e228459b761a1f483f8c38f22dd6f8915919b40747b5eded1514673"
     },
     {
       "path": "backend/src/hypothesislab/study_agent.py",
@@ -758,8 +773,8 @@
     },
     {
       "path": "backend/tests/test_calculation_api.py",
-      "bytes": 3931,
-      "sha256": "951834733a878c7f2f7f25287d63a8c4e71eaa14d2b96b7eace2f23b6403be01"
+      "bytes": 4163,
+      "sha256": "a4d9893c5d1f9f9f3ee9cf5961010a3caab99c8b9b8faa1948bea5432f466ad5"
     },
     {
       "path": "backend/tests/test_catalog.py",
@@ -818,8 +833,8 @@
     },
     {
       "path": "backend/tests/test_orca_runtime.py",
-      "bytes": 7608,
-      "sha256": "81c88d254be649301e5f39611f14040c78ec45f935d72b41d40d0cbecbba1248"
+      "bytes": 8058,
+      "sha256": "aff91cb26c29223294a95c05a33fa8a88a46cabb29ddb104230e120d14b6d84b"
     },
     {
       "path": "backend/tests/test_portable_launcher.py",
@@ -848,8 +863,8 @@
     },
     {
       "path": "backend/tests/test_qchem_runtime.py",
-      "bytes": 13323,
-      "sha256": "be1f2da487c7afcfa94fcf93f0091a184aa3b325f9f6ea82cb647e50d4d58cda"
+      "bytes": 14203,
+      "sha256": "63896bae24815ee7d3ef93ef46af7037dac28a6ca475926f6135991d43375734"
     },
     {
       "path": "backend/tests/test_qwen_deployment.py",
@@ -873,18 +888,18 @@
     },
     {
       "path": "backend/tests/test_science_api.py",
-      "bytes": 4359,
-      "sha256": "d3f865a1c6d223c62d0c95bff7d8a407016c38f54d073fd2d01c9fc29142404a"
+      "bytes": 4748,
+      "sha256": "ddda220a44a165e9e8d0b1a95cd1f2f8f8e4cda3df28403cd8afdd25343bad8d"
     },
     {
       "path": "backend/tests/test_science_jobs.py",
-      "bytes": 9149,
-      "sha256": "88dee14fdf790615de94c7f46eaa59c6bea42ffaccdba6a8e03a6d7cda2c6a37"
+      "bytes": 9444,
+      "sha256": "ba5523f956b5ce4b791c586d4050ff94add0815e5cde72bae02a48fa82425fdc"
     },
     {
       "path": "backend/tests/test_security_cp03.py",
-      "bytes": 8461,
-      "sha256": "2202ac036cbf718d77fdead46ef8d29f0a4c17c61cbf592036aad60c8d5d22df"
+      "bytes": 8688,
+      "sha256": "a6838f7a648b467d1e0f75425d1f6072d895a7e2932524e912737d7fa53cc872"
     },
     {
       "path": "backend/tests/test_standalone_profile.py",
@@ -1355,6 +1370,56 @@
       "path": "docs/COMMUNITY.md",
       "bytes": 1803,
       "sha256": "0803ab47a9c56305907ca931d62f53c459dc8dd525f53ea02534e7ab96afb881"
+    },
+    {
+      "path": "docs/history/2026-10-17-desktop-ui-refinement.md",
+      "bytes": 2195,
+      "sha256": "60c39bd5ebdb19f7bd9e01c8541ad36bdbf151d4758f5be41692d9da5203772e"
+    },
+    {
+      "path": "docs/history/2026-10-17-research-workspace.md",
+      "bytes": 2696,
+      "sha256": "08a339a97930fa6a3d783ed07ec809bd806506d1bd89b8fa5e8ccc137676f91f"
+    },
+    {
+      "path": "docs/history/2026-10-17-standalone-mac.md",
+      "bytes": 2560,
+      "sha256": "70089f30e3df2e4041de81f95ae57d79b059f7727e49802dc2a8c37cb78dc2b2"
+    },
+    {
+      "path": "docs/history/2026-10-18-beginner-workflow.md",
+      "bytes": 2657,
+      "sha256": "b5ded5ca913206c28ed87bb809e7b0a67190d282bb975f7cd1867163eeb6538f"
+    },
+    {
+      "path": "docs/history/2026-10-18-qchem-beginner.md",
+      "bytes": 2774,
+      "sha256": "29128ef744c6f1f260d714e9e074683bf4055653198f18a9676b1e96dabb7c10"
+    },
+    {
+      "path": "docs/history/2026-10-18-qchem-execution.md",
+      "bytes": 1858,
+      "sha256": "0967969cfc7f96307113ca558e324e525484ea324bba19c215d7f1d5a60c6033"
+    },
+    {
+      "path": "docs/history/2026-10-18-qwen-study-agent-spec.md",
+      "bytes": 1730,
+      "sha256": "b30bcd26484973397fc1537aed04665ec4a82cb50dd0ea868f1ce0e6627a2cc2"
+    },
+    {
+      "path": "docs/history/2026-10-18-qwen-study-agent.md",
+      "bytes": 2308,
+      "sha256": "420212a940f24a6af02aff783a7eafbb4e21b8075966508c2481c880d451554d"
+    },
+    {
+      "path": "docs/history/2026-10-19-chem313-workspace.md",
+      "bytes": 2009,
+      "sha256": "257202900bbc2108f5c13475ab65fc7345855c0f0317eab64a3c5ff21d27e3d2"
+    },
+    {
+      "path": "docs/history/2026-10-24-v2-direction.md",
+      "bytes": 653,
+      "sha256": "7e986d0b53dcbbf58ddc2b1dc71bb31ae7dca268804077d921fa36991b181fbb"
     },
     {
       "path": "environments/bioscience-macos-arm64.lock",
@@ -1877,6 +1942,11 @@
       "sha256": "e871d12b89c8c4f94b9cd10a256d91fec55b2c3243202c6a811e405959d9367f"
     },
     {
+      "path": "release/public-source/COMMUNITY_HANDOFF.md",
+      "bytes": 3714,
+      "sha256": "f31e21b95a304df692280bbd5fc4c44f1dee650412cca642698abe3d91bc9cee"
+    },
+    {
       "path": "release/public-source/CONTRIBUTING.md",
       "bytes": 636,
       "sha256": "bee9a1e333b67c4c207e26cd5ecc21a583ffd17bd072e38fb7053cd7ff7f94fa"
@@ -1898,13 +1968,13 @@
     },
     {
       "path": "release/public-source/PUBLICATION_STATUS.md",
-      "bytes": 1886,
-      "sha256": "43d9b6a6c5f9ce0038449aa3f5dbef11103339d251d0896cc6470aa68e4c929b"
+      "bytes": 1946,
+      "sha256": "af19b4b6549bcae83d952b7b2239eac9780585d736de718d1125382df135fb8c"
     },
     {
       "path": "release/public-source/README.md",
-      "bytes": 3283,
-      "sha256": "7bb20347dafd39ebb576e7f19048f421520a7e39c60dfcda8403729ab3d2792b"
+      "bytes": 4350,
+      "sha256": "c02c153540a9761478670fd8e5c305f86e2d1b1d1ef516c1092afba15a00415f"
     },
     {
       "path": "release/public-source/RELEASE_CHECKS.md",
@@ -1932,9 +2002,19 @@
       "sha256": "da88760f502c0280eac6791cafe61af5866cf59af93d2c414919e65b43523cce"
     },
     {
+      "path": "release/public-source/V2_FROZEN_QA.json",
+      "bytes": 2998,
+      "sha256": "26da8c031367d78568ad5603c0eeb3c9a8978c8233fc458231e277e16bcb1b6a"
+    },
+    {
       "path": "release/public-source/VERIFICATION.json",
       "bytes": 5445,
       "sha256": "ed24d553367ebcdd99d686cf7d39db2695c8dc2cdc1a5a2f6b543cf8213c05fb"
+    },
+    {
+      "path": "release/public-source/VERIFICATION_FINAL.md",
+      "bytes": 3585,
+      "sha256": "685dca768dfa3820864a77606b8cebb740313429e77b20c043f09da12f1ad275"
     },
     {
       "path": "release/qwen/BUILDING.md",
@@ -2022,6 +2102,11 @@
       "sha256": "96b86c5f47671fc126042dc70969cbdefc22f70bff6a66cee010e8ca22ae53df"
     },
     {
+      "path": "scripts/collect_runtime_licenses.py",
+      "bytes": 1713,
+      "sha256": "16d02f3b0d765b7ba2f58a9bba912920edee06f4a51b9b9ee6a265cb9216c939"
+    },
+    {
       "path": "scripts/collect_standalone_licenses.py",
       "bytes": 31715,
       "sha256": "e89f870a6d65c8ace319ed0aa5e39fd89c10dff3ab239a3a9be1e3e98a635c77"
@@ -2042,6 +2127,11 @@
       "sha256": "0a6bf8dde15331de89a2eb011eede0808b3063f0f7b7a8f1f9769cc1811b8a48"
     },
     {
+      "path": "scripts/native_beginner_workflow.js",
+      "bytes": 3971,
+      "sha256": "aaa744a1348cd535df2efbbe8b4a068851ca8990386c3b37355455cbe2c56b54"
+    },
+    {
       "path": "scripts/native_chem313_workflow.js",
       "bytes": 13327,
       "sha256": "505ff5d0fa94d8d1fbc0a5ab81bd7eb61b9e9d084c42b5bc5803f094caacedf1"
@@ -2052,9 +2142,24 @@
       "sha256": "73830646e772b6a3e77ca4ce73c59c76638602437cd84b7e09ba585d871323fa"
     },
     {
+      "path": "scripts/native_orca_review_workflow.js",
+      "bytes": 5528,
+      "sha256": "21fda9feebeeca29003313f406ab28efdc90b11c7475dbd349abd9f950028aad"
+    },
+    {
       "path": "scripts/native_public_workflow.js",
       "bytes": 1952,
       "sha256": "7fe44526cfec8eb28d56756ce3981a3801e37eeed3a5a25e3afa33d2af910d23"
+    },
+    {
+      "path": "scripts/native_qchem_workflow.js",
+      "bytes": 7945,
+      "sha256": "85c774bc685adf433da887427dc3e9665319860319c33b6f4d1e10b2f3759519"
+    },
+    {
+      "path": "scripts/native_quick_calculation_workflow.js",
+      "bytes": 9746,
+      "sha256": "665dfc68f2d5a133347d28dc227c5e457f7709f71f452f28500b6756eec66cd0"
     },
     {
       "path": "scripts/native_standalone_workflow.js",
@@ -2062,9 +2167,19 @@
       "sha256": "0dd3919855fab5f4045b7356f56019e58c99925f6d8b55367b544b78258002d7"
     },
     {
+      "path": "scripts/native_study_agent_workflow.js",
+      "bytes": 8265,
+      "sha256": "82465615f5464f3c27f0b09fb52d93a8ec0e0fe899a70d04f20f1dfd097dda35"
+    },
+    {
+      "path": "scripts/native_study_cancel_workflow.js",
+      "bytes": 1915,
+      "sha256": "157d13d2b6badb6a89d243b98361fbab54bf405c65c30d4bd6fffec3d67a2e12"
+    },
+    {
       "path": "scripts/package_public_source.py",
-      "bytes": 7871,
-      "sha256": "df160d8061153b4be60cb2173b51bd3704dbcafdf59d9aa74e73936abcc6af58"
+      "bytes": 9386,
+      "sha256": "9f03bf4659aa49197931d08bcaef3ca231bf64e56a42bdf74e09325f28ba2791"
     },
     {
       "path": "scripts/package_qwen_mac.sh",
@@ -2080,6 +2195,16 @@
       "path": "scripts/prepare_linux_runtime_sources.py",
       "bytes": 6481,
       "sha256": "278634773d9fc95b4aa6147766b2f79dc6dd0053a80de8b6983855c385d02da4"
+    },
+    {
+      "path": "scripts/probe_extended_engines.py",
+      "bytes": 6757,
+      "sha256": "5ce4ec694990d80db143808f317b3a0e52bedb7a544449273091ada506b1a682"
+    },
+    {
+      "path": "scripts/release_parts.py",
+      "bytes": 3077,
+      "sha256": "9677ee7b5732824db8a72fdda3f6119794b605e49a2d5246401fd5adebd0b174"
     },
     {
       "path": "scripts/render_app_icon.swift",
@@ -2102,6 +2227,21 @@
       "sha256": "93262719add980baa8e0d34f193354d5e79fa57a43a5e9e346dc7c35ae6eae95"
     },
     {
+      "path": "scripts/test_avogadro_integration.py",
+      "bytes": 2381,
+      "sha256": "35007ac63b5542f3300de5254a81650bad52d643b3b00adfa9fe0327de1e8052"
+    },
+    {
+      "path": "scripts/test_avogadro_ui.py",
+      "bytes": 6518,
+      "sha256": "0c528c9f4c53300109bf23d1213f2c8965070c76cc9aeeb63472bcc719cff5a5"
+    },
+    {
+      "path": "scripts/test_beginner_workflow_ui.py",
+      "bytes": 7026,
+      "sha256": "dd22fe8f6f97969255252a0eea4e70c6e95ee4d83b62e18d35c6525edef355d8"
+    },
+    {
       "path": "scripts/test_bioscience_engines.py",
       "bytes": 5618,
       "sha256": "23f2f14a66079195bd9c2ecfb99801c24c54af7e0b93be101a111fede91c2750"
@@ -2117,9 +2257,24 @@
       "sha256": "167620e98f62c92a1676c435c69388dc59e60da5ca2aa208b610463b1820b630"
     },
     {
+      "path": "scripts/test_orca_preparation_ui.py",
+      "bytes": 4543,
+      "sha256": "a59e5119d4aa35e1180d7fe173ab75f9242718902dede9e249da3e8f1372e01c"
+    },
+    {
+      "path": "scripts/test_orca_review_ui.py",
+      "bytes": 3535,
+      "sha256": "c35d8d32eaf13619dd583fa21e323488222a9ac92943e8261371d1241d2e0630"
+    },
+    {
       "path": "scripts/test_packaged_engine.py",
       "bytes": 5747,
       "sha256": "9bd7aa48d111f11375016494bff9c94001564ecbba1e454a65c778902e05ea50"
+    },
+    {
+      "path": "scripts/test_packaged_science.py",
+      "bytes": 4951,
+      "sha256": "a87c60e899fce97e664ba8f398a1631918eb73ce8de30fa02a07a75818eafaa7"
     },
     {
       "path": "scripts/test_portable_package.py",
@@ -2132,9 +2287,39 @@
       "sha256": "858204565fc7a5335d39b63b8abee3556019f9d930d35ce04a568c25b55c8aac"
     },
     {
+      "path": "scripts/test_qchem_execution_ui.py",
+      "bytes": 7571,
+      "sha256": "7ce80fde05ca0463cb305dcddedac246144db3f7b751d31f7338ae4c0033b8d0"
+    },
+    {
+      "path": "scripts/test_qchem_workflow_ui.py",
+      "bytes": 10199,
+      "sha256": "fbea71558badf171e074beeae07c088a25ac485b53d3264f762c3c19a85092c3"
+    },
+    {
+      "path": "scripts/test_quick_calculation_ui.py",
+      "bytes": 4486,
+      "sha256": "bb8675b5102611dc546a13ff69b806e39c99713516c61da7ec51cf1a3afdf823"
+    },
+    {
+      "path": "scripts/test_recipe_lifecycle_ui.py",
+      "bytes": 3780,
+      "sha256": "0729ebbfe377215929990dcb1c6850d69af4a097ebc51b2c1090cc8ee69dc416"
+    },
+    {
+      "path": "scripts/test_research_workspace_ui.py",
+      "bytes": 7839,
+      "sha256": "c1f0cbcfb49830ab90c7d12969cd073393f95ce089b40e66244a5807cddef3bb"
+    },
+    {
       "path": "scripts/test_science_engines.py",
       "bytes": 6766,
       "sha256": "e13acd6d1f59b7f549608e8531c4e29497a38d9230c24ccb47e90fdb89d0a1e0"
+    },
+    {
+      "path": "scripts/test_science_ui.py",
+      "bytes": 5225,
+      "sha256": "bffc01a578e3b6cc034c818d9a1725d45e0a2851a20a7e877f441827e39616c5"
     },
     {
       "path": "scripts/test_standalone_package.py",
@@ -2142,14 +2327,39 @@
       "sha256": "805c2d920a6250de47bfa4e59c39d71d91f9542c1c9e2dd5480d8bca5e69a162"
     },
     {
+      "path": "scripts/test_study_agent_ui.py",
+      "bytes": 5263,
+      "sha256": "62b5037ce8e59989ce555d390f432c3cf464ea6aceab4f98612bc7ee79ee715f"
+    },
+    {
       "path": "scripts/test_v2_frozen_engine.py",
       "bytes": 8581,
       "sha256": "f681483f3975a2e462f794184d26e2118db5eaa8df89d3e0a12bdf8276a07beb"
     },
     {
+      "path": "scripts/test_workbench_ui.py",
+      "bytes": 8092,
+      "sha256": "6c7d1b5a9ff213a996cf6cfc6031738365cc96e7de7d45b1b92924362fd451eb"
+    },
+    {
       "path": "scripts/tests/test_collect_v2_notices.py",
       "bytes": 4820,
       "sha256": "2412d208adbb8c2206490aad2c410078ad702432c4deacd1ea594f361a2f7229"
+    },
+    {
+      "path": "training/public/README.md",
+      "bytes": 1175,
+      "sha256": "15c1ccf7a73d1309d39ada310444faa5a580fc84eaef6f75422c13653e8e2044"
+    },
+    {
+      "path": "training/public/local_lora.py",
+      "bytes": 10139,
+      "sha256": "dfdb9ed0aa2b1d4debfabdfafc8e3ffd0021a98778598d46fc88f65b63a6f3fe"
+    },
+    {
+      "path": "training/public/requirements-macos.lock.txt",
+      "bytes": 896,
+      "sha256": "e3c1dfa2c98199faf528c4fa06cd32326f72273fac7daf9b0ce1cf84626c0a16"
     }
   ]
 }

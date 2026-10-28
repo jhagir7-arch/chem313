@@ -1,0 +1,41 @@
+"""Real recipe failure, cancellation and stale-project UI checks; no worker mocks."""
+import json,os,time
+from pathlib import Path
+from playwright.sync_api import sync_playwright,expect
+BASE=os.environ['OPENCHEM_TEST_URL'];checks=[]
+with sync_playwright() as p:
+ browser=p.chromium.launch(headless=True,executable_path=os.environ['OPENCHEM_BROWSER_EXECUTABLE'])
+ page=browser.new_page(viewport={'width':1440,'height':940})
+ page.goto(BASE,wait_until='networkidle');expect(page.locator('.formula')).to_have_text('C8H9NO2',timeout=60000)
+ page.get_by_role('button',name='Research scripts',exact=True).click()
+ source=page.get_by_label('Recipe JSON source')
+ def recipe(steps):source.fill(json.dumps({'version':1,'name':'Lifecycle QA','steps':steps}))
+ later={'name':'Must not schedule','operation':'numpy.summary','inputs':{'values':[1,2,3],'unit':'a.u.'}}
+ recipe([{'name':'Invalid molecule','operation':'meeko.prepare_pdbqt','inputs':{'smiles':'not-a-smiles'}},later])
+ page.get_by_role('button',name='Review all steps',exact=True).click();page.get_by_role('button',name='Run reviewed recipe',exact=True).click()
+ expect(page.locator('.recipe-results tbody tr').nth(0).locator('td').nth(2)).to_have_text('FAILED',timeout=130000)
+ expect(page.locator('.recipe-results tbody tr').nth(1).locator('td').nth(2)).to_have_text('NOT SCHEDULED')
+ expect(page.locator('.recipe-workspace [role=alert]')).to_contain_text('Remaining steps were not scheduled')
+ expect(page.get_by_role('button',name='Run reviewed recipe')).to_have_count(0)
+ checks.append('Real failed molecule job stops later steps and clears consumed review authority')
+ recipe([{'name':'Cancellable RHF','operation':'pyscf.rhf_singlepoint','inputs':{'atomic_numbers':[1,1],'coordinates_angstrom':[[0,0,0],[0,0,.74]],'charge':0,'basis':'sto-3g'}},later])
+ page.get_by_role('button',name='Review all steps',exact=True).click();page.get_by_role('button',name='Run reviewed recipe',exact=True).click()
+ cancel=page.get_by_role('button',name='Cancel active step',exact=True).first;expect(cancel).to_be_enabled();cancel.click()
+ expect(page.locator('.recipe-results tbody tr').nth(0).locator('td').nth(2)).to_have_text('CANCELLED',timeout=130000)
+ expect(page.locator('.recipe-results tbody tr').nth(1).locator('td').nth(2)).to_have_text('NOT SCHEDULED')
+ expect(source).to_be_enabled();checks.append('Cancel reaches current job and prevents every later step')
+ page.get_by_role('button',name='Review all steps',exact=True).click();expect(page.get_by_role('button',name='Run reviewed recipe')).to_be_enabled()
+ page.once('dialog',lambda dialog:dialog.accept('lifecycle-'+str(int(time.time()))))
+ page.get_by_role('button',name='New project',exact=True).click()
+ expect(page.get_by_role('button',name='Run reviewed recipe')).to_have_count(0)
+ checks.append('Changing project removes earlier recipe review authority')
+ page.get_by_role('button',name='Review all steps',exact=True).click();page.get_by_role('button',name='Run reviewed recipe',exact=True).click()
+ expect(page.get_by_role('button',name='Cancel active step',exact=True).first).to_be_enabled()
+ page.once('dialog',lambda dialog:dialog.accept('stale-'+str(int(time.time()))))
+ page.get_by_role('button',name='New project',exact=True).click()
+ expect(source).to_be_enabled(timeout=130000)
+ expect(page.locator('.recipe-results tbody tr').nth(0).locator('td').nth(2)).to_have_text('SUCCEEDED',timeout=130000)
+ expect(page.locator('.recipe-results tbody tr').nth(1).locator('td').nth(2)).to_have_text('NOT SCHEDULED')
+ checks.append('Project change during a real run tracks accepted job to terminal and stops later scheduling')
+ browser.close()
+Path('build/recipe-lifecycle-0.8.0.json').write_text(json.dumps({'status':'PASS','checks':checks},indent=2)+'\n');print(checks)

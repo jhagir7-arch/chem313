@@ -1,0 +1,54 @@
+// Explicit local QA hook for the production WKWebView; never loaded in ordinary launches.
+const checks=[];
+const tick=()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+const wait=async(fn,label)=>{const end=Date.now()+30000;while(Date.now()<end){const value=fn();if(value)return value;await new Promise(r=>setTimeout(r,50));}throw Error('Timed out: '+label);};
+const visible=e=>!!e?.getClientRects().length;
+const button=name=>[...document.querySelectorAll('button')].find(e=>visible(e)&&e.textContent.trim()===name);
+const assert=(ok,message)=>{if(!ok)throw Error(message);};
+try{
+ await wait(()=>button('ORCA results'),'navigation');button('ORCA results').click();await tick();
+ const root=document.querySelector('.orca-workspace');
+ assert(root.innerText.includes('no ORCA engine or Qwen is needed'),'Missing independent local review start');
+ assert(root.innerText.includes('not your calculation'),'Synthetic explanation absent');
+ checks.push('Beginner start explains actual output files, local reading and synthetic scope');
+ const good='* O   R   C   A *\nProgram Version 6.1.0\n! B3LYP def2-SVP\nTotal Charge ... 0\nMultiplicity ... 1\nCARTESIAN COORDINATES (ANGSTROEM)\n----------------\nO 0 0 0\nH 0.75 0 0.5\nH -0.75 0 0.5\n\nSCF CONVERGED AFTER 8 CYCLES\nFINAL SINGLE POINT ENERGY -76.12345\nORCA TERMINATED NORMALLY\n';
+ const importFiles=async files=>{const data=new DataTransfer();for(const f of files)data.items.add(f);const input=root.querySelector('input[type=file]');input.files=data.files;input.dispatchEvent(new Event('change',{bubbles:true}));await tick();};
+ await importFiles([new File([good],'review-a.out'),new File([new Uint8Array([255,254,253])],'invalid-utf8.out')]);
+ await wait(()=>root.querySelector('.orca-tabs')?.innerText.includes('review-a.out'),'valid file');
+ assert(root.querySelector('[data-testid=orca-import-error]').textContent.includes('invalid-utf8.out'),'Rejected filename missing');
+ assert(root.innerText.includes('IMPORTED FILE')&&!root.innerText.includes('SAVED LOCAL RUN'),'Import provenance false');
+ checks.push('Mixed valid/invalid UTF-8 import retains valid file and names rejected file; import provenance truthful');
+ const inspect=button('Inspect original source');inspect.focus();inspect.click();await tick();
+ assert(inspect.getAttribute('aria-expanded')==='true'&&inspect.getAttribute('aria-controls')==='orca-source-panel','Source ARIA');
+ assert(document.activeElement===document.querySelector('#orca-source-panel h2'),'Source heading focus');
+ const energy=root.querySelector('.evidence-link');energy.click();await tick();
+ assert(document.activeElement.id.startsWith('orca-line-')&&document.activeElement.textContent.includes('FINAL SINGLE POINT ENERGY'),'Evidence focus');
+ checks.push('Source inspection moves keyboard focus to heading; energy evidence focuses exact printed line');
+ const digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(good)))).map(v=>v.toString(16).padStart(2,'0')).join('');
+ assert(root.querySelector('.source-hash').textContent.includes(digest),'Input SHA mismatch');
+ await importFiles([new File([good.replace('-76.12345','-76.12245')],'review-b.log')]);
+ await wait(()=>root.querySelector('.orca-tabs').children.length===2,'second file');
+ assert(!root.querySelector('.comparison').innerText.includes('on hold'),'Compatible comparison blocked');
+ const relative=root.querySelector('.comparison tbody tr:last-child td:last-child').textContent;
+ assert(relative==='0.6275','Wrong electronic relative energy: '+relative);
+ checks.push('Matching single-point files compare printed electronic energies with expected derived difference');
+ const unknown=good.replace('SCF CONVERGED AFTER 8 CYCLES\n','');
+ await importFiles([new File([unknown],'unknown-scf.out')]);
+ await wait(()=>root.querySelector('.orca-tabs').children.length===3,'unknown SCF');
+ assert(root.querySelector('[data-testid=orca-review-missing]').textContent.includes('SCF outcome'),'Unknown SCF review absent');
+ assert(root.querySelector('.comparison').innerText.includes('SCF convergence is unresolved.'),'Unknown SCF comparison not held');
+ checks.push('Missing SCF outcome visibly unresolved and blocks comparison');
+ await importFiles([new File(['Program Version 6.1.0\nCARTESIAN COORDINATES (ANGSTROEM)\nC 0 0 0\n'],'truncated.out')]);
+ await wait(()=>root.querySelector('.orca-tabs').children.length===4,'truncated file');
+ assert(root.querySelector('[data-testid=orca-review-missing]').textContent.includes('final electronic energy'),'Truncated missing energy absent');
+ await importFiles([new File([good+'\n$new_job\n'+good],'multi-job.out')]);
+ await wait(()=>root.querySelector('[data-testid=orca-multijob-label]'),'multi job');
+ assert(root.innerText.includes('may belong to different stages'),'Stage caveat missing');
+ assert(root.querySelector('.orca-tabs').children.length===5,'Prior imports discarded');
+ checks.push('Truncated file lists missing facts; multi-job last-observed caveat and prior files retained');
+ button('Load synthetic example').click();await tick();
+ assert(root.innerText.includes('SYNTHETIC'),'Example not distinguished');
+ checks.push('Synthetic example stays explicitly labelled');
+ return JSON.stringify({status:'PASS',checks,relative_energy_kcal_mol:relative,input_sha256:digest,host:'production UI in real local service / WKWebView'});
+}catch(error){return JSON.stringify({status:'FAIL',error:String(error),checks,body:document.body.innerText.slice(-6000)});}
+

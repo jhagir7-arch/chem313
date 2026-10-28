@@ -1,0 +1,101 @@
+{
+  "status": "PASS",
+  "engine": "chem313-engine (local Apple Silicon frozen build)",
+  "checks": [
+    "Session handshake and catalog",
+    "Invalid input rejected",
+    "All content-addressed artifacts hash verified",
+    "Project event and artifact verification"
+  ],
+  "calculations": [
+    {
+      "name": "water",
+      "smiles": "O",
+      "force_field": "MMFF94",
+      "inchikey": "XLYOFNOQVPJJNP-UHFFFAOYSA-N",
+      "converged": true,
+      "energies_kcal_mol": [
+        0.7047639690687358,
+        8.252338777785056e-06
+      ],
+      "recalculated_energies_kcal_mol": [
+        0.7047639690687358,
+        8.252338777785056e-06
+      ],
+      "artifact_sha256": [
+        "18577b2d4886192bf0ba47bafcf0caf62c980558323df8011885541d4b34e229",
+        "a20039a34165708be6e3f463a290669eacdb6ea8ba762d03019cabc5d57b6d31",
+        "33a26594a77750c1fc64388626bca2404286b099a8796b74c2433259d0d10d7d"
+      ]
+    },
+    {
+      "name": "methane",
+      "smiles": "C",
+      "force_field": "MMFF94",
+      "inchikey": "VNWKTOKETHGBQD-UHFFFAOYSA-N",
+      "converged": true,
+      "energies_kcal_mol": [
+        0.7016349675648463,
+        0.026384268518137674
+      ],
+      "recalculated_energies_kcal_mol": [
+        0.7016349675648463,
+        0.026384268518137674
+      ],
+      "artifact_sha256": [
+        "d6e4f2fe377ed0d8e82d40b06f477f3b290cb957409ccab5e6aed4dcbc95cadd",
+        "42f4e456c32ded6394d6e3439c73d89c33ba693729429daa2a8281a57a9ae2df",
+        "817d5c3efc6ad54eb1d65c25da0cc73690cac06771c9d18abfd07a56230b48cb"
+      ]
+    },
+    {
+      "name": "ethanol",
+      "smiles": "CCO",
+      "force_field": "MMFF94",
+      "inchikey": "LFQSCWFLJHTTHZ-UHFFFAOYSA-N",
+      "converged": true,
+      "energies_kcal_mol": [
+        6.831185199278835,
+        -1.336852493138535
+      ],
+      "recalculated_energies_kcal_mol": [
+        6.831185199278835,
+        -1.336852493138535
+      ],
+      "artifact_sha256": [
+        "60f5fc20bb3dd20d3d7af6bc52c54774c82d15665dfec78b238aba37437f9a7d",
+        "e897009fc596862d6ec06ee7a7da0ebe69b7f0737a372769ec982ee8ec4abd11",
+        "ea26198a122a596996334028efc37e5c3b534ebcbbcbe520d300399b5a58cba3"
+      ]
+    },
+    {
+      "name": "phenol",
+      "smiles": "Oc1ccccc1",
+      "force_field": "UFF",
+      "inchikey": "ISWSIDIOOBJBQZ-UHFFFAOYSA-N",
+      "converged": true,
+      "energies_kcal_mol": [
+        23.05626863735975,
+        11.178510924596871
+      ],
+      "recalculated_energies_kcal_mol": [
+        23.05626863735975,
+        11.178510924596871
+      ],
+      "artifact_sha256": [
+        "0486a746f40fd215a9f6dd575fd34076407b944fc2c464ad55507aa4998662f6",
+        "c49493d1b46ccc570076006ee9965ebf7dab660faf08840c5bac0cc9b7ac554a",
+        "2292daa72b8b88a3dbe29f65155b37b9fc70e62aedb908e9cd4b1ad2069e649c"
+      ]
+    }
+  ],
+  "independent_energy": {
+    "status": "PASS",
+    "rdkit_version": "2026.09.1",
+    "absolute_tolerance_kcal_mol": 1e-06
+  },
+  "shutdown": {
+    "exited": true,
+    "returncode": -15
+  }
+}
