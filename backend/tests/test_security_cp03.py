@@ -1,5 +1,6 @@
 """Adversarial regression tests for request approval and local transport."""
 from __future__ import annotations
+import os
 import tempfile
 import time
 import unittest
@@ -99,6 +100,11 @@ class AuthorizationTests(unittest.TestCase):
             self.assertEqual(target.read_text(),'original')
             self.assertFalse((directory/'originals').exists())
             with self.assertRaises(InputError): self.engine.store.events('alpha')
+
+    def test_event_log_symlink_rejected_without_nofollow(self):
+        from unittest.mock import patch
+        with patch.object(os, 'O_NOFOLLOW', 0, create=True):
+            self.test_event_log_symlink_rejected()
 
     def test_readonly_does_not_consume_foreign_ticket(self):
         p=self.issue()

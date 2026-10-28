@@ -28,12 +28,14 @@ def test_qwen_orca_routes_require_session_and_trusted_origin(tmp_path,monkeypatc
         assert client.post('/api/orca/jobs/missing/cancel',json={'approved':False},headers=headers).status_code==422
 
 
-def test_configured_path_survives_restart_without_any_automatic_calculation(tmp_path):
+def test_configured_path_survives_restart_without_any_automatic_calculation(tmp_path, monkeypatch):
     # Executable is a simulation used only for connection and persistence checks.
     import json
     binary=tmp_path/'simulated-orca'
     binary.write_text('#!/bin/sh\n[ "$1" = "--version" ] || exit 99\necho "SIMULATED connection probe"\n')
     binary.chmod(0o700)
+    # Probe behavior is tested separately; this test checks configuration and persistence.
+    monkeypatch.setattr("hypothesislab.calculation_api.executable_status", lambda path: {"status": "READY", "path": str(path)})
     app=FastAPI()
     facade=SimpleNamespace(ROOT=tmp_path,engine=WorkbenchEngine(tmp_path),SESSION_HEADER=api.SESSION_HEADER,require_session=api.require_session)
     register(app,facade)

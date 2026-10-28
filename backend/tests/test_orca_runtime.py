@@ -1,4 +1,5 @@
 """Lifecycle tests use a fake executable; they do not exercise ORCA chemistry."""
+import os
 import pytest
 
 from hypothesislab.conformers import molecule_conformer
@@ -24,6 +25,7 @@ def fake(tmp_path, body):
     return path
 
 
+@pytest.mark.skipif(os.name == "nt", reason="POSIX shell and process-group simulation")
 def test_simulated_normal_process_persists_output_and_conservative_convergence(tmp_path):
     store = Store(tmp_path / "data")
     runtime = OrcaRuntime(store, fake(tmp_path, "echo 'ORCA TERMINATED NORMALLY'\n"), timeout_seconds=2)
@@ -36,6 +38,7 @@ def test_simulated_normal_process_persists_output_and_conservative_convergence(t
     assert [event["action"] for event in store.events("ethanol")] == ["orca.prepare_input", "orca.run_started", "orca.run_finished"]
 
 
+@pytest.mark.skipif(os.name == "nt", reason="POSIX shell and process-group simulation")
 def test_simulated_timeout_and_cancel_are_truthful(tmp_path):
     store = Store(tmp_path / "data")
     sleeper = fake(tmp_path, "sleep 2\necho late\n")
@@ -48,6 +51,7 @@ def test_simulated_timeout_and_cancel_are_truthful(tmp_path):
     assert cancel_runtime.wait(cancel_job["id"], 3)["state"] == "CANCELLED"
 
 
+@pytest.mark.skipif(os.name == "nt", reason="POSIX shell and process-group simulation")
 def test_terminal_cancel_does_not_deadlock_and_stubborn_process_group_is_killed(tmp_path):
     store = Store(tmp_path / "data")
     completed = OrcaRuntime(store, fake(tmp_path, "echo complete\n"), timeout_seconds=2)
@@ -61,6 +65,7 @@ def test_terminal_cancel_does_not_deadlock_and_stubborn_process_group_is_killed(
     assert runtime.wait(job["id"], 4)["state"] == "CANCELLED"
 
 
+@pytest.mark.skipif(os.name == "nt", reason="POSIX shell and process-group simulation")
 def test_persistence_failure_releases_active_slot_and_reports_interruption(tmp_path):
     class FailFinishStore(Store):
         def event(self, project, action, parameters_sha256, outputs, result):
@@ -105,6 +110,7 @@ def test_rejects_unlinked_or_mutated_input_and_reports_missing_configuration(tmp
     assert executable_status(None)["status"] == "NOT_CONFIGURED"
 
 
+@pytest.mark.skipif(os.name == "nt", reason="POSIX shell and process-group simulation")
 def test_durable_state_recovers_finished_and_interrupted_without_replay(tmp_path):
     import json
     store=Store(tmp_path/'data')

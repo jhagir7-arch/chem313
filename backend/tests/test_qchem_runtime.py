@@ -56,6 +56,7 @@ def test_preparation_returns_a_coordinate_identity_receipt_and_blocks_nonmatchin
         prepare_input("ethanol", same_formula_ether_atoms())
 
 
+@pytest.mark.skipif(os.name == "nt", reason="POSIX shell and process-group simulation")
 def test_simulated_process_requires_real_qchem_success_markers_and_persists_authoritative_record(tmp_path):
     installation = simulated_installation(tmp_path, "cat > \"$4\" <<'EOF'\nSCF converged\nTotal energy in the final basis set = -75.123\nThank you very much for using Q-Chem\nEOF\nexit 0\n")
     runtime = QchemRuntime(Store(tmp_path / "data"), installation, timeout_seconds=2)
@@ -70,6 +71,7 @@ def test_simulated_process_requires_real_qchem_success_markers_and_persists_auth
     assert [event["action"] for event in runtime.store.events("water")] == ["qchem.run_started", "qchem.run_finished"]
 
 
+@pytest.mark.skipif(os.name == "nt", reason="POSIX shell and process-group simulation")
 def test_license_or_missing_convergence_cannot_be_reported_successful(tmp_path):
     installation = simulated_installation(tmp_path, "cat > \"$4\" <<'EOF'\nQ-Chem license error\nTotal energy in the final basis set = -1.0\nThank you very much for using Q-Chem\nEOF\nexit 0\n")
     runtime = QchemRuntime(Store(tmp_path / "data"), installation, timeout_seconds=2)
@@ -79,6 +81,7 @@ def test_license_or_missing_convergence_cannot_be_reported_successful(tmp_path):
     assert "license" in final["detail"].lower()
 
 
+@pytest.mark.skipif(os.name == "nt", reason="POSIX shell and process-group simulation")
 def test_license_header_is_not_a_failure_and_environment_contains_qchem_requirements(tmp_path):
     installation = simulated_installation(tmp_path, "test \"$QC\" = \"$(cd \"$(dirname \"$0\")/..\" && pwd)\" || exit 11\ntest \"$QCAUX\" = \"$QC/qcaux\" || exit 12\ntest -n \"$QCSCRATCH\" && test -n \"$HOME\" || exit 13\ncat > \"$4\" <<'EOF'\nLicense information loaded\nSCF converged\nTotal energy in the final basis set = -75.0\nThank you very much for using Q-Chem\nEOF\n")
     runtime = QchemRuntime(Store(tmp_path / "data"), installation, timeout_seconds=2)
@@ -86,6 +89,7 @@ def test_license_header_is_not_a_failure_and_environment_contains_qchem_requirem
     assert final["state"] == "SUCCEEDED"
 
 
+@pytest.mark.skipif(os.name == "nt", reason="POSIX shell and process-group simulation")
 def test_simulated_timeout_cancel_overflow_and_recovery_are_terminal_and_never_replayed(tmp_path):
     sleeper = simulated_installation(tmp_path, "sleep 3\n")
     timeout = QchemRuntime(Store(tmp_path / "timeout"), sleeper, timeout_seconds=1)
@@ -104,6 +108,7 @@ def test_simulated_timeout_cancel_overflow_and_recovery_are_terminal_and_never_r
     assert recovered.status("a" * 32)["state"] == "INTERRUPTED"
 
 
+@pytest.mark.skipif(os.name == "nt", reason="POSIX shell and process-group simulation")
 def test_silent_process_times_out_without_a_result(tmp_path):
     runtime = QchemRuntime(Store(tmp_path / "data"), simulated_installation(tmp_path, "sleep 3\n"), timeout_seconds=1)
     final = runtime.wait(runtime.start("water", "water", WATER, True)["id"], 3)
@@ -112,6 +117,7 @@ def test_silent_process_times_out_without_a_result(tmp_path):
     assert final["output_text"] == ""
 
 
+@pytest.mark.skipif(os.name == "nt", reason="POSIX shell and process-group simulation")
 def test_cancel_terminates_the_qchem_process_group(tmp_path):
     installation = simulated_installation(tmp_path, "sleep 30 &\necho $! > \"$QC/child.pid\"\nwait\n")
     runtime = QchemRuntime(Store(tmp_path / "data"), installation, timeout_seconds=10)
@@ -129,6 +135,7 @@ def test_cancel_terminates_the_qchem_process_group(tmp_path):
         os.kill(child, 0)
 
 
+@pytest.mark.skipif(os.name == "nt", reason="POSIX shell and process-group simulation")
 def test_output_file_growth_is_bounded_before_a_success_can_be_recorded(tmp_path):
     installation = simulated_installation(tmp_path, "head -c 2048 /dev/zero > \"$4\"\nsleep 2\n")
     runtime = QchemRuntime(Store(tmp_path / "data"), installation, timeout_seconds=5, max_output_bytes=1024)
@@ -138,6 +145,7 @@ def test_output_file_growth_is_bounded_before_a_success_can_be_recorded(tmp_path
     assert final["result"]["energy_hartree"] is None
 
 
+@pytest.mark.skipif(os.name == "nt", reason="POSIX shell and process-group simulation")
 def test_exit_zero_energy_without_all_required_markers_is_not_success(tmp_path):
     installation = simulated_installation(tmp_path, "cat > \"$4\" <<'EOF'\nTotal energy in the final basis set = -5.0\nEOF\nexit 0\n")
     runtime = QchemRuntime(Store(tmp_path / "data"), installation, timeout_seconds=2)
@@ -147,6 +155,7 @@ def test_exit_zero_energy_without_all_required_markers_is_not_success(tmp_path):
     assert "SCF convergence" in final["detail"]
 
 
+@pytest.mark.skipif(os.name == "nt", reason="POSIX shell and process-group simulation")
 def test_stdout_only_license_failure_is_saved_as_a_diagnostic(tmp_path):
     installation = simulated_installation(tmp_path, "echo 'Q-Chem license error: cannot locate license'\nexit 9\n")
     runtime = QchemRuntime(Store(tmp_path / "data"), installation, timeout_seconds=2)
@@ -156,6 +165,7 @@ def test_stdout_only_license_failure_is_saved_as_a_diagnostic(tmp_path):
     assert "license failure" in final["detail"].lower()
 
 
+@pytest.mark.skipif(os.name == "nt", reason="POSIX shell and process-group simulation")
 def test_recovery_keeps_terminal_jobs_and_marks_active_jobs_interrupted_without_replay(tmp_path):
     installation = simulated_installation(tmp_path, "cat > \"$4\" <<'EOF'\nSCF converged\nTotal energy in the final basis set = -1.0\nThank you very much for using Q-Chem\nEOF\n")
     store = Store(tmp_path / "data")

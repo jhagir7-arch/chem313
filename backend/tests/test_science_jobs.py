@@ -6,7 +6,7 @@ import time
 
 import pytest
 
-from hypothesislab.science_jobs import ScienceJobs
+from hypothesislab.science_jobs import ScienceJobs, worker_command
 from hypothesislab.validation import InputError
 from hypothesislab.workbench import WorkbenchEngine
 
@@ -67,6 +67,13 @@ def test_science_requires_bound_single_use_approval_and_rejects_invalid_inputs(t
 
 
 def test_real_numpy_and_pint_jobs_persist_reports_and_verify_project(tmp_path):
+    try:
+        worker_command("numpy.summary")
+        worker_command("pint.convert")
+    except InputError as exc:
+        if "isolated science environment is unavailable" in str(exc):
+            pytest.skip("Optional isolated science worker is not installed")
+        raise
     engine = WorkbenchEngine(tmp_path)
     try:
         numpy_id = submit(engine, {"operation": "numpy.summary", "inputs": {"values": [1.0, 2.0, 3.0], "unit": "a.u."}})

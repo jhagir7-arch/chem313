@@ -1,3 +1,5 @@
+import sys
+
 import pytest
 from fastapi.testclient import TestClient
 
@@ -58,7 +60,11 @@ def test_planner_cannot_mint_approval_or_submit_science_job(client):
     assert engine.jobs.jobs == {}
 
 
-def test_api_preview_execute_and_cancel_require_explicit_true(client):
+def test_api_preview_execute_and_cancel_require_explicit_true(client, monkeypatch):
+    # An actual child process keeps the cancellation path active without a private worker.
+    command = [sys.executable, "-c", "import time; time.sleep(30)"]
+    monkeypatch.setattr("hypothesislab.workbench.worker_command", lambda operation: (command, None))
+    monkeypatch.setattr("hypothesislab.science_jobs.worker_command", lambda operation: (command, None))
     test_client, headers, engine = client
     params = {"operation": "numpy.summary", "inputs": {"values": [1.0, 2.0, 3.0], "unit": "a.u."}}
     preview = test_client.post("/api/preview", headers=headers, json={"action": "science.run", "params": params, "project": "science"})
