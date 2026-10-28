@@ -4,7 +4,7 @@ This is a source alpha for the consolidated Tauri desktop workbench. Historical 
 
 The v2 source provides a catalog-driven Ketcher/3Dmol interface, SMILES/molfile import, real RDKit MMFF94/UFF shape relaxation, saved immutable reports and native dialogs. It includes no ORCA or Q-Chem executable, Qwen model, private adapter, training dataset, Avogadro binary or optional science-worker environments. No real quantum-chemistry calculation is claimed.
 
-The 2026-10-28 review corrected structure draft leakage, ignored starter edits, stale snapshots, force-field parameter validation, ambiguous stereo and multi-record SDF handling, duplicate-run prevention, startup timeout/cleanup and a returning-watchdog defect. See REVIEW_2026-10-28.md for verification boundaries.
+The 2026-10-28 review corrected structure draft leakage, ignored starter edits, stale snapshots, force-field parameter validation, ambiguous stereo and multi-record SDF handling, duplicate-run prevention, startup timeout/cleanup and a returning-watchdog defect. See VERIFICATION_FINAL.md for the completed local checks and REVIEW_2026-10-28.md for the earlier staging record.
 
 Installer publication requires native frozen-engine smoke, app checks and dependency notices on each platform. The current local macOS notice review retains 12 unresolved objc2-family notice gaps. Those are preserved as exact upstream revision evidence, not silently marked clear. Unpassed installers must not be attached as downloads. Source-only publication includes no compiled third-party crates.
 
