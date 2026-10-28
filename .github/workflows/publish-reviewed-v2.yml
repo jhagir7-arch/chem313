@@ -1,4 +1,5 @@
-name: Import community handoff
+
+name: Import reviewed desktop beta
 on:
   workflow_dispatch:
 permissions:
@@ -15,15 +16,15 @@ jobs:
         run: |
           import hashlib, json, pathlib, stat, subprocess, zipfile
           root = pathlib.Path.cwd()
-          archive = 'chem313-community-handoff.zip'
+          archive = 'chem313-desktop-beta-source.zip'
           workflow = '.github/workflows/publish-reviewed-v2.yml'
-          base = 'e5213b012f59cc4a66e694e1e2c17b01a0310667'
+          base = 'b6fb2098ad8a64831042d2c3eece91ebcee3a70e'
           subprocess.run(['git', 'merge-base', '--is-ancestor', base, 'HEAD'], check=True)
           changed = set(subprocess.check_output(['git', 'diff', '--name-only', base, 'HEAD'], text=True).splitlines())
-          assert changed <= {archive, workflow}, 'Concurrent repository edits require review'
+          assert changed <= {archive, workflow, '.github/workflows/app.yml'}, 'Concurrent repository edits require review'
           data = (root / archive).read_bytes()
-          assert hashlib.sha256(data).hexdigest() == '0640c00fbb3cbd8e312cdabdfdd246db7fd3376e5e8c2788d2e03831004a9e59'
-          prefix = 'chem313-community-handoff/'
+          assert hashlib.sha256(data).hexdigest() == '441bbeddfb45dc20aed7dde7355b67a4f82851d9ba95f5e08e8d4febbfbe7ca4'
+          prefix = 'chem313-desktop-beta/'
           with zipfile.ZipFile(root / archive) as z:
               names = z.namelist()
               assert len(names) == len(set(names)) and len(names) < 1000
@@ -36,7 +37,7 @@ jobs:
                   assert '\\' not in str(p) and i.file_size < 20_000_000
               assert z.testzip() is None
               manifest = json.loads(z.read(prefix + 'BUNDLE_MANIFEST.json'))
-              assert manifest['code_version'] == '2.0.0-alpha.1'
+              assert manifest['code_version'] == '2.0.0-beta.1'
               expected = {prefix + f['path'] for f in manifest['files']}
               assert set(names) == expected | {prefix + 'BUNDLE_MANIFEST.json'}
               for f in manifest['files']:
@@ -44,6 +45,7 @@ jobs:
                   assert len(payload) == f['bytes'] and hashlib.sha256(payload).hexdigest() == f['sha256']
               for name in names:
                   if name[len(prefix):].startswith('.github/workflows/'):
+                      assert (root / name[len(prefix):]).read_bytes() == z.read(name), 'Workflow differs from reviewed UI commit'
                       continue
                   destination = root / name[len(prefix):]
                   assert destination.resolve().is_relative_to(root.resolve())
@@ -53,5 +55,5 @@ jobs:
           subprocess.run(['git', 'config', 'user.name', 'github-actions[bot]'], check=True)
           subprocess.run(['git', 'config', 'user.email', '41898282+github-actions[bot]@users.noreply.github.com'], check=True)
           subprocess.run(['git', 'add', '-A'], check=True)
-          subprocess.run(['git', 'commit', '-m', 'docs: preserve community handoff and historical module source'], check=True)
+          subprocess.run(['git', 'commit', '-m', 'release: prepare self-contained community desktop beta'], check=True)
           subprocess.run(['git', 'push', 'origin', 'HEAD:main'], check=True)
