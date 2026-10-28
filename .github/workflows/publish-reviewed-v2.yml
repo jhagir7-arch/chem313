@@ -23,7 +23,7 @@ jobs:
           changed = set(subprocess.check_output(['git', 'diff', '--name-only', base, 'HEAD'], text=True).splitlines())
           assert changed <= {archive, workflow, '.github/workflows/app.yml'}, 'Concurrent repository edits require review'
           data = (root / archive).read_bytes()
-          assert hashlib.sha256(data).hexdigest() == '441bbeddfb45dc20aed7dde7355b67a4f82851d9ba95f5e08e8d4febbfbe7ca4'
+          assert hashlib.sha256(data).hexdigest() == '3280ca28b7b46879ff113e54e842b5dbd0779521005e54515071451c347ad3ec'
           prefix = 'chem313-desktop-beta/'
           with zipfile.ZipFile(root / archive) as z:
               names = z.namelist()
