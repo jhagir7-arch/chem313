@@ -93,6 +93,8 @@ class Store:
         if folder.is_symlink():
             raise InputError("Project symlinks are unsupported")
         log = folder / "events.jsonl"
+        if log.is_symlink():
+            raise InputError("Event log symlinks are unsupported")
         if os.path.lexists(log):
             flags = getattr(os, "O_BINARY", 0) | os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
             try:
@@ -111,6 +113,8 @@ class Store:
         if folder.is_symlink():
             raise InputError("Project symlinks are unsupported")
         log = folder / "events.jsonl"
+        if log.is_symlink():
+            raise InputError("Event log symlinks are unsupported")
         if not os.path.lexists(log):
             return b""
         flags = getattr(os, "O_BINARY", 0) | os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
@@ -148,6 +152,8 @@ class Store:
         }
         self.preflight_event_log(project)
         log = self._project(project) / "events.jsonl"
+        if log.is_symlink():
+            raise InputError("Event log symlinks are unsupported")
         data = (json.dumps(event, ensure_ascii=False, sort_keys=True, allow_nan=False) + "\n").encode("utf-8")
         flags = getattr(os, "O_BINARY", 0) | os.O_WRONLY | os.O_CREAT | os.O_APPEND | getattr(os,"O_NOFOLLOW",0) | getattr(os,"O_NONBLOCK",0)
         try:
