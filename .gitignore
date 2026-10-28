@@ -21,3 +21,11 @@ training/models/
 training/runs/
 training/upstream/
 frontend/test/orca/fixtures/public/
+
+# Current desktop build outputs
+app/node_modules
+app/dist/
+app/public/ketcher/
+app/src-tauri/engine/
+app/src-tauri/notices/
+app/src-tauri/target/

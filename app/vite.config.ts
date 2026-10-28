@@ -2,6 +2,7 @@ import {defineConfig} from 'vite';
 import react from '@vitejs/plugin-react';
 import {nodePolyfills} from 'vite-plugin-node-polyfills';
 import pkg from './package.json';
+import {uiLicenseProvenance} from './scripts/license-provenance.mjs';
 
 // Upstream Ketcher (ketcher-core) requires `raphael` with CommonJS; rewrite that one line so the
 // browser bundle can import it as ESM. Same adaptation as the previous interface, no fork.
@@ -18,7 +19,7 @@ const ketcherRaphaelEsm = {
 
 // The Tauri shell loads this at dev time from devUrl; `cargo tauri build` bundles ../dist.
 export default defineConfig({
-  plugins: [react(), nodePolyfills({include: ['process', 'events', 'util', 'assert', 'buffer']}), ketcherRaphaelEsm],
+  plugins: [react(), nodePolyfills({include: ['process', 'events', 'util', 'assert', 'buffer']}), ketcherRaphaelEsm, uiLicenseProvenance()],
   clearScreen: false,
   define: {__APP_VERSION__: JSON.stringify(pkg.version)},
   server: {

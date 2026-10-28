@@ -6,11 +6,11 @@ Formerly OpenChem; independent of [Mariewelt/OpenChem](https://github.com/Mariew
 
 ## Community handoff — development paused
 
-Maintainer development is paused as of 28 October 2026. The repository stays open for community contributions through issues and pull requests. This is a research alpha, not a finished scientific product. Start with the [community handoff and remaining gaps](COMMUNITY_HANDOFF.md). No ongoing support or delivery date is promised.
+Maintainer development is paused as of 28 October 2026. The repository stays open for community contributions through issues and pull requests. The desktop beta has a deliberately limited scientific scope. Start with the [community handoff and remaining gaps](COMMUNITY_HANDOFF.md). No ongoing support or delivery date is promised.
 
-## Current development release: 2.0.0-alpha.1
+## Community desktop beta: 2.0.0-beta.1
 
-This consolidates the interface into one Tauri desktop app with Structure, 3D, Setup and Results views. The included engine performs real MMFF94/UFF molecular mechanics. The desktop packaging is designed to bundle its runtime. No ready-to-run v2 installer is currently cleared for distribution; building from source requires the development tools in the build instructions.
+The current desktop target is one Tauri app with Structure, 3D, Setup and Results views. Its bundled RDKit engine performs real MMFF94/UFF molecular mechanics. End users do not install Python or Node.
 
 1. Choose a starter molecule in the Navigator, or use File → New molecule to enter SMILES. You can also draw in Ketcher or import one `.mol`/`.sdf` record.
 2. Open Setup, choose MMFF94 or UFF and select Run.
@@ -21,11 +21,17 @@ This consolidates the interface into one Tauri desktop app with Structure, 3D, S
 
 ## Downloads and testing
 
-This release begins as a **source alpha**. New installers are withheld until their native workflow and notice gates pass. The local macOS review still has 12 unresolved objc2-family notice gaps.
+The [desktop release page](https://github.com/jhagir7-arch/chem313/releases/tag/v2.0.0-beta.1) is the download destination once the native release workflow passes. A failed candidate is withheld; an absent asset is not a supported download. See [platform requirements, installation and first calculation](docs/DESKTOP_RELEASE.md).
 
-See [Releases](https://github.com/jhagir7-arch/chem313/releases) for attached installers and their platform-specific checks. Do not treat older preview.6 packages as this new interface. Windows and Linux desktop packages require their native CI checks; a Mac test does not validate those systems. macOS 14+ Apple Silicon is the locally tested platform. Packages are unsigned or ad-hoc signed, not notarized.
+| Platform | Package | Requirements |
+| --- | --- | --- |
+| Mac | `.dmg` | Apple Silicon, macOS 14 or newer; ad-hoc signed, not notarized |
+| Windows | `.msi` | Windows 10/11 x64; WebView2 bootstrapper may need internet |
+| Linux | `.deb` or `.AppImage` | x86_64; WebKitGTK 4.1 and distribution libraries; see release notes |
 
-ORCA, Q-Chem and Qwen are **not included** in this alpha. Disabled engine/add-on rows describe future work. The complete workflow here uses the bundled RDKit engine.
+Each published package must pass notice verification and real calculations using its extracted engine. These checks do not establish full native GUI or accessibility coverage. Please report platform-specific problems with the package version and steps to reproduce. Older preview.6 packages are a separate interface.
+
+ORCA, Q-Chem and Qwen are **not included** in this beta. Disabled add-on rows describe future work. The complete supported workflow uses bundled RDKit.
 
 ## Build and contribute
 

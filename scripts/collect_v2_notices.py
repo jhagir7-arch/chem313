@@ -47,18 +47,24 @@ def files(source):
     return sorted(p for p in source.rglob('*') if p.is_file() and is_notice(p) and 'node_modules' not in p.relative_to(source).parts)
 
 
-def npm(app, output, root):
+def npm(app, output, root, ui=None):
     rows, errors = [], []
-    packages = json.loads((app / 'package-lock.json').read_text())['packages']
+    packages = json.loads((app / 'package-lock.json').read_text(encoding='utf-8'))['packages']
+    emitted = ui['packages'] if ui else set()
+    if not emitted <= packages.keys():
+        raise SystemExit('Emitted dependency absent from lockfile')
     for location, item in sorted(packages.items()):
-        if not location.startswith('node_modules/') or item.get('dev') is True:
+        if not location.startswith('node_modules/') or (item.get('dev') is True and location not in emitted):
             continue
         source = app / location
         manifest = source / 'package.json'
         if not manifest.is_file():
-            if not item.get('optional'): errors.append(f'npm package missing: {location}')
+            if location in emitted or not item.get('optional'): errors.append(f'npm package missing: {location}')
             continue
-        data = json.loads(manifest.read_text())
+        # GitHub's Windows runner defaults to cp1252; npm package metadata and
+        # notices are UTF-8 by contract, so do not let a byte in a dependency
+        # make the release gate platform-dependent.
+        data = json.loads(manifest.read_text(encoding='utf-8'))
         name, version = data['name'], data['version']
         if version != item.get('version'):
             errors.append(f'npm version mismatch: {location}')
@@ -80,7 +86,7 @@ def npm(app, output, root):
 def rust_fallback(vendor, target, output, name, version, revision):
     """Accept only hash-verified notices matched to the packaged crate's source revision."""
     try:
-        manifest = json.loads((vendor / 'provenance.json').read_text())
+        manifest = json.loads((vendor / 'provenance.json').read_text(encoding='utf-8'))
         if not manifest.get('complete') or (manifest['name'], manifest['version'], manifest['revision']) != (name, version, revision):
             return []
         entries = manifest['files']
@@ -122,7 +128,7 @@ def rust(meta, output):
         notices = [copy(f, target / f.relative_to(source), output) for f in sorted(candidates)]
         if not notices:
             try:
-                revision = json.loads((source / '.cargo_vcs_info.json').read_text())['git']['sha1']
+                revision = json.loads((source / '.cargo_vcs_info.json').read_text(encoding='utf-8'))['git']['sha1']
             except (OSError, KeyError, ValueError):
                 revision = None
             vendor = ROOT / 'desktop' / 'licenses' / 'rust-v2' / f"{p['name']}-{p['version']}"
@@ -207,7 +213,11 @@ def main():
     errors = []
     project = [copy(ROOT / n, output / 'project' / n, output) for n in ('LICENSE', 'NOTICE') if (ROOT / n).is_file()]
     if len(project) != 2: errors.append('Project LICENSE or NOTICE missing')
-    nr, ne = npm(ROOT / 'app', output, ROOT); errors += ne
+    ui = standalone.ui_provenance(ROOT / 'app/dist/ui-provenance.json')
+    if not ui['packages']:
+        raise SystemExit('No emitted UI dependencies recorded')
+    ui_notice = copy(Path(ui['path']), output / 'ui' / 'ui-provenance.json', output)
+    nr, ne = npm(ROOT / 'app', output, ROOT, ui); errors += ne
     pr, pe = python_packages(output, ROOT); errors += pe
     rustc = subprocess.run(['rustc', '-vV'], check=True, capture_output=True, text=True).stdout
     host = next(line.split(': ', 1)[1] for line in rustc.splitlines() if line.startswith('host: '))
@@ -230,8 +240,8 @@ def main():
     executable = args.bundle / ('chem313-engine.exe' if sys.platform.startswith('win') else 'chem313-engine')
     boot, boot_errors = bootloader(executable, license_file, version, output)
     errors += boot_errors
-    inventory = {'schema': 'chem313.v2-notices.v1', 'project': project, 'python_interpreter': {'version': sys.version.split()[0], 'notices': py}, 'npm': nr, 'python': pr, 'rust': rr, 'frozen_engine': frozen, 'pyinstaller_bootloader': boot, 'errors': errors,
-      'limitations': ['Dependency closure is conservative, not a proof of emitted frontend or frozen Python contents.', 'Native mappings use wheel RECORD checksums and PyInstaller TOC source mappings; transformations and statically linked components require additional review.', 'Cargo metadata is filtered to the build host; verify statically linked native dependencies separately.', 'PyInstaller version and license come from the current build interpreter; freeze and collection must use the same environment.']}
+    inventory = {'schema': 'chem313.v2-notices.v1', 'ui_provenance': ui_notice, 'project': project, 'python_interpreter': {'version': sys.version.split()[0], 'notices': py}, 'npm': nr, 'python': pr, 'rust': rr, 'frozen_engine': frozen, 'pyinstaller_bootloader': boot, 'errors': errors,
+      'limitations': ['Npm scope includes production closure plus all bundler-attributed emitted modules and hash-verified copied Ketcher files; host build tools are not installed runtime dependencies.', 'Native mappings use wheel RECORD checksums and PyInstaller TOC source mappings; transformations and statically linked components require additional review.', 'Cargo metadata is filtered to the build host; verify statically linked native dependencies separately.', 'PyInstaller version and license come from the current build interpreter; freeze and collection must use the same environment.']}
     (output / 'inventory.json').write_text(json.dumps(inventory, indent=2, sort_keys=True) + '\n')
     for error in errors: print(error, file=sys.stderr)
     print(f'Wrote {output / "inventory.json"}: {len(errors)} unresolved gaps')

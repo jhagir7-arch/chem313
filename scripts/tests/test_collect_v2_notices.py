@@ -9,6 +9,29 @@ mod = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(mod)
 
 class NoticeTests(unittest.TestCase):
+    def test_emitted_dev_polyfill_is_included_but_unused_build_tool_is_not(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp); app = root / 'app'; app.mkdir()
+            lock = {'packages': {'': {}, 'node_modules/polyfill': {'version': '1', 'dev': True}, 'node_modules/builder': {'version': '1', 'dev': True}}}
+            (app / 'package-lock.json').write_text(json.dumps(lock), encoding='utf-8')
+            package = app / 'node_modules/polyfill'; package.mkdir(parents=True)
+            (package / 'package.json').write_text(json.dumps({'name': 'polyfill', 'version': '1', 'license': 'MIT'}), encoding='utf-8')
+            (package / 'LICENSE').write_text('full terms', encoding='utf-8')
+            rows, errors = mod.npm(app, root / 'out', root, {'packages': {'node_modules/polyfill'}})
+            self.assertEqual([r['name'] for r in rows], ['polyfill'])
+            self.assertEqual(errors, [])
+
+    def test_npm_manifest_is_always_decoded_as_utf8(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp); app = root / 'app'; package = app / 'node_modules' / 'utf8'; out = root / 'out'
+            app.mkdir(); (app / 'package-lock.json').write_text(json.dumps({'packages': {'': {}, 'node_modules/utf8': {'version': '1'}}}), encoding='utf-8')
+            package.mkdir(parents=True)
+            (package / 'package.json').write_bytes(json.dumps({'name': 'utf8', 'version': '1', 'license': 'MIT', 'description': '\u009d'}, ensure_ascii=False).encode('utf-8'))
+            (package / 'LICENSE').write_text('permission', encoding='utf-8')
+            rows, errors = mod.npm(app, out, root)
+            self.assertFalse(errors)
+            self.assertEqual(rows[0]['name'], 'utf8')
+
     def test_npm_distinguishes_versions_and_missing_notices(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp); app = root / 'app'; mods = app / 'node_modules'; out = root / 'out'

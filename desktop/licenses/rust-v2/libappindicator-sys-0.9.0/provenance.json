@@ -1,0 +1,6 @@
+{
+  "complete": true,
+  "files": [{"path": "LICENSE-MIT", "sha256": "eb227437252b2a7a9c1fc342c93ade1f3d7ce38cc6dd754f613db07d53ceff0b", "url": "https://raw.githubusercontent.com/tauri-apps/libappindicator-rs/eafd1e3682a1247f595410266091e9684021cb6f/LICENSE-MIT"}],
+  "license_expression": "Apache-2.0 OR MIT", "name": "libappindicator-sys", "path_in_vcs": "sys", "revision": "eafd1e3682a1247f595410266091e9684021cb6f", "version": "0.9.0",
+  "review": "Exact upstream revision and retained MIT option from the dual-license expression."
+}

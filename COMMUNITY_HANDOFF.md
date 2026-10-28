@@ -1,6 +1,6 @@
 # Community handoff
 
-This repository is a source-only research alpha. Development is paused; historical plans are
+This repository contains the community desktop beta source and historical modules. Development is paused; historical plans are
 preserved for context, not promises or current release instructions. The repository does not
 include installed engines, datasets, private adapters or model weights.
 
@@ -13,11 +13,7 @@ include installed engines, datasets, private adapters or model weights.
 | External engines | backend adapters and `native/` | ORCA and Q-Chem require independent licensed installations; no quantum engine or license is bundled by this source archive. |
 | Plans | `docs/history/` | Sanitized historical design records; outcomes and future proposals require fresh verification. |
 
-Before any installer release, independently verify each target's native workflow, third-party
-license and notice coverage, and packaging. The macOS candidate has unresolved native dependency
-notice gaps; Windows and Linux require their own verified native workflows and notices. Signing
-and notarization are separate. A source archive or a passing test on one platform does not prove
-another platform's installer is ready.
+The native release workflow builds each target independently and withholds the entire release if a package fails its tests, notice coverage or extracted-engine calculation check. See [desktop release scope](docs/DESKTOP_RELEASE.md). The earlier 12 objc2-family notice gaps now have full upstream license texts and revision provenance; upstream Apple SDK derivation boundaries remain documented. Signing, notarization and GUI testing are separate from these automated gates.
 
 Known product gaps include accessibility and keyboard operation of the 3D viewer, broad molecule
 and stereochemistry support, robust process lifecycle and record migration, and independent
