@@ -1,11 +1,13 @@
-# Release scope: Chem313 1.0.0-preview.5
+# Release scope: Chem313 2.0.0-alpha.1
 
-Chem313 was previously named OpenChem. The new name distinguishes this application from the unrelated Mariewelt/OpenChem project. Existing repository URLs, internal identifiers and project data paths remain compatible.
+This is a source alpha for the consolidated Tauri desktop workbench. Historical preview.6 portable downloads are separate artifacts and are not evidence that v2 has passed.
 
-The standalone core contains a frozen CPython service, Ketcher/Indigo, RDKit, 3Dmol, NumPy, SciPy and Matplotlib. It contains no ORCA or Q-Chem executable, Qwen model, private adapter, training dataset, Avogadro binary or optional science-worker environments.
+The v2 source provides a catalog-driven Ketcher/3Dmol interface, SMILES/molfile import, real RDKit MMFF94/UFF shape relaxation, saved immutable reports and native dialogs. It includes no ORCA or Q-Chem executable, Qwen model, private adapter, training dataset, Avogadro binary or optional science-worker environments. No real quantum-chemistry calculation is claimed.
 
-Verified checks must distinguish frontend/unit tests, frozen service tests and compiled native workflow tests. These prove only the documented workflow and bounded numerical checks. A fake executable used in runner lifecycle tests is never evidence of a real licensed quantum calculation. The first real ORCA / Q-Chem calculation remains pending.
+The 2026-10-28 review corrected structure draft leakage, ignored starter edits, stale snapshots, force-field parameter validation, ambiguous stereo and multi-record SDF handling, duplicate-run prevention, startup timeout/cleanup and a returning-watchdog defect. See REVIEW_2026-10-28.md for verification boundaries.
 
-The Mac candidate is ad-hoc signed, not Developer ID signed or notarized. The binary audit determines its minimum deployment target; other OS releases and architectures remain untested unless explicitly recorded. Windows/Linux workflows must pass native smoke and notice gates before a download is offered. Failed or license-blocked builds retain evidence only.
+Installer publication requires native frozen-engine smoke, app checks and dependency notices on each platform. The current local macOS notice review retains 12 unresolved objc2-family notice gaps. Those are preserved as exact upstream revision evidence, not silently marked clear. Unpassed installers must not be attached as downloads. Source-only publication includes no compiled third-party crates.
 
-The source archive excludes private correspondence, handoff archives, Git history, installed dependencies, model weights, training data, user projects and third-party fixtures with unresolved redistribution rights. Component notices and source-origin records accompany the permitted application code. No dependency is relicensed by the application's Apache-2.0 grant.
+A local build is not publication, an API smoke test is not a native interface test, and a Mac check does not validate Windows/Linux. Failed or blocked builds retain their reports. macOS builds remain ad-hoc signed, without Developer ID signing or notarization.
+
+The allowlisted source archive excludes private correspondence, handoff archives, private Git history, installed dependencies, model weights, training data, user projects and third-party fixtures with unresolved redistribution rights. The app Apache-2.0 license covers project-originated code, not third-party components.

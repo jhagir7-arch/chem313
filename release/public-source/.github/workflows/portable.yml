@@ -30,11 +30,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
     steps:
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           # The retained CPython CRT conditions are source-pinned below.
           python-version: '3.13.16'
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: '24'
       - name: Download and verify the exact reviewed source
@@ -46,7 +46,7 @@ jobs:
           python - <<'PY'
           import hashlib, os, pathlib, re, urllib.request, zipfile
           url, digest = os.environ['SOURCE_URL'], os.environ['SOURCE_SHA256'].lower()
-          if not re.fullmatch(r'https://github.com/jhagir7-arch/openchem/releases/download/[^/]+/[^/]+\.zip', url):
+          if not re.fullmatch(r'https://github.com/jhagir7-arch/chem313/releases/download/[^/]+/[^/]+\.zip', url):
               raise SystemExit('Only this project release ZIP assets are accepted')
           if not re.fullmatch(r'[0-9a-f]{64}', digest):
               raise SystemExit('Invalid expected SHA-256')
@@ -187,10 +187,10 @@ jobs:
         run: |
           tag=$(python -c "import os; print(os.environ['SOURCE_URL'].split('/download/')[1].split('/')[0])")
           if [ "$RUNNER_OS" = "Windows" ]; then extension=zip; else extension=tar.gz; fi
-          gh release upload "$tag" "dist/$BUNDLE_NAME.$extension" "dist/$BUNDLE_NAME.$extension.sha256" --repo jhagir7-arch/openchem
+          gh release upload "$tag" "dist/$BUNDLE_NAME.$extension" "dist/$BUNDLE_NAME.$extension.sha256" --repo jhagir7-arch/chem313
           cp build/portable/workflow.json "build/portable/$BUNDLE_NAME-QA.json"
-          gh release upload "$tag" "build/portable/$BUNDLE_NAME-QA.json" --repo jhagir7-arch/openchem
-      - uses: actions/upload-artifact@v4
+          gh release upload "$tag" "build/portable/$BUNDLE_NAME-QA.json" --repo jhagir7-arch/chem313
+      - uses: actions/upload-artifact@v7
         if: steps.release_gate.outputs.releasable == 'true'
         with:
           name: Chem313-core-${{ matrix.label }}-tested-candidate
@@ -199,7 +199,7 @@ jobs:
             source/dist/*.tar.gz
             source/dist/*.sha256
           if-no-files-found: error
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: portable-${{ matrix.label }}-evidence

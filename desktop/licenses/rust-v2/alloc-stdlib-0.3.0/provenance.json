@@ -1,0 +1,16 @@
+{
+  "complete": true,
+  "files": [
+    {
+      "path": "LICENSE",
+      "sha256": "c0c56f26d9c051cac4d200c34c84e7ae9aaa853e01a982a1df08b09931e518ae",
+      "url": "https://raw.githubusercontent.com/dropbox/rust-alloc-no-stdlib/0a81fd6928ea3b33c8cd484aa4575d50ffb98012/LICENSE"
+    }
+  ],
+  "license_expression": "BSD-3-Clause",
+  "name": "alloc-stdlib",
+  "path_in_vcs": "alloc-stdlib",
+  "review": "Exact upstream revision and retained license text.",
+  "revision": "0a81fd6928ea3b33c8cd484aa4575d50ffb98012",
+  "version": "0.3.0"
+}

@@ -7,6 +7,8 @@ is a project index, not an AI memory, retrieval, or RAG system.
 ## Read first
 
 - [Public package README (staged at the package root)](README.md)
+- [Changelog: release history and unreleased changes](CHANGELOG.md)
+- [v2 desktop shell (Tauri + engine sidecar)](app/README.md), [design tokens](design/tokens.json) and [component spec](design/COMPONENTS.md); plan in `CHEM313_V2_PLAN_2026-10-24.md` (private)
 - [Standalone macOS build and signing guide](release/standalone/BUILDING.md)
 - [Portable-core build scope](release/portable/README.txt)
 - [Source-candidate setup, test scope, and limitations](release/public-source/README.md)
@@ -20,6 +22,7 @@ is a project index, not an AI memory, retrieval, or RAG system.
 | --- | --- | --- |
 | Frontend | [application shell](frontend/src/App.tsx), [feature catalog](frontend/src/featureIndex.mjs), [API client](frontend/src/api.ts), [frontend tests](frontend/test) | Add a user-facing workspace or component in `frontend/src`; add its focused JavaScript test in `frontend/test`; maintain its catalog entry. |
 | Local backend | [HTTP entry point](backend/src/hypothesislab/api.py), [engine](backend/src/hypothesislab/engine.py), [runtime modules](backend/src/hypothesislab), [backend tests](backend/tests) | Add local actions, validation, storage, or engine integration under `backend/src/hypothesislab`; put focused pytest coverage in `backend/tests`. |
+| v2 desktop shell | [Rust host: engine sidecar, proxy, menus](app/src-tauri/src/lib.rs), [shell state and commands](app/src/App.tsx), [workspace tabs](app/src/workspace.tsx), [panels](app/src/panels.tsx), [host bridge](app/src/engine.ts) | Phase 2 skeleton: one app for all three OSes; replaces the Swift shell and portable launcher once Phase 3 lands. Add UI in `app/src`, host behaviour in `app/src-tauri/src`. |
 | Native desktop and portable core | [macOS shell](desktop/Chem313.swift), [desktop services](desktop), [portable launcher](desktop/portable.py), [Rust helper](native/rust), [C++ helper](native/cpp) | Change native menu/window behavior in `desktop/Chem313.swift`; change local launch packaging in `desktop`; place narrow native helpers in the matching `native` language directory. |
 | Contracts | [local API contract](contracts/openapi.generated.json), [desktop contract](contracts/desktop.openapi.generated.json), [tool-action schema](contracts/tool-actions.schema.json) | Update the applicable contract when a typed external or desktop-facing interface changes, then keep implementation and tests aligned. |
 | Build, package, and QA scripts | [public app build](scripts/build_public_app.sh), [portable build](scripts/build_portable.py), [source packaging](scripts/package_public_source.py), [packaged QA](scripts/test_portable_package.py) | Add a deterministic maintenance, build, package, or native-QA script under `scripts`; keep release claims tied to its recorded output. |
@@ -43,7 +46,7 @@ portable packaging.
 The macOS shell renders these four sections in its native sidebar. Labs is an
 opt-in area for additional tools. The result card links to NIST CCCBDB as a
 reference lookup only; it makes no direct NIST comparison or experimental claim.
-Windows and Linux source/runtime-clearance fixes are implemented, but native CI is pending. Distributable artifacts remain withheld until native behavior, notice, and distribution gates pass.
+Windows x64 and Linux x86_64 portable core archives are published with preview.6 after their native workflow, notice, and distribution gates passed. Interactive GUI checks on those platforms still need testers.
 
 ## Capability boundary
 

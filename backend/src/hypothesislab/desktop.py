@@ -25,38 +25,14 @@ def platform_data_dir(*, environ=None, system=None, home=None) -> Path:
     return home_path / "Library" / "Application Support" / "OpenChem"
 
 
-def main(argv=None):
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--data")
-    parser.add_argument("--ui")
-    parser.add_argument("--port", type=int, default=0)
-    args = parser.parse_args(argv)
-    if args.data:
-        os.environ["HYPOTHESISLAB_DATA"] = args.data
-    else:
-        os.environ.setdefault("HYPOTHESISLAB_DATA", str(platform_data_dir()))
-    os.environ.setdefault("MPLCONFIGDIR", str(Path(os.environ["HYPOTHESISLAB_DATA"])/".matplotlib"))
-
-    from . import api, __version__
-    from .workbench import WorkbenchEngine
-    from .validation import InputError, PROJECT_RE
-    from fastapi import Request, HTTPException, Security
-    from fastapi.responses import Response, FileResponse
-    from fastapi.staticfiles import StaticFiles
-    import uvicorn
-
-    api.engine = WorkbenchEngine(api.ROOT)
-    app = api.app
-    from .science_api import register
-    register(app, api)
-    from .calculation_api import register as register_calculations
-    register_calculations(app, api)
-    from .study_api import register as register_studies
-    register_studies(app, api)
-    from .qchem_api import register as register_qchem
-    register_qchem(app, api)
+def register_desktop(app, api):
+    """Add the desktop-only routes; scripts/sync_version.py also calls this to generate the contract."""
+    from . import __version__
     from .assistant import Assistant
     from .orca_runtime import executable_status
+    from .validation import InputError, PROJECT_RE
+    from fastapi import Request, HTTPException, Security
+    from fastapi.responses import Response
 
     @app.get("/api/workbench")
     def workbench(request: Request, token: str | None = Security(api.SESSION_HEADER)):
@@ -117,10 +93,84 @@ def main(argv=None):
         mime = {"svg": "image/svg+xml", "json": "application/json"}.get(p.suffix[1:], "text/plain; charset=utf-8")
         return Response(content, media_type=mime, headers={"X-Content-Type-Options": "nosniff", "Cache-Control": "no-store"})
 
+
+def parent_alive(pid: int) -> bool:
+    """True while the process that started us still exists (cross-platform, no signals sent)."""
+    if pid <= 0:
+        return False
+    if sys.platform.startswith("win"):
+        import ctypes
+        handle = ctypes.windll.kernel32.OpenProcess(0x1000, False, pid)  # PROCESS_QUERY_LIMITED_INFORMATION
+        if not handle:
+            return False
+        try:
+            code = ctypes.c_ulong()
+            ok = ctypes.windll.kernel32.GetExitCodeProcess(handle, ctypes.byref(code))
+            return bool(ok) and code.value == 259  # STILL_ACTIVE
+        finally:
+            ctypes.windll.kernel32.CloseHandle(handle)
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    return os.getppid() == pid
+
+
+def watch_parent(pid: int, interval: float = 2.0, exit_fn=os._exit) -> None:
+    """Exit as soon as the parent process disappears, so a crashed or killed shell leaves no engine behind."""
+    import threading
+    import time
+
+    def loop():
+        while True:
+            time.sleep(interval)
+            if not parent_alive(pid):
+                exit_fn(0)
+                return
+
+    threading.Thread(target=loop, name="parent-watchdog", daemon=True).start()
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--data")
+    parser.add_argument("--ui")
+    parser.add_argument("--port", type=int, default=0)
+    parser.add_argument("--parent-pid", type=int, default=0, help="exit when this process ends (set by the desktop shell)")
+    args = parser.parse_args(argv)
+    if args.parent_pid:
+        watch_parent(args.parent_pid)
+    if args.data:
+        os.environ["HYPOTHESISLAB_DATA"] = args.data
+    else:
+        os.environ.setdefault("HYPOTHESISLAB_DATA", str(platform_data_dir()))
+    os.environ.setdefault("MPLCONFIGDIR", str(Path(os.environ["HYPOTHESISLAB_DATA"])/".matplotlib"))
+
+    from . import api
+    from .workbench import WorkbenchEngine
+    from fastapi.staticfiles import StaticFiles
+    import uvicorn
+
+    api.engine = WorkbenchEngine(api.ROOT)
+    app = api.app
+    from .science_api import register
+    register(app, api)
+    from .calculation_api import register as register_calculations
+    register_calculations(app, api)
+    from .study_api import register as register_studies
+    register_studies(app, api)
+    from .qchem_api import register as register_qchem
+    register_qchem(app, api)
+    register_desktop(app, api)
+
+    # The browser interface is optional: the v2 desktop shell talks to the API only.
     ui = Path(args.ui) if args.ui else Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parents[4])) / "ui"
-    if not ui.is_dir():
-        raise SystemExit("Built interface missing; use --ui frontend/dist for development")
-    app.mount("/", StaticFiles(directory=ui, html=True), name="interface")
+    if ui.is_dir():
+        app.mount("/", StaticFiles(directory=ui, html=True), name="interface")
+    elif args.ui:
+        raise SystemExit(f"Built interface missing at {ui}; use --ui frontend/dist for development")
     listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     listener.bind(("127.0.0.1", args.port))

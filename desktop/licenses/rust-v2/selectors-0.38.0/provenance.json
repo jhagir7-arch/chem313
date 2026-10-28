@@ -1,0 +1,21 @@
+{
+  "complete": true,
+  "files": [
+    {
+      "path": "SOURCE-HEADER-lib.rs",
+      "sha256": "d54c6e13e9e952dac17d209171df8657e3cae93beaddace4906150cdec8d02e9",
+      "url": "https://raw.githubusercontent.com/servo/stylo/572ecba2d1600e7c3d490586692a209faf703baa/selectors/lib.rs"
+    },
+    {
+      "path": "LICENSE-MPL-2.0",
+      "sha256": "3f3d9e0024b1921b067d6f7f88deb4a60cbe7a78e76c64e3f1d7fc3b779b9d04",
+      "url": "https://www.mozilla.org/media/MPL/2.0/index.txt"
+    }
+  ],
+  "license_expression": "MPL-2.0",
+  "name": "selectors",
+  "path_in_vcs": "selectors",
+  "review": "Exact upstream revision and retained license text.",
+  "revision": "572ecba2d1600e7c3d490586692a209faf703baa",
+  "version": "0.38.0"
+}

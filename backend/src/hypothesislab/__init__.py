@@ -1,2 +1,2 @@
 """Versioned HypothesisLab local chemistry engine."""
-__version__ = "1.0.0-preview.6"
+__version__ = "2.0.0-alpha.1"

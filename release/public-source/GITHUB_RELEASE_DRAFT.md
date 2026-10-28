@@ -1,36 +1,35 @@
-# Chem313 1.0.0-preview.5 — classic desktop, open community preview
+# Chem313 preview.6 — your first real molecule calculation
 
-This preview replaces the remaining beige with white, black and neutral grey, using compact, square, traditional desktop controls. Completed shape calculations show results first; their instructions can be reopened.
+Chem313 preview.6 makes one complete beginner job available: choose a small molecule, relax its shape with the included MMFF94 force field, inspect the 3D result and energy chart, and save a reproducible record. No Python, Node, engine account or Qwen setup is required.
 
-Chem313 organizes the work around four tasks: **Learn, Molecule, Calculate and Records**. Experimental tools stay in Labs, hidden by default. The Mac app has an AppKit sidebar and toolbar; the portable interface follows the same task structure.
+## Downloads
 
-- First-launch choices: learn, prepare a calculation, or read an ORCA output.
-- One Calculate section, with ORCA or Q-Chem chosen as a setting.
-- Persistent molecule context, coordinate-derived identity checks, and visible calculation stages.
-- Visible answer cards with immediate feedback and a different-molecule practice task.
-- Result cards with plain status, explicit provenance, Eh/kJ/mol/eV units, one primary save action and a downloads menu. NIST CCCBDB is a lookup link; no unmatched reference energy is presented.
-- Black-and-white light/dark appearance, optional Qwen help, and a searchable feature/project index.
+- Windows x64: [portable ZIP](https://github.com/jhagir7-arch/chem313/releases/download/v1.0.0-preview.6/Chem313-core-windows-amd64.zip). Extract the entire folder, then open Chem313.exe. Supports Windows 10 or later / Server 2022 or later; native automated checks ran on Server 2022.
+- Linux x86_64: [portable archive](https://github.com/jhagir7-arch/chem313/releases/download/v1.0.0-preview.6/Chem313-core-linux-x86_64.tar.gz). Extract the entire folder, then run ./Chem313. Tested on Ubuntu 22.04; requires glibc 2.35 or later. Other distributions and ARM systems have not been verified.
+- Apple Silicon Mac, macOS 14+: [DMG](https://github.com/jhagir7-arch/chem313/releases/download/v1.0.0-preview.6/Chem313-1.0.0-preview.6-Mac-arm64.dmg) or [ZIP](https://github.com/jhagir7-arch/chem313/releases/download/v1.0.0-preview.6/Chem313-1.0.0-preview.6-Mac-arm64.zip). Ad-hoc signed, not Apple Developer ID signed or notarized; macOS may block an Internet download.
 
-## Download
+Windows and Linux run a compiled local service and open the interface in your browser. Keep the launcher running while you work. Neither needs a system Python or Node installation. Read the included README for launch instructions and retained third-party notices. On the first Windows launch, review the retained Microsoft runtime terms and choose Yes only if you accept them. The portable executables are unsigned.
 
-**Chem313-1.0.0-preview.5-Mac-arm64.dmg** includes Python and its core scientific libraries. Download, open the disk image and drag Chem313.app to Applications. Apple Silicon, macOS 14+ deployment target; tested on macOS 27. Verify the SHA-256 sums.
+## Try it in three steps
 
-This remains an **ad-hoc signed, unnotarized research preview**. macOS may block a downloaded copy. No Developer ID signature or notarization is claimed.
+1. Open **Calculate → First calculation** and choose **Ethanol**.
+2. Click **Run shape calculation**. Inspect the relaxed 3D structure, signed before/after energy chart, convergence and molecule identity.
+3. Click **Download record** to keep the parameters, model version and artifact hashes. Try water or methane next.
 
-## Verification
+With the recorded RDKit 2026.09.1 model and seed 42, ethanol changed from **6.831185 to −1.336852 kcal/mol**. This compares two shapes of the same molecule using the same force field. Raw energies of different molecules cannot rank reactions or experimental stability.
 
-The compiled AppKit/WKWebView workflow, core package and native-library audit are checked before publishing. The core performs real bundled RDKit force-field calculations; a separately labelled simulated UI fixture tests result-card presentation without claiming a quantum calculation. See the attached QA record for the checks and scientific limits. Frontend: 42 tests passed. Focused backend: 59 passed.
+## What was verified
 
-## Limits
+- The compiled Mac interface completed ethanol, water and methane, including 3D and chart rendering, record-save bridge payload, artifact hashes and clearing stale results after changing molecule or project.
+- Native frozen Windows and Linux workflow checks ran all three real calculations from a fresh home directory and relocated working directory with Python and Node absent from PATH. Scientific worker checks and relaunch persistence also passed. Interactive GUI checks on Windows and Linux are still needed from community testers.
+- Runtime notice and distribution checks passed before the portable archives were published. SHA-256 checksum files and platform QA reports are attached.
 
-**No real ORCA or Q-Chem quantum calculation has completed here.** Both need a separately licensed installation. ORCA registration is the next step for validating the small water calculation. Force-field calculations do not establish reactions or experimental properties. Qwen is optional, experimental and absent from the core download.
+## Scientific scope
 
-Windows/Linux native CI passed on the previous source candidate ([run 39366818959](https://github.com/jhagir7-arch/chem313/actions/runs/39366818959)). This version's builds are not yet verified there. Their compiled downloads remain withheld pending Microsoft runtime redistribution review on Windows and exact GCC/libquadmath source obligations on Linux. The portable build scripts are included in source.
+This is **real molecular mechanics**, not a quantum-chemistry calculation, reaction predictor, experimental validation or proof of a global minimum. ORCA and Q-Chem input preparation remains available for separately installed and licensed engines; real execution of those engines is still unverified. Qwen remains optional and experimental and is not bundled or needed for this activity.
 
-Use **Chem313-1.0.0-preview.5-Source.zip** for the corresponding source and build scripts. The reviewed source is consolidated into the repository for contribution; the named ZIP is the exact packaged source snapshot. The named source ZIP excludes Git history, private correspondence, research projects, model weights, adapters and training data.
+## Source and feedback
 
-Feedback: [GitHub Issues](https://github.com/jhagir7-arch/chem313/issues). Tell us which step confused you and what you expected to happen. Please omit private research data. No broad scientific or student-usability validation is claimed.
+The latest reviewed packaging source is **Chem313-1.0.0-preview.6-Source-portable-r3.zip**. The original source ZIP records the Mac build; portable-r2 records the Windows build; portable-r3 adds the Ubuntu package-ownership correction. All use the same first-calculation implementation. GitHub's automatically generated source links refer to the original tag commit; current packaging fixes are on main.
 
-## Community
-
-[Contributor guide](https://github.com/jhagir7-arch/chem313/blob/main/CONTRIBUTING.md) · [Project map](https://github.com/jhagir7-arch/chem313/blob/main/PROJECT_INDEX.md) · [Community guide](https://github.com/jhagir7-arch/chem313/blob/main/docs/COMMUNITY.md). Beginners, educators and chemistry reviewers are welcome. Open an issue with one confusing step or a small reproducible example.
+Chem313 is a community research preview. Please report launch problems, unclear instructions and reproducible science issues through [GitHub Issues](https://github.com/jhagir7-arch/chem313/issues), including your OS and the exact error. No private email is published.

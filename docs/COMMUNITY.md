@@ -15,6 +15,6 @@ Chemistry reviewers can check whether interface wording accurately distinguishes
 
 ## Release boundaries
 
-Platform and release reports should state the exact OS, architecture, package, and validation evidence. New runtimes, dependencies, binaries, models, fixtures, and data require a redistribution and notice review before inclusion. The current Mac preview is ad-hoc signed and unnotarized. Windows and Linux artifacts are not offered until their native smoke, licensing, and notice gates are recorded.
+Platform and release reports should state the exact OS, architecture, package, and validation evidence. New runtimes, dependencies, binaries, models, fixtures, and data require a redistribution and notice review before inclusion. The current Mac preview is ad-hoc signed and unnotarized. Windows and Linux artifacts are offered only after their native smoke, licensing, and notice gates are recorded; preview.6 recorded them for Windows x64 and Linux x86_64, and those executables are unsigned.
 
 Be respectful, specific, and patient. Report security-sensitive material through the route in [SECURITY.md](../release/public-source/SECURITY.md), without publishing secrets or exploit details.

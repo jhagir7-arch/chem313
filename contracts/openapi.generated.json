@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "HypothesisLab Local Engine",
-    "version": "1.0.0-preview.2"
+    "version": "2.0.0-alpha.1"
   },
   "paths": {
     "/api/session": {
@@ -41,6 +41,28 @@
       "get": {
         "summary": "Capabilities",
         "operationId": "capabilities_api_capabilities_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
+      }
+    },
+    "/api/catalog": {
+      "get": {
+        "summary": "Catalog Route",
+        "description": "Starter molecules, force fields and parameter bounds; the interface shows nothing it does not read here.",
+        "operationId": "catalog_route_api_catalog_get",
         "responses": {
           "200": {
             "description": "Successful Response",

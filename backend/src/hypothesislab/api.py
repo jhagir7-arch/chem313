@@ -81,6 +81,13 @@ def capabilities(request: Request, x_hypothesislab_session: str | None = Securit
     require_session(request, x_hypothesislab_session)
     return capability_manifest()
 
+@app.get("/api/catalog")
+def catalog_route(request: Request, x_hypothesislab_session: str | None = Security(SESSION_HEADER)):
+    """Starter molecules, force fields and parameter bounds; the interface shows nothing it does not read here."""
+    require_session(request, x_hypothesislab_session)
+    from .catalog import catalog
+    return catalog()
+
 @app.post("/api/preview")
 def preview(payload: Action, request: Request, x_hypothesislab_session: str | None = Security(SESSION_HEADER)):
     require_session(request, x_hypothesislab_session)

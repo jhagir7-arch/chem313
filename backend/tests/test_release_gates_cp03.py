@@ -1,6 +1,6 @@
 """Keep source evidence and the public contract synchronized as peers amend code."""
 from pathlib import Path
-import hashlib,json
+import hashlib,json,subprocess,sys
 import unittest
 from hypothesislab.api import app
 from hypothesislab import __version__
@@ -14,6 +14,11 @@ class ReleaseGateTests(unittest.TestCase):
         self.assertEqual(shipped,actual)
         self.assertEqual(shipped['info']['version'],__version__)
         self.assertEqual(shipped['components']['securitySchemes']['APIKeyHeader']['name'],'X-HypothesisLab-Session')
+
+    def test_derived_versions_and_desktop_contract_are_current(self):
+        # A separate process: registering desktop routes would otherwise leak into the shared app.
+        result=subprocess.run([sys.executable,str(ROOT/'scripts/sync_version.py'),'--check'],capture_output=True,text=True)
+        self.assertEqual(result.returncode,0,result.stderr)
 
     def test_original_peer_archive_hashes(self):
         candidate = ROOT/'BUNDLE_MANIFEST.json'

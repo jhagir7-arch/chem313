@@ -21,6 +21,41 @@ python3 scripts/check_project_index.py
 
 The setup script requires Python 3.13 and Node 24.20 or later. Use synthetic or rights-cleared examples in reports and tests.
 
+## The v2 desktop app (`app/`)
+
+The desktop shell is where new interface work goes. Rules that keep it honest and portable:
+
+- **No chemistry in the interface.** Starter molecules, force fields, parameter bounds and the
+  scope sentence come from `GET /api/catalog` (`backend/src/hypothesislab/catalog.py`). If you
+  need a new option, add it there with validation and a test; the interface only renders it.
+- **One way to the engine.** Every call goes through `app/src/engine.ts` and the host's
+  `engine_request` command. Never fetch the loopback port directly.
+- **Tokens, not colours.** Styles use `design/tokens.css`; layout and copy follow
+  `design/COMPONENTS.md`. No new hex values, sentences in chrome, or emoji icons.
+- **Real controls.** `<button>`, `<a>`, `<input>` with labels; keyboard paths for everything.
+
+Set up and run:
+
+```sh
+python3 -m pip install -e "backend[test]" "pyinstaller>=6.19,<7"
+python3 scripts/freeze_engine.py --dest app/src-tauri/engine   # the engine the shell starts
+npm --prefix app install
+cargo install tauri-cli --version "^2" --locked
+cd app && cargo tauri dev                                        # or: cargo tauri build
+```
+
+Checks that must pass before a pull request (the same ones CI runs in `.github/workflows/app.yml`):
+
+```sh
+python3 scripts/sync_version.py --check
+python3 -m pytest backend/tests -q
+npm --prefix app test && npm --prefix app run build
+(cd app/src-tauri && cargo test)
+```
+
+Report the OS and architecture you tested on. Windows and Linux installers come from CI; say in
+the pull request if you could only test one platform.
+
 ## Chemistry review
 
 Chemistry-domain contributions should identify the source or method, inputs, units, assumptions, and the limit of the proposed interpretation. Check that molecule identity, charge, multiplicity, geometry, method labels, and energy units are represented consistently. A successful process or rendered result does not establish convergence, a quantum calculation, experimental agreement, or scientific validity.

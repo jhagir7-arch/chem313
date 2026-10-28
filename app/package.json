@@ -1,0 +1,31 @@
+{
+  "name": "chem313-app",
+  "private": true,
+  "version": "2.0.0-alpha.1",
+  "type": "module",
+  "scripts": {
+    "postinstall": "node scripts/copy-assets.mjs",
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "test": "node --experimental-strip-types --no-warnings --test test/*.test.mts",
+    "tauri": "cargo tauri"
+  },
+  "dependencies": {
+    "3dmol": "2.5.5",
+    "@tauri-apps/api": "^2.5.0",
+    "events": "3.3.0",
+    "ketcher-core": "3.18.0",
+    "ketcher-react": "3.18.0",
+    "ketcher-standalone": "3.18.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "vite-plugin-node-polyfills": "0.28.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.6.3",
+    "vite": "^6.0.3"
+  }
+}

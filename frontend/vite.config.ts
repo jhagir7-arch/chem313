@@ -2,6 +2,7 @@ import {defineConfig} from 'vite';
 import react from '@vitejs/plugin-react';
 import {nodePolyfills} from 'vite-plugin-node-polyfills';
 import {uiLicenseProvenance} from './scripts/license-provenance.mjs';
+import pkg from './package.json';
 
 const ketcherRaphaelEsm = {
   name: 'ketcher-raphael-esm',
@@ -15,6 +16,7 @@ const ketcherRaphaelEsm = {
 };
 
 export default defineConfig({
+  define:{__APP_VERSION__:JSON.stringify(pkg.version)},
   // Browser adaptations for upstream Ketcher's Node utility imports, without forking Ketcher.
   plugins:[react(),nodePolyfills({include:['process','events','util','assert','buffer']}),ketcherRaphaelEsm,uiLicenseProvenance()],
   server:{host:'127.0.0.1',port:5173,strictPort:true,proxy:{'/api':{target:'http://127.0.0.1:8765',changeOrigin:false}}}

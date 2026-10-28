@@ -6,6 +6,8 @@ Licensed under the Apache License, Version 2.0. This grant covers
 Chem313-originated source and documentation supplied in this release.
 Third-party dependencies, separately attributed material, external programs,
 models and datasets retain their own licenses and are not relicensed.
-The standalone Qwen edition includes separately licensed runtimes and a
-4-bit Qwen3.5-2B-Base model. No private training adapter or dataset is shipped.
-See THIRD_PARTY_NOTICES.md and the artifact-local licenses manifests.
+The v2 desktop alpha includes RDKit and other separately licensed runtime
+components; retained notices are in its resources/notices directory.
+Qwen model weights, proprietary engines, private adapters and datasets are not
+included in the v2 desktop alpha. Historical Qwen editions have separate terms.
+See THIRD_PARTY_NOTICES.md and each artifact's own license inventory.

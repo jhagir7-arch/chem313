@@ -8,6 +8,7 @@ if [ -e "$OUT" ]; then echo "Output already exists: $OUT" >&2; exit 1; fi
 if [ "$(uname -s)" != Darwin ] || [ "$(uname -m)" != arm64 ]; then
   echo "Build this target on Apple Silicon macOS." >&2; exit 1
 fi
+VERSION="$(.venv/bin/python scripts/sync_version.py --print)"
 mkdir -p "$BUILD"
 npm --prefix frontend run build
 .venv/bin/python scripts/standalone_profile.py "$BUILD/bundle.json"
@@ -27,7 +28,7 @@ mkdir -p "$OUT/Contents/MacOS" "$OUT/Contents/Resources/engine"
 swiftc -target arm64-apple-macos14.0 -O -framework AppKit -framework WebKit desktop/Chem313.swift -o "$OUT/Contents/MacOS/Chem313"
 cp desktop/Info.plist "$OUT/Contents/Info.plist"
 /usr/libexec/PlistBuddy -c 'Set :CFBundleIdentifier org.openchem.workbench.preview' "$OUT/Contents/Info.plist"
-/usr/libexec/PlistBuddy -c 'Set :CFBundleShortVersionString 1.0.0-preview.6' "$OUT/Contents/Info.plist"
+/usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" "$OUT/Contents/Info.plist"
 /usr/libexec/PlistBuddy -c 'Set :CFBundleVersion 26' "$OUT/Contents/Info.plist"
 /usr/libexec/PlistBuddy -c 'Add :OpenChemStandalone bool true' "$OUT/Contents/Info.plist"
 cp -R "$BUILD/engine-dist/chem313-engine/" "$OUT/Contents/Resources/engine/"

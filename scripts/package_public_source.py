@@ -7,12 +7,17 @@ from pathlib import Path
 import shutil
 import zipfile
 
+from sync_version import package_version
+
 ROOT = Path(__file__).resolve().parents[1]
-TREES = ('backend/src', 'backend/tests', 'frontend/src', 'frontend/test',
+TREES = ('app/src', 'app/test', 'app/scripts', 'app/src-tauri/src', 'app/src-tauri/capabilities', 'app/src-tauri/icons', 'design',
+         'backend/src', 'backend/tests', 'frontend/src', 'frontend/test',
          'frontend/scripts', 'native', 'environments', 'examples', 'release/public-source',
          'release/standalone', 'release/portable', 'release/qwen', 'desktop/licenses/standalone-npm', 'desktop/licenses/qwen',
-         'desktop/licenses/portable-runtime')
-FILES = ('PROJECT_INDEX.md', 'CONTRIBUTING.md', 'docs/COMMUNITY.md', 'scripts/check_project_index.py', 'scripts/native_chem313_workflow.js', 'scripts/native_first_calculation_workflow.js', 'backend/pyproject.toml', 'frontend/package.json', 'frontend/package-lock.json',
+         'desktop/licenses/portable-runtime', 'desktop/licenses/rust-v2', 'scripts/tests')
+FILES = ('PROJECT_INDEX.md', 'CHANGELOG.md', 'app/README.md', 'app/package.json', 'app/package-lock.json', 'app/vite.config.ts', 'app/tsconfig.json', 'app/index.html', 'app/.gitignore',
+         'app/src-tauri/Cargo.toml', 'app/src-tauri/Cargo.lock', 'app/src-tauri/build.rs', 'app/src-tauri/tauri.conf.json', 'app/src-tauri/.gitignore',
+         'CONTRIBUTING.md', 'docs/COMMUNITY.md', 'scripts/check_project_index.py', 'scripts/native_chem313_workflow.js', 'scripts/native_first_calculation_workflow.js', 'backend/pyproject.toml', 'frontend/package.json', 'frontend/package-lock.json',
          'frontend/tsconfig.json', 'frontend/vite.config.ts', 'frontend/index.html',
          'desktop/Chem313.swift', 'desktop/Info.plist', 'desktop/service.py', 'desktop/portable.py',
          'desktop/science_service.py', 'desktop/extended_service.py',
@@ -23,7 +28,7 @@ FILES = ('PROJECT_INDEX.md', 'CONTRIBUTING.md', 'docs/COMMUNITY.md', 'scripts/ch
          'scripts/build_public_qwen_worker.sh', 'scripts/assemble_qwen_app.py',
          'scripts/package_qwen_mac.sh', 'scripts/collect_qwen_licenses.py',
          'release/qwen/requirements-lock.txt',
-         'scripts/standalone_profile.py', 'scripts/collect_standalone_licenses.py',
+         'scripts/standalone_profile.py', 'scripts/sync_version.py', 'scripts/freeze_engine.py', 'scripts/collect_v2_notices.py', 'scripts/test_v2_frozen_engine.py', 'scripts/collect_standalone_licenses.py',
          'scripts/audit_standalone_binary.py', 'scripts/test_standalone_package.py',
          'scripts/native_standalone_workflow.js', 'desktop/Chem313.icns',
          'scripts/render_app_icon.swift', 'desktop/branding/Chem313.png',
@@ -88,7 +93,7 @@ def main():
         rows.append({'path': relative, 'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest()})
     if violations:
         raise ValueError('Public source scan failed: ' + json.dumps(violations))
-    manifest = {'schema': 'openchem.public-source-candidate.v1', 'code_version': '1.0.0-preview.6',
+    manifest = {'schema': 'openchem.public-source-candidate.v1', 'code_version': package_version(),
                 'publication_status': 'PUBLIC_RESEARCH_PREVIEW',
                 'scope': 'Source only. No compiled application or installed engines.',
                 'excluded': ['Git history', 'Private Drive receipts and handoff archives',

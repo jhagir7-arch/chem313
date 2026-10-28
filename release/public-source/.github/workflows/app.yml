@@ -1,0 +1,102 @@
+name: Desktop app
+
+# Builds the v2 desktop shell with a frozen engine on all three OSes, runs the engine's tests
+# and the interface's checks, and keeps each installer as a workflow artifact. Publishing a
+# release stays a manual step: download, test by hand, attach to a GitHub release.
+
+on:
+  push:
+    branches: [main]
+    paths: ["app/**", "backend/**", "design/**", "desktop/**", "scripts/collect_v2_notices.py", "scripts/test_v2_frozen_engine.py", "scripts/collect_standalone_licenses.py", "scripts/freeze_engine.py", "scripts/sync_version.py", ".github/workflows/app.yml"]
+  pull_request:
+    paths: ["app/**", "backend/**", "design/**", "desktop/**", "scripts/collect_v2_notices.py", "scripts/test_v2_frozen_engine.py", "scripts/collect_standalone_licenses.py", "scripts/freeze_engine.py", "scripts/sync_version.py", ".github/workflows/app.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  app:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-14
+            label: mac-arm64
+            bundles: app,dmg
+          - os: ubuntu-22.04
+            label: linux-x86_64
+            bundles: deb,appimage
+          - os: windows-2022
+            label: windows-amd64
+            bundles: msi
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Linux webview and bundler dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libssl-dev
+      - name: Install engine and checks
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e "backend[test]" "pyinstaller>=6.19,<7"
+      - name: Version and contract gate
+        run: python scripts/sync_version.py --check
+      - name: Engine tests
+        run: python -m pytest backend/tests -q -p no:cacheprovider --deselect backend/tests/test_release_gates_cp03.py::ReleaseGateTests::test_original_peer_archive_hashes
+      - name: Freeze engine
+        run: python scripts/freeze_engine.py --dest app/src-tauri/engine
+      - name: Frozen engine workflow
+        run: python scripts/test_v2_frozen_engine.py app/src-tauri/engine/chem313-engine${{ runner.os == 'Windows' && '.exe' || '' }} frozen-engine-qa.json
+      - name: Interface dependencies
+        run: npm --prefix app ci
+      - name: Interface tests and type check
+        run: |
+          npm --prefix app test
+          npm --prefix app run build
+      - name: Dependency notices
+        id: notices
+        continue-on-error: true
+        run: python scripts/collect_v2_notices.py
+      - name: Host tests
+        working-directory: app/src-tauri
+        run: cargo test --locked
+      - name: Require complete dependency notices
+        if: steps.notices.outcome != 'success'
+        run: python -c "raise SystemExit('Dependency notices incomplete; installer publication blocked. See app/src-tauri/notices/inventory.json')"
+      - name: Tauri CLI
+        run: cargo install tauri-cli --version "^2" --locked
+      - name: Build installers
+        working-directory: app
+        run: cargo tauri build --bundles ${{ matrix.bundles }}
+      - name: Collect installers
+        shell: bash
+        run: |
+          mkdir -p out
+          find app/src-tauri/target/release/bundle -type f \( -name "*.dmg" -o -name "*.deb" -o -name "*.AppImage" -o -name "*.msi" \) -exec cp {} out/ \;
+          ls -la out
+      - uses: actions/upload-artifact@v7
+        with:
+          name: Chem313-${{ matrix.label }}
+          path: out/
+          if-no-files-found: error
+      - name: Retain verification reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: Chem313-checks-${{ matrix.label }}
+          path: |
+            frozen-engine-qa.json
+            app/src-tauri/notices/inventory.json
+          if-no-files-found: warn

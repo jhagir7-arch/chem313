@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "HypothesisLab Local Engine",
-    "version": "1.0.0-preview.2"
+    "version": "2.0.0-alpha.1"
   },
   "paths": {
     "/api/session": {
@@ -41,6 +41,28 @@
       "get": {
         "summary": "Capabilities",
         "operationId": "capabilities_api_capabilities_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
+      }
+    },
+    "/api/catalog": {
+      "get": {
+        "summary": "Catalog Route",
+        "description": "Starter molecules, force fields and parameter bounds; the interface shows nothing it does not read here.",
+        "operationId": "catalog_route_api_catalog_get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -484,6 +506,27 @@
         ]
       }
     },
+    "/api/orca/discover": {
+      "get": {
+        "summary": "Discover Orca",
+        "operationId": "discover_orca_api_orca_discover_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
+      }
+    },
     "/api/orca/configure": {
       "post": {
         "summary": "Configure",
@@ -571,6 +614,560 @@
       "post": {
         "summary": "Cancel",
         "operationId": "cancel_api_orca_jobs__job_id__cancel_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Cancel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/qchem/results/coach": {
+      "post": {
+        "summary": "Qchem Result Coach",
+        "operationId": "qchem_result_coach_api_qchem_results_coach_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QchemResultRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
+      }
+    },
+    "/api/qchem/coach": {
+      "post": {
+        "summary": "Qchem Coach",
+        "operationId": "qchem_coach_api_qchem_coach_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QchemCoachRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
+      }
+    },
+    "/api/studies/plan": {
+      "post": {
+        "summary": "Plan",
+        "operationId": "plan_api_studies_plan_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlanRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
+      }
+    },
+    "/api/studies/run": {
+      "post": {
+        "summary": "Run",
+        "operationId": "run_api_studies_run_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
+      }
+    },
+    "/api/studies/{project}/{job_id}": {
+      "get": {
+        "summary": "Status",
+        "operationId": "status_api_studies__project___job_id__get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project"
+            }
+          },
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/studies/{project}/{job_id}/cancel": {
+      "post": {
+        "summary": "Cancel",
+        "operationId": "cancel_api_studies__project___job_id__cancel_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project"
+            }
+          },
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/qchem/status": {
+      "get": {
+        "summary": "Status",
+        "operationId": "status_api_qchem_status_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
+      }
+    },
+    "/api/qchem/configure": {
+      "post": {
+        "summary": "Configure",
+        "operationId": "configure_api_qchem_configure_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Configuration"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
+      }
+    },
+    "/api/qchem/prepare": {
+      "post": {
+        "summary": "Prepare",
+        "operationId": "prepare_api_qchem_prepare_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Preparation"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
+      }
+    },
+    "/api/qchem/jobs": {
+      "post": {
+        "summary": "Start",
+        "operationId": "start_api_qchem_jobs_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Start"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Jobs",
+        "operationId": "jobs_api_qchem_jobs_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/qchem/jobs/{job_id}": {
+      "get": {
+        "summary": "Job Status",
+        "operationId": "job_status_api_qchem_jobs__job_id__get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/qchem/jobs/{job_id}/cancel": {
+      "post": {
+        "summary": "Cancel",
+        "operationId": "cancel_api_qchem_jobs__job_id__cancel_post",
         "security": [
           {
             "APIKeyHeader": []
@@ -764,6 +1361,35 @@
         ],
         "title": "Action"
       },
+      "Atom": {
+        "properties": {
+          "element": {
+            "type": "string",
+            "title": "Element"
+          },
+          "x": {
+            "type": "number",
+            "title": "X"
+          },
+          "y": {
+            "type": "number",
+            "title": "Y"
+          },
+          "z": {
+            "type": "number",
+            "title": "Z"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "element",
+          "x",
+          "y",
+          "z"
+        ],
+        "title": "Atom"
+      },
       "Cancel": {
         "properties": {
           "approved": {
@@ -775,6 +1401,28 @@
         "additionalProperties": false,
         "type": "object",
         "title": "Cancel"
+      },
+      "CancelRequest": {
+        "properties": {},
+        "additionalProperties": false,
+        "type": "object",
+        "title": "CancelRequest"
+      },
+      "Configuration": {
+        "properties": {
+          "installation": {
+            "type": "string",
+            "maxLength": 4096,
+            "minLength": 1,
+            "title": "Installation"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "installation"
+        ],
+        "title": "Configuration"
       },
       "Goal": {
         "properties": {
@@ -821,6 +1469,54 @@
         ],
         "title": "OrcaPath"
       },
+      "PlanRequest": {
+        "properties": {
+          "project": {
+            "type": "string",
+            "maxLength": 48,
+            "minLength": 1,
+            "title": "Project"
+          },
+          "prompt": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Prompt"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "project",
+          "prompt"
+        ],
+        "title": "PlanRequest"
+      },
+      "Preparation": {
+        "properties": {
+          "molecule": {
+            "type": "string",
+            "title": "Molecule"
+          },
+          "atoms": {
+            "items": {
+              "$ref": "#/components/schemas/Atom"
+            },
+            "type": "array",
+            "maxItems": 9,
+            "minItems": 1,
+            "title": "Atoms"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "molecule",
+          "atoms"
+        ],
+        "title": "Preparation",
+        "description": "Read-only coordinate validation used before a beginner input is saved or downloaded."
+      },
       "Prompt": {
         "properties": {
           "prompt": {
@@ -836,6 +1532,153 @@
           "prompt"
         ],
         "title": "Prompt"
+      },
+      "QchemCoachRequest": {
+        "properties": {
+          "project": {
+            "type": "string",
+            "maxLength": 48,
+            "minLength": 1,
+            "title": "Project"
+          },
+          "prompt": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 1,
+            "title": "Prompt"
+          },
+          "step": {
+            "type": "string",
+            "enum": [
+              "choose",
+              "inspect",
+              "settings",
+              "export"
+            ],
+            "title": "Step"
+          },
+          "molecule": {
+            "type": "string",
+            "enum": [
+              "water",
+              "methane",
+              "ethanol"
+            ],
+            "title": "Molecule"
+          },
+          "charge": {
+            "type": "integer",
+            "title": "Charge"
+          },
+          "multiplicity": {
+            "type": "integer",
+            "title": "Multiplicity"
+          },
+          "atom_count": {
+            "type": "integer",
+            "title": "Atom Count"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "project",
+          "prompt",
+          "step",
+          "molecule",
+          "charge",
+          "multiplicity",
+          "atom_count"
+        ],
+        "title": "QchemCoachRequest"
+      },
+      "QchemResultRequest": {
+        "properties": {
+          "project": {
+            "type": "string",
+            "maxLength": 48,
+            "minLength": 1,
+            "title": "Project"
+          },
+          "job_id": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{32}$",
+            "title": "Job Id"
+          },
+          "prompt": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 1,
+            "title": "Prompt"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "project",
+          "job_id",
+          "prompt"
+        ],
+        "title": "QchemResultRequest"
+      },
+      "RunRequest": {
+        "properties": {
+          "project": {
+            "type": "string",
+            "maxLength": 48,
+            "minLength": 1,
+            "title": "Project"
+          },
+          "plan_id": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 32,
+            "title": "Plan Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "project",
+          "plan_id"
+        ],
+        "title": "RunRequest"
+      },
+      "Start": {
+        "properties": {
+          "project": {
+            "type": "string",
+            "maxLength": 48,
+            "minLength": 1,
+            "title": "Project"
+          },
+          "molecule": {
+            "type": "string",
+            "title": "Molecule"
+          },
+          "atoms": {
+            "items": {
+              "$ref": "#/components/schemas/Atom"
+            },
+            "type": "array",
+            "maxItems": 9,
+            "minItems": 1,
+            "title": "Atoms"
+          },
+          "approved": {
+            "type": "boolean",
+            "title": "Approved",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "project",
+          "molecule",
+          "atoms"
+        ],
+        "title": "Start"
       },
       "ValidationError": {
         "properties": {

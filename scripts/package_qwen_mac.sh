@@ -33,7 +33,7 @@ PY
 mkdir -p "$(dirname "$PREFIX")"
 STAGE="$(mktemp -d "${TMPDIR:-/tmp}/OpenChem-Qwen.XXXXXX")"
 trap 'rm -rf "$STAGE"' EXIT
-cp -R "$APP" "$STAGE/OpenChem.app"
+cp -R "$APP" "$STAGE/Chem313.app"
 cp release/qwen/README.txt "$STAGE/README.txt"
 ln -s /Applications "$STAGE/Applications"
 hdiutil create -volname 'OpenChem Qwen Preview' -srcfolder "$STAGE" -ov -format UDZO "$PREFIX.dmg"

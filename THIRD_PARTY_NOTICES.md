@@ -78,3 +78,14 @@ is retained; missing-fixture tests explicitly skip in the public snapshot.
 The earlier preview.1 native shell was source-runtime based. Its narrower
 distribution scope is preserved in its original release, not used to describe
 the standalone preview.2 download. Product names remain their owners' marks.
+
+## Version 2 desktop alpha review (2026-10-28)
+
+The new Tauri/Rust shell, Ketcher/3Dmol interface and frozen Python engine have
+a separate notice collector (`scripts/collect_v2_notices.py`). Historical
+preview inventories below do not clear the v2 installer. The current macOS
+review maps native runtime files and fonts, but retains unresolved upstream
+objc2-family license/copyright materials. Exact upstream revision evidence is
+under `desktop/licenses/rust-v2`. Installer publication is gated until the
+notice inventory passes; source publication does not include compiled crates
+or proprietary engines. No blanket legal-clearance claim is made.
