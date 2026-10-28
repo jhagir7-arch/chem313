@@ -1,16 +1,21 @@
+
 name: Desktop app
 
 # Builds the v2 desktop shell with a frozen engine on all three OSes, runs the engine's tests
-# and the interface's checks, and keeps each installer as a workflow artifact. Publishing a
-# release stays a manual step: download, test by hand, attach to a GitHub release.
+# and interface checks. An explicit dispatch can publish only after every package passes.
 
 on:
   push:
     branches: [main]
-    paths: ["app/**", "backend/**", "design/**", "desktop/**", "scripts/collect_v2_notices.py", "scripts/test_v2_frozen_engine.py", "scripts/collect_standalone_licenses.py", "scripts/freeze_engine.py", "scripts/sync_version.py", ".github/workflows/app.yml"]
+    paths: ["app/**", "backend/**", "design/**", "desktop/**", "scripts/collect_v2_notices.py", "scripts/test_v2_frozen_engine.py", "scripts/collect_standalone_licenses.py", "scripts/freeze_engine.py", "scripts/verify_desktop_package.py", "scripts/tests/**", "scripts/sync_version.py"]
   pull_request:
-    paths: ["app/**", "backend/**", "design/**", "desktop/**", "scripts/collect_v2_notices.py", "scripts/test_v2_frozen_engine.py", "scripts/collect_standalone_licenses.py", "scripts/freeze_engine.py", "scripts/sync_version.py", ".github/workflows/app.yml"]
+    paths: ["app/**", "backend/**", "design/**", "desktop/**", "scripts/collect_v2_notices.py", "scripts/test_v2_frozen_engine.py", "scripts/collect_standalone_licenses.py", "scripts/freeze_engine.py", "scripts/verify_desktop_package.py", "scripts/tests/**", "scripts/sync_version.py"]
   workflow_dispatch:
+    inputs:
+      publish:
+        description: Publish the tested packages as a community beta release
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -31,6 +36,10 @@ jobs:
             label: windows-amd64
             bundles: msi
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 65
+    env:
+      PYTHONUTF8: "1"
+      APPLE_SIGNING_IDENTITY: "-"
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
@@ -38,7 +47,7 @@ jobs:
           python-version: "3.13"
       - uses: actions/setup-node@v7
         with:
-          node-version: "22"
+          node-version: "24"
           cache: npm
           cache-dependency-path: app/package-lock.json
       - uses: dtolnay/rust-toolchain@stable
@@ -69,6 +78,8 @@ jobs:
         id: notices
         continue-on-error: true
         run: python scripts/collect_v2_notices.py
+      - name: Notice collector regression tests
+        run: python -m unittest discover -s scripts/tests -v
       - name: Host tests
         working-directory: app/src-tauri
         run: cargo test --locked
@@ -86,6 +97,15 @@ jobs:
           mkdir -p out
           find app/src-tauri/target/release/bundle -type f \( -name "*.dmg" -o -name "*.deb" -o -name "*.AppImage" -o -name "*.msi" \) -exec cp {} out/ \;
           ls -la out
+      - name: Verify extracted installers
+        shell: bash
+        run: |
+          for package in out/*; do
+            python scripts/verify_desktop_package.py "$package" "out/$(basename "$package").qa.json"
+          done
+          python -m pip freeze > out/build-python.txt
+          rustc -vV > out/build-rust.txt
+          node --version > out/build-node.txt
       - uses: actions/upload-artifact@v7
         with:
           name: Chem313-${{ matrix.label }}
@@ -98,5 +118,49 @@ jobs:
           name: Chem313-checks-${{ matrix.label }}
           path: |
             frozen-engine-qa.json
+            out/*.qa.json
             app/src-tauri/notices/inventory.json
           if-no-files-found: warn
+
+  publish:
+    needs: app
+    if: github.event_name == 'workflow_dispatch' && inputs.publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v7
+        with:
+          pattern: Chem313-*
+          path: artifacts
+      - name: Verify candidate set and publish immutable release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: python
+        run: |
+          import hashlib, json, pathlib, subprocess
+          root = pathlib.Path('artifacts')
+          version = json.loads(pathlib.Path('app/package.json').read_text())['version']
+          tag = 'v' + version
+          expected = {'mac-arm64': {'.dmg'}, 'windows-amd64': {'.msi'}, 'linux-x86_64': {'.deb', '.AppImage'}}
+          release = pathlib.Path('release-assets'); release.mkdir()
+          hashes = []
+          for label, suffixes in expected.items():
+              folder = root / ('Chem313-' + label)
+              packages = [p for p in folder.iterdir() if p.suffix in suffixes]
+              assert {p.suffix for p in packages} == suffixes and len(packages) == len(suffixes), label
+              for package in packages:
+                  report = json.loads(package.with_name(package.name + '.qa.json').read_text())
+                  digest = hashlib.sha256(package.read_bytes()).hexdigest()
+                  assert report['status'] == 'PASS' and report['sha256'] == digest
+                  assert report['engine_workflow']['independent_energy']['status'] == 'PASS'
+                  target = release / ('Chem313-' + version + '-' + label + package.suffix)
+                  target.write_bytes(package.read_bytes())
+                  (release / (target.name + '.qa.json')).write_text(json.dumps(report, indent=2) + '\n')
+                  hashes.append(digest + '  ' + target.name)
+          (release / 'SHA256SUMS.txt').write_text('\n'.join(sorted(hashes)) + '\n')
+          # Refuse to overwrite or retag an existing release.
+          check = subprocess.run(['gh', 'release', 'view', tag], capture_output=True)
+          assert check.returncode != 0, 'Release already exists; use a new version'
+          subprocess.run(['gh', 'release', 'create', tag, '--target', '${{ github.sha }}', '--title', 'Chem313 ' + version + ' - community desktop release', '--prerelease', '--notes-file', 'docs/DESKTOP_RELEASE.md', *map(str, sorted(release.iterdir()))], check=True)
