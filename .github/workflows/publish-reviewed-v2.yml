@@ -1,0 +1,57 @@
+name: Import reviewed v2 source
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Verify and import source snapshot
+        shell: python
+        run: |
+          import hashlib, json, pathlib, stat, subprocess, zipfile
+          root = pathlib.Path.cwd()
+          archive = 'reviewed-source-2.0.0-alpha.1-final.zip'
+          workflow = '.github/workflows/publish-reviewed-v2.yml'
+          base = '108b52baab4d034db5a872c7c99c75192dd3c6e4'
+          subprocess.run(['git', 'merge-base', '--is-ancestor', base, 'HEAD'], check=True)
+          changed = set(subprocess.check_output(['git', 'diff', '--name-only', base, 'HEAD'], text=True).splitlines())
+          assert changed <= {archive, workflow}, 'Concurrent repository edits require review'
+          data = (root / archive).read_bytes()
+          assert hashlib.sha256(data).hexdigest() == '74fdd1b4859f4cf982d5f2ab1ec972caf0a25c8bd5e1ed031715dddb3dd33d2b'
+          prefix = 'reviewed-source-2.0.0-alpha.1-final/'
+          with zipfile.ZipFile(root / archive) as z:
+              names = z.namelist()
+              assert len(names) == len(set(names)) and len(names) < 1000
+              assert sum(i.file_size for i in z.infolist()) < 40_000_000
+              for i in z.infolist():
+                  assert i.filename.startswith(prefix)
+                  p = pathlib.PurePosixPath(i.filename[len(prefix):])
+                  assert p.parts and not p.is_absolute() and '..' not in p.parts
+                  assert '.git' not in p.parts and not stat.S_ISLNK(i.external_attr >> 16)
+                  assert '\\' not in str(p) and i.file_size < 20_000_000
+              assert z.testzip() is None
+              manifest = json.loads(z.read(prefix + 'BUNDLE_MANIFEST.json'))
+              assert manifest['code_version'] == '2.0.0-alpha.1'
+              expected = {prefix + f['path'] for f in manifest['files']}
+              assert set(names) == expected | {prefix + 'BUNDLE_MANIFEST.json'}
+              for f in manifest['files']:
+                  payload = z.read(prefix + f['path'])
+                  assert len(payload) == f['bytes'] and hashlib.sha256(payload).hexdigest() == f['sha256']
+              for name in names:
+                  if name[len(prefix):].startswith('.github/workflows/'):
+                      continue
+                  destination = root / name[len(prefix):]
+                  assert destination.resolve().is_relative_to(root.resolve())
+                  destination.parent.mkdir(parents=True, exist_ok=True)
+                  destination.write_bytes(z.read(name))
+          (root / archive).unlink()
+          subprocess.run(['git', 'config', 'user.name', 'github-actions[bot]'], check=True)
+          subprocess.run(['git', 'config', 'user.email', '41898282+github-actions[bot]@users.noreply.github.com'], check=True)
+          subprocess.run(['git', 'add', '-A'], check=True)
+          subprocess.run(['git', 'commit', '-m', 'feat: reviewed Chem313 v2 source alpha with release gates'], check=True)
+          subprocess.run(['git', 'push', 'origin', 'HEAD:main'], check=True)
