@@ -1,4 +1,3 @@
-
 name: Chem313 portable core candidate
 on:
   workflow_dispatch:
@@ -31,11 +30,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
     steps:
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           # The retained CPython CRT conditions are source-pinned below.
           python-version: '3.13.16'
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: '24'
       - name: Download and verify the exact reviewed source
@@ -191,7 +190,7 @@ jobs:
           gh release upload "$tag" "dist/$BUNDLE_NAME.$extension" "dist/$BUNDLE_NAME.$extension.sha256" --repo jhagir7-arch/chem313
           cp build/portable/workflow.json "build/portable/$BUNDLE_NAME-QA.json"
           gh release upload "$tag" "build/portable/$BUNDLE_NAME-QA.json" --repo jhagir7-arch/chem313
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: steps.release_gate.outputs.releasable == 'true'
         with:
           name: Chem313-core-${{ matrix.label }}-tested-candidate
@@ -200,7 +199,7 @@ jobs:
             source/dist/*.tar.gz
             source/dist/*.sha256
           if-no-files-found: error
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: portable-${{ matrix.label }}-evidence
