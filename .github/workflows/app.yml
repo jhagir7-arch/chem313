@@ -63,7 +63,7 @@ jobs:
       - name: Version and contract gate
         run: python scripts/sync_version.py --check
       - name: Engine tests
-        run: python -m pytest backend/tests -q -p no:cacheprovider --deselect backend/tests/test_release_gates_cp03.py::ReleaseGateTests::test_original_peer_archive_hashes
+        run: python -m pytest backend/tests -q -p no:cacheprovider -k "not test_original_peer_archive_hashes"
       - name: Freeze engine
         run: python scripts/freeze_engine.py --dest app/src-tauri/engine
       - name: Frozen engine workflow
