@@ -4,13 +4,13 @@ Tauri 2 + React with an included frozen Python/RDKit engine. The catalog owns mo
 
 ## Build
 
-Python 3.13, Node 24.14.1+, Rust and platform Tauri build prerequisites are required for developers. End users need none of those runtimes.
+Python 3.13, Node 24, Rust and platform Tauri build prerequisites are required for developers. End users need none of those runtimes.
 
 ```sh
 python -m pip install -e "backend[test]" "pyinstaller>=6.19,<7"
 npm --prefix app ci
 python scripts/sync_version.py --check
-python -m pytest backend/tests -q
+python -m pytest backend/tests -q -k "not test_original_peer_archive_hashes"
 python scripts/freeze_engine.py
 python scripts/test_v2_frozen_engine.py app/src-tauri/engine/chem313-engine frozen-engine-qa.json
 npm --prefix app run build
@@ -20,6 +20,8 @@ cargo test --manifest-path app/src-tauri/Cargo.toml --locked
 cargo install tauri-cli --version "^2" --locked
 cd app && cargo tauri build
 ```
+
+The excluded test verifies private handoff archives that are not redistributed. All other backend tests run. On Windows, append `.exe` to the frozen-engine executable in the check command.
 
 The notice collector must pass before packaging. Its inventory identifies scope and gaps; it is not a blanket legal clearance. Installers are built independently on each platform by `.github/workflows/app.yml`.
 
