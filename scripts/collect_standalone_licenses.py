@@ -12,6 +12,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 NOTICE_PREFIXES = ("license", "licence", "notice", "copying", "copyright")
@@ -22,6 +23,9 @@ PYINSTALLER_MAPPING = "PyInstaller collection with load-path/signature transform
 CPYTHON_EXTENSION_MAPPING = "PyInstaller TOC standard-library extension checksum"
 DEBIAN_SYSTEM_MAPPING = "PyInstaller TOC Debian package checksum"
 WINDOWS_CPYTHON_RUNTIME_MAPPING = "PyInstaller TOC official CPython Windows runtime checksum"
+MACOS_CPYTHON_RUNTIME_MAPPING = "PyInstaller macOS replayed collection checksum"
+MACOS_NCURSES_RUNTIME_VERSION = b"ncurses 6.5.20240427"
+MACOS_OPENSSL_RUNTIME_VERSION = b"OpenSSL 3.0.21 9 Jun 2026"
 WINDOWS_CPYTHON_RUNTIME_NOTICES = {
     "libcrypto-3.dll": ("OpenSSL-3", "OPENSSL-3-SOURCE.txt"),
     "libssl-3.dll": ("OpenSSL-3", "OPENSSL-3-SOURCE.txt"),
@@ -394,6 +398,106 @@ def windows_cpython_runtime_owner(source: Path, runtime: Path | None, output: Pa
     }
 
 
+def macos_cpython_runtime_owner(source: Path, runtime: Path | None, output: Path,
+                                project_root: Path) -> dict | None:
+    """Map only CPython's top-level macOS OpenSSL runtime dylibs.
+
+    A later replay check must prove the exact PyInstaller-produced payload.
+    The marker is present in libcrypto; libssl is bounded by that sibling.
+    No other third-party CPython dylib is inferred from its filename.
+    """
+    if sys.platform != "darwin" or runtime is None:
+        return None
+    runtime_lib = (runtime / "lib").resolve()
+    try:
+        if source.resolve().parent != runtime_lib or source.name.lower() not in {"libcrypto.3.dylib", "libssl.3.dylib"}:
+            return None
+        marker_source = source if source.name.lower() == "libcrypto.3.dylib" else runtime_lib / "libcrypto.3.dylib"
+        if not marker_source.is_file() or MACOS_OPENSSL_RUNTIME_VERSION not in marker_source.read_bytes():
+            return None
+    except OSError:
+        return None
+    notice_root = project_root / "desktop" / "licenses" / "portable-runtime"
+    terms = notice_root / "OPENSSL-3.0.21-LICENSE.txt"
+    provenance = notice_root / "OPENSSL-3.0.21-PROVENANCE.txt"
+    if not terms.is_file() or not provenance.is_file():
+        return None
+    return {
+        "owner": "OpenSSL-3.0.21",
+        "source": str(source),
+        "source_sha256": sha256(source),
+        "strict_source_sha256": True,
+        "notices": [
+            copy(terms, output / "macos-cpython-runtime" / terms.name, output),
+            copy(provenance, output / "macos-cpython-runtime" / provenance.name, output),
+        ],
+    }
+
+
+def macos_ncurses_runtime_owner(source: Path, runtime: Path | None, output: Path,
+                                project_root: Path) -> dict | None:
+    """Map only the diagnosed ncurses runtime build from the CPython lib dir."""
+    if sys.platform != "darwin" or runtime is None:
+        return None
+    runtime_lib = (runtime / "lib").resolve()
+    try:
+        if source.resolve().parent != runtime_lib or source.name.lower() != "libncurses.6.dylib":
+            return None
+        if MACOS_NCURSES_RUNTIME_VERSION not in source.read_bytes():
+            return None
+    except OSError:
+        return None
+    notice_root = project_root / "desktop" / "licenses" / "portable-runtime"
+    terms = notice_root / "NCURSES-6.5.20240427-LICENSE.txt"
+    provenance = notice_root / "NCURSES-6.5.20240427-PROVENANCE.txt"
+    if not terms.is_file() or not provenance.is_file():
+        return None
+    return {
+        "owner": "ncurses-6.5.20240427",
+        "source": str(source),
+        "source_sha256": sha256(source),
+        "strict_source_sha256": True,
+        "notices": [
+            copy(terms, output / "macos-cpython-runtime" / terms.name, output),
+            copy(provenance, output / "macos-cpython-runtime" / provenance.name, output),
+        ],
+    }
+
+
+def macos_pyinstaller_replay_sha256(source: Path, destination: str, kind: str) -> str | None:
+    """Return PyInstaller's exact macOS collection digest for one TOC entry.
+
+    This replays the collector in an isolated binary cache; it never changes
+    the source or the release bundle.  A failure deliberately returns no
+    mapping so the release gate remains fail-closed.
+    """
+    if sys.platform != "darwin" or kind not in {"BINARY", "EXTENSION"}:
+        return None
+    try:
+        from PyInstaller.building.utils import process_collected_binary
+        from PyInstaller.config import CONF
+    except ImportError:
+        return None
+    prior_cachedir = CONF.get("cachedir")
+    had_cachedir = "cachedir" in CONF
+    try:
+        with tempfile.TemporaryDirectory(prefix="chem313-pyinstaller-replay-") as cache:
+            CONF["cachedir"] = cache
+            replayed = Path(process_collected_binary(
+                str(source), destination, use_strip=False, use_upx=False,
+                upx_exclude=[], target_arch="arm64", codesign_identity=None,
+                entitlements_file=None, strict_arch_validation=(kind == "EXTENSION"),
+            ))
+            return sha256(replayed) if replayed.is_file() else None
+    except (OSError, ValueError, RuntimeError, SystemError):
+        return None
+    finally:
+        if had_cachedir:
+            CONF["cachedir"] = prior_cachedir
+        else:
+            CONF.pop("cachedir", None)
+
+
 def windows_cpython_microsoft_runtime_owner(source: Path, runtime: Path | None, output: Path,
                                             project_root: Path) -> dict | None:
     """Map CPython's bundled Microsoft code only with CPython's exact terms.
@@ -454,23 +558,34 @@ def pyinstaller_toc(path: Path | None, site: Path, ownership: dict, python_runti
         if owner and source_sha256 == owner["source_sha256"]:
             mapped[destination] = owner
         elif py_runtime and py_runtime.get("notices") and python_runtime and is_cpython_runtime_source(source, python_runtime, extension_dirs):
-            mapped[destination] = {
+            owner = {
                 "owner": "CPython",
                 "source": str(source),
                 "source_sha256": source_sha256,
                 "strict_source_sha256": True,
                 "notices": py_runtime["notices"],
             }
+            replay_sha256 = macos_pyinstaller_replay_sha256(source, destination, kind)
+            if replay_sha256:
+                owner["macos_pyinstaller_replay_sha256"] = replay_sha256
+            mapped[destination] = owner
         elif output is not None:
             owner = windows_cpython_runtime_owner(source, python_runtime, output, project_root) if project_root else None
             if owner is None and project_root:
                 owner = windows_cpython_microsoft_runtime_owner(source, python_runtime, output, project_root)
+            if owner is None and project_root:
+                owner = macos_cpython_runtime_owner(source, python_runtime, output, project_root)
+            if owner is None and project_root:
+                owner = macos_ncurses_runtime_owner(source, python_runtime, output, project_root)
             diagnostic = None
             if owner is None:
                 debian_owner, debian_diagnostic = debian_system_owner_detail(source, output)
                 owner = debian_owner
                 diagnostic = diagnostic or debian_diagnostic
             if owner:
+                replay_sha256 = macos_pyinstaller_replay_sha256(source, destination, kind)
+                if replay_sha256 and owner["owner"] in {"OpenSSL-3.0.21", "ncurses-6.5.20240427"}:
+                    owner["macos_pyinstaller_replay_sha256"] = replay_sha256
                 mapped[destination] = owner
             elif diagnostic:
                 mapped[destination] = {"owner": "UNMAPPED", "diagnostic": diagnostic}
@@ -493,7 +608,7 @@ def mapped_native_row(path: str, packaged_sha256: str, owner: dict, mapping_meth
     row = {"path": path, "owner": owner["owner"], "source": owner["source"],
            "source_sha256": owner["source_sha256"], "packaged_sha256": packaged_sha256,
            "mapping_method": mapping_method, "notices": owner["notices"]}
-    for key in ("wheel_record_sha256", "package", "package_version", "official_terms", "review"):
+    for key in ("wheel_record_sha256", "package", "package_version", "official_terms", "review", "macos_pyinstaller_replay_sha256"):
         if key in owner:
             row[key] = owner[key]
     return row
@@ -514,10 +629,13 @@ def native(bundle: Path, ownership: dict, py_runtime: dict, toc: dict) -> list[d
             if owner and owner.get("owner") == "UNMAPPED":
                 row = {"path": path, "owner": "UNMAPPED", "source": "UNMAPPED", "packaged_sha256": packaged_sha256,
                        "notices": [], "diagnostic": owner["diagnostic"]}
-            elif owner and (not owner.get("strict_source_sha256") or owner["source_sha256"] == packaged_sha256):
-                method = CPYTHON_EXTENSION_MAPPING if owner["owner"] == "CPython" else (
+            elif owner and (not owner.get("strict_source_sha256") or owner["source_sha256"] == packaged_sha256
+                            or owner.get("macos_pyinstaller_replay_sha256") == packaged_sha256):
+                method = (MACOS_CPYTHON_RUNTIME_MAPPING if owner.get("macos_pyinstaller_replay_sha256") == packaged_sha256
+                          and owner["source_sha256"] != packaged_sha256 else
+                          CPYTHON_EXTENSION_MAPPING if owner["owner"] == "CPython" else (
                     WINDOWS_CPYTHON_RUNTIME_MAPPING if owner["owner"] in {"OpenSSL-3", "libffi", "SQLite", "Microsoft Distributable Code via CPython 3.13.16"} else
-                    DEBIAN_SYSTEM_MAPPING if "package" in owner else PYINSTALLER_MAPPING)
+                    DEBIAN_SYSTEM_MAPPING if "package" in owner else PYINSTALLER_MAPPING))
                 row = mapped_native_row(path, packaged_sha256, owner, method)
             elif owner:
                 row = {"path": path, "owner": "UNMAPPED", "source": "UNMAPPED", "packaged_sha256": packaged_sha256, "notices": []}

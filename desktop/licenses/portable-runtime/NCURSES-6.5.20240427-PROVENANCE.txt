@@ -1,0 +1,17 @@
+ncurses runtime provenance for macOS CPython collection
+
+Diagnosed runtime source requirement:
+- filename: libncurses.6.dylib
+- source directory: selected CPython runtime lib/
+- embedded version marker: ncurses 6.5.20240427
+
+The diagnostic source binary contained that exact version marker and had
+SHA-256 73e7c59f21d6fb27c7592bb467e4263c0983f3c4814af77395ecb18b498105a1.
+The packaged arm64 binary is accepted only after a separate exact PyInstaller
+macOS replay checksum match; this record does not waive that requirement.
+
+Official upstream source:
+https://invisible-island.net/archives/ncurses/ncurses-6.5.tar.gz
+Archive SHA-256: 136d91bc269a9a5785e5f9e980bc76ab57428f604ce3e5a5a90cebc767971cc6
+License member: ncurses-6.5/COPYING
+The retained LICENSE file is the complete COPYING member from that archive.

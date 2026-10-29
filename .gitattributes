@@ -1,0 +1,5 @@
+# Keep checkout bytes stable for hash-verified release material.
+* text=auto eol=lf
+desktop/licenses/** -text
+# Preserve the existing research CSV byte-for-byte.
+contracts/COMPETITOR_CHALLENGE.csv -text

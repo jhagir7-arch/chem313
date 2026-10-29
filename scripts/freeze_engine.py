@@ -9,6 +9,7 @@ interface is not included; the shell does not use it.
 """
 import argparse
 import platform
+import re
 import shutil
 import subprocess
 import sys
@@ -23,6 +24,24 @@ HIDDEN = [
     "uvicorn.protocols.http.h11_impl", "uvicorn.protocols.websockets.auto", "uvicorn.lifespan.on",
 ]
 EXCLUDE = ["tkinter", "pytest", "IPython", "pandas", "torch", "PyQt5", "PySide6"]
+
+
+def exclude_windows_system_runtime(bundle: Path, target_platform: str) -> list[str]:
+    """Use the Windows 10+ OS UCRT rather than redistribute SDK/system DLLs.
+
+    Microsoft documents UCRT as an OS component on every supported Windows
+    target: https://learn.microsoft.com/cpp/windows/universal-crt-deployment
+    VCRUNTIME is separate and remains bundled with its CPython notice.
+    """
+    if target_platform != "win32":
+        return []
+    removed = []
+    for file in sorted((bundle / "_internal").glob("*.dll")):
+        name = file.name.lower()
+        if file.is_file() and (name == "ucrtbase.dll" or re.fullmatch(r"api-ms-win-(?:core|crt)-[a-z0-9-]+\.dll", name)):
+            file.unlink()
+            removed.append(file.name)
+    return removed
 
 
 def main() -> int:
@@ -49,6 +68,9 @@ def main() -> int:
     print("freezing engine for", platform.system(), platform.machine(), flush=True)
     subprocess.run(command, check=True, cwd=ROOT)
     shutil.copytree(work / "dist" / "chem313-engine", dest)
+    removed = exclude_windows_system_runtime(dest, sys.platform)
+    if removed:
+        print("using Windows 10+ system UCRT; excluded redundant OS DLLs:", ", ".join(removed), flush=True)
     executable = dest / ("chem313-engine.exe" if sys.platform.startswith("win") else "chem313-engine")
     if not executable.is_file():
         print("freeze produced no executable at", executable, file=sys.stderr)

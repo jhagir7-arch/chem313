@@ -1,0 +1,20 @@
+OpenSSL macOS CPython runtime provenance
+
+Diagnosed runtime source requirement:
+- filenames: libcrypto.3.dylib and libssl.3.dylib
+- source directory: selected CPython runtime lib/
+- version evidence: OpenSSL 3.0.21 9 Jun 2026 in libcrypto.3.dylib; libssl.3.dylib is accepted only when its sibling libcrypto.3.dylib has that marker.
+
+Diagnostic original SHA-256 values:
+- libcrypto.3.dylib: fc0f2f371a6a030a0aba6deb378d0cc173db18d99361524e3737176484d1af24
+- libssl.3.dylib: 35534366a0ee006b05f7b85071e2627be2338dc9f40e40992b9c41bb6b55d0c4
+
+The packaged arm64 binary is accepted only after a separate exact PyInstaller
+macOS replay checksum match; this record does not waive that requirement.
+
+Official upstream source:
+https://www.openssl.org/source/openssl-3.0.21.tar.gz
+Archive SHA-256: 617e29af8e421f46649484a4937e48c685e47f46488167c982f88bc4ec1d522f
+License member: openssl-3.0.21/LICENSE.txt
+License SHA-256: 7d5450cb2d142651b8afa315b5f238efc805dad827d91ba367d8516bc9d49e7a
+No top-level NOTICE member is present in this upstream archive.
