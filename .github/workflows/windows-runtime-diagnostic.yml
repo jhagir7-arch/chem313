@@ -1,0 +1,48 @@
+name: Diagnose Windows runtime provenance
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: windows-2022
+    timeout-minutes: 20
+    env:
+      PYTHONUTF8: "1"
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+      - run: python -m pip install -e "backend[test]" "pyinstaller>=6.19,<7"
+      - run: python scripts/freeze_engine.py --dest app/src-tauri/engine
+      - name: Capture CRT provenance
+        shell: python
+        run: |
+          import ast, hashlib, json, pathlib, shutil, subprocess, sys
+          root=pathlib.Path.cwd(); out=root/'runtime-diagnostic'; out.mkdir()
+          toc=root/'build/freeze-engine/work/chem313-engine/COLLECT-00.toc'
+          shutil.copy2(toc,out/'COLLECT-00.toc')
+          entries=ast.literal_eval(toc.read_text()); entries=entries[0] if isinstance(entries,tuple) and len(entries)==1 else entries
+          rows=[]; base=pathlib.Path(sys.base_prefix).resolve()
+          for entry in entries:
+              if not isinstance(entry,tuple) or len(entry)<3: continue
+              destination,source,kind=entry[:3]
+              if kind not in {'BINARY','EXTENSION'}: continue
+              source=pathlib.Path(source)
+              name=source.name.lower()
+              if not source.is_file() or not (name.startswith('api-ms-win-') or name in {'ucrtbase.dll','vcruntime140.dll','vcruntime140_1.dll'}): continue
+              packaged=root/'app/src-tauri/engine/_internal'/destination
+              row={'destination':destination,'source':str(source),'kind':kind,'original_sha256':hashlib.sha256(source.read_bytes()).hexdigest(),'packaged_sha256':hashlib.sha256(packaged.read_bytes()).hexdigest() if packaged.is_file() else None}
+              command=['powershell','-NoProfile','-Command', '(Get-Item -LiteralPath "'+str(source)+'").VersionInfo | Select-Object CompanyName,FileVersion,ProductVersion,OriginalFilename | ConvertTo-Json']
+              result=subprocess.run(command,capture_output=True,text=True); row['version_info']=result.stdout+result.stderr
+              copies=[]
+              for candidate in base.rglob(source.name):
+                  if 'site-packages' not in candidate.parts and candidate.is_file(): copies.append({'path':str(candidate),'sha256':hashlib.sha256(candidate.read_bytes()).hexdigest()})
+              row['runtime_copies']=copies; rows.append(row)
+          (out/'inventory.json').write_text(json.dumps({'python':sys.version,'base':str(base),'entries':rows},indent=2))
+      - uses: actions/upload-artifact@v7
+        with:
+          name: windows-runtime-diagnostic
+          path: runtime-diagnostic/
+          if-no-files-found: error
